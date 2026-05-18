@@ -1,12 +1,13 @@
 
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Google Cloud Platform (GCP) - Morning AI Briefing</title>
-            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-            
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Morning AI Portal</title>
+        <meta name="description" content="AIが厳選・解説する最新ビジネスニュース">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+        
         <style>
             :root {
                 --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -127,51 +128,69 @@
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         </style>
     
-        </head>
-        <body>
-            <div class="container">
-                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
-                <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="assets/images/gcp.png" class="thumbnail-icon-small" alt="Google Cloud Platform (GCP)">
-                        Google Cloud Platform (GCP)
-                    </h1>
-                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
-                        Morning Briefing (2026-05-18 11:40)
-                    </div>
-                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
-                </header>
-                <div class="grid" style="animation: fadeIn 1s ease-out;">
-        
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE11YjJnSHJRN19UVkdIZDRBU2xpSzBVaFNnWXA1Q3JGUEtuRUM4MDBuS2oxTkNnNGdGMm81M01RVndobVpfbmozR25TS2R2Rld0VVdVRmtPRmxSMXNCbmJhTlltSTdIQQ?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect-multicloud」新機能をプレビュー Google Cloudとの接続に続き - ITmedia</a></h3>
-                        <div class="meta">📅 2026-05-18 01:34 | 🏢 配信元: <b>ITmedia</b></div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">今日のビジネス環境では、複数のクラウドサービス（AWS、GCP、Oracle Cloudなど）を併用する「マルチクラウド」戦略が一般的です。これは、特定のベンダーに依存するリスクを避け、各クラウドの強みを活かすためです。また、企業がクラウドサービスと自社のデータセンター、あるいは異なるクラウドサービス間を接続する際、インターネットではなく専用の閉じたネットワーク（閉域網）を利用するケースが増えています。閉域網は、セキュリティの強化、通信速度の安定、レイテンシ（遅延）の低減といったメリットがあり、特に金融機関や製造業など、高い信頼性とパフォーマンスが求められる業界で重要視されています。AWS Interconnect、Google Cloud Interconnect、Oracle Cloud Infrastructure FastConnectなどは、それぞれのクラウドプロバイダーが提供する閉域網接続サービスです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">企業がクラウドへの移行を進める中で、データの安全性や安定した通信環境の確保は常に課題でした。特にマルチクラウド環境では、異なるクラウドプロバイダー間でデータを安全かつ効率的に連携させる必要があり、閉域網接続の需要が高まっていました。AWSは以前から、自社クラウドとGoogle Cloud Platform (GCP) などの競合クラウドとの閉域網接続サービスを提供しており、顧客のマルチクラウド戦略を支援してきました。今回のニュースは、AWSがさらにデータベースに強みを持つOracle Cloudとの閉域網接続機能「AWS Interconnect-multicloud」をプレビュー公開したことを報じており、これはAWSがより多様なマルチクラウドニーズに応えようとしている動きを示しています。</div>
-                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
-                            <div class="ai-content">この機能が「プレビュー」段階である点に注意が必要です。プレビュー期間中は機能が限定的であったり、今後仕様が変更されたりする可能性があります。また、閉域網接続は通信コストが発生するため、利用を検討する企業は費用対効果を慎重に評価する必要があります。AWSが他社クラウドとの連携を強化する背景には、顧客の選択肢を広げ、クラウド市場全体の競争力を高める狙いがある一方で、自社エコシステムへのロックインだけでなく、顧客の柔軟なインフラ構築を支援することで、最終的にAWSの利用機会を増やすという戦略的な意図も考えられます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE9hMVA2azNOX0pmTHhJa1VuNkFWWkZiNy1aWnM2c19WZ0NlOEVFNXRJZEIxemZ5VHVlZnNiR2g0THNuVDdzUjRrQXVfaGFIMW9Na0tJczFVZDVGa25HZzZkdG9ieUNvZjR4Z1Y5VmtYejhXNUZETlNjQkxOZw?oc=5" target="_blank">クレッシェンドラボ、DAAC AI AgentでGoogle Cloud Ready - Gemini Enterprise認定を取得 - ニコニコニュース</a></h3>
-                        <div class="meta">📅 2026-05-18 01:00 | 🏢 配信元: <b>ニコニコニュース</b></div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Google Cloud Platform (GCP) は、Googleが提供するクラウドコンピューティングサービス群です。Gemini Enterpriseは、Googleが開発した高性能な大規模言語モデル（LLM）であるGeminiの、企業向け（エンタープライズ）バージョンを指します。企業向けAIソリューションでは、データのプライバシー、セキュリティ、信頼性、既存システムとの統合性などが特に重要視されます。このため、Google Cloud Ready - Gemini Enterprise認定は、サードパーティ製のAIソリューションが、Gemini Enterpriseと連携する上でGoogle Cloudの定めた厳しい技術基準やセキュリティ基準を満たしていることを示す公式なプログラムであり、企業が安心してそのソリューションを導入するための信頼の証となります。AI Agentは、特定の目的を達成するために自律的に動作するAIプログラムの総称です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">大規模言語モデル（LLM）の進化は目覚ましく、多くの企業が業務効率化や新たなサービス開発のためにAIの導入を検討しています。Googleは、AI分野での競争力を強化するため、自社開発のGeminiを企業向けに「Gemini Enterprise」として展開し、パートナー企業とのエコシステム構築に力を入れています。企業がAIソリューションを選ぶ際、その信頼性や互換性は重要な判断基準となるため、Googleは「Google Cloud Ready」のような認定プログラムを通じて、品質の担保を図っています。今回のニュースは、クレッシェンドラボが提供するDAAC AI Agentがこの認定を取得したことを報じており、これは同社ソリューションの信頼性がGoogleによって公式に認められたことを意味します。</div>
-                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
-                            <div class="ai-content">「Google Cloud Ready - Gemini Enterprise認定」は、技術的な互換性と一定の品質基準を満たしていることを示しますが、それだけでビジネス上の成功が保証されるわけではありません。認定されたソリューションの具体的な機能、費用対効果、導入実績、サポート体制なども、企業が導入を検討する際には詳しく評価する必要があります。また、ニュースタイトルからはDAAC AI Agentの具体的な機能や、認定によってユーザーが享受できる具体的なメリットが不明確なため、詳細な情報収集が必要です。この認定は、クレッシェンドラボがGoogle Cloudエコシステム内で競合他社との差別化を図るための重要な要素となります。</div>
-                        </div>
-                    </div>
-            
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>Morning AI Portal</h1>
+                <div style="font-size: 1.5rem; color: var(--accent-color); margin-top: 15px; font-weight: bold; letter-spacing: 2px;">
+                    Morning Briefing <span style="font-size: 1.2rem; color: var(--text-muted);">(2026-05-19)</span>
                 </div>
+                <div class="subtitle">トピックを選んで本日の最新ニュースとAI解説をチェック</div>
+            </header>
+            <div class="portal-grid" style="animation: fadeIn 1s ease-out;">
+    
+                <a href="economy.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/economy.png" class="thumbnail-icon" alt="経済">
+                    <div class="portal-card-title">経済</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="market.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/market.png" class="thumbnail-icon" alt="マーケット">
+                    <div class="portal-card-title">マーケット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gcp.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/gcp.png" class="thumbnail-icon" alt="Google Cloud Platform (GCP)">
+                    <div class="portal-card-title">Google Cloud Platform (GCP)</div>
+                    <div class="portal-card-count">良質な最新ニュース 2件 ➔</div>
+                </a>
+        
+                <a href="claude.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/claude.png" class="thumbnail-icon" alt="Claude">
+                    <div class="portal-card-title">Claude</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gadget.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/gadget.png" class="thumbnail-icon" alt="ガジェット">
+                    <div class="portal-card-title">ガジェット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="data_analysis.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/data_analysis.png" class="thumbnail-icon" alt="データ分析">
+                    <div class="portal-card-title">データ分析</div>
+                    <div class="portal-card-count">良質な最新ニュース 4件 ➔</div>
+                </a>
+        
+                <a href="character.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/character.png" class="thumbnail-icon" alt="キャラクター">
+                    <div class="portal-card-title">キャラクター</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="entertainment.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/entertainment.png" class="thumbnail-icon" alt="エンタメ">
+                    <div class="portal-card-title">エンタメ</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
             </div>
-            
+        </div>
+        
         <!-- ✨ フローティング目安箱 -->
         <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
         <div class="feedback-modal" id="feedbackModal">
@@ -216,6 +235,6 @@
         }
         </script>
     
-        </body>
-        </html>
-        
+    </body>
+    </html>
+    
