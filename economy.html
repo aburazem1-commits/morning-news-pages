@@ -1,0 +1,259 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>経済 - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">経済</h1>
+                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMid0FVX3lxTFBNV05MYmR2Q29TVENVT1F0S0xGbUxGUTZxVllBNUlLbFVQRnd5TS0ySVdhOFBiamh0WlkwZTFQUDhJZENlZFE0akwtSk9ySHNRU3oyTlE5V0QwQ3pqdjJOako5aTdHQnNFb1hMUkV3aVI5aDBqUWpj?oc=5" target="_blank">中国経済が急減速、投資は予想外の減少に転じる－脆弱さ浮き彫り - Bloomberg.com</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 02:07</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">中国経済は長らく世界の成長を牽引してきましたが、不動産バブル、過剰債務、米中貿易摩擦、少子高齢化、そして内需の低迷といった構造的な課題を抱えています。投資の動向は経済全体の健全性を示す重要な指標です。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">過去数年間、中国政府は不動産市場への規制強化やプラットフォーム企業への締め付けを行ってきました。これにより不動産開発企業のデフォルトが相次ぎ、消費者の信頼も低下。コロナ禍での厳格なゼロコロナ政策も経済活動に大きな打撃を与え、経済成長率は目標を下回る状況が続いています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTE42MF9kV1FfSFRGQWhpSjdJTm9fTkFQd2hlc0g1aVBCY3BkcHI5TTFrbXFETVFxVnlOX1Uxb2lCMmdpUDBwR1l1MksxOFpjYXk0MEhkMl9adWtxVVNqVWY4NXoyZ1U1eWVlbUZJUU9OM0lQdURXeFZ0c9IBhAFBVV95cUxObnppU3FpZUk2SzdJT2taeWZsbHdyRUZWam9TaktmR1BWUnpzaUhDcmpTNlZnN29URVdaMkV4NzRQdmNoeVhwLS10cElTM2tpN1ZkME9qX1k4VjR5bERXTWVBUDJrUzVaa3Rqd3hRZExfdWlMbWVkZWRjd3dIV3ZkVjdGTS0?oc=5" target="_blank">経済活動に支障が生じないよう対応と首相 - oita-press.co.jp</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 03:41</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">首相が経済活動への支障を懸念する背景には、国内外の経済情勢（インフレ、エネルギー価格高騰、サプライチェーン問題、少子高齢化、国際情勢の不確実性など）があります。政府はこれらのリスクを緩和し、国民生活や企業活動を安定させる責務を負っています。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">近年、新型コロナウイルス感染症のパンデミック、ロシアによるウクライナ侵攻、急速な円安の進行などが経済に大きな影響を与え、物価高騰や企業の収益圧迫が社会問題化しています。政府はこれまでにも、経済対策として補助金や税制優遇、金融緩和などを実施し、経済の回復と安定を目指す取り組みを続けてきました。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE84Q0JmUEplY3VBWWwzYVA4enZqcWhHV2hhWXQzWDVSX2tqak5MNUY4MUVuaXd0Y3RFbWtpaE94SnJEV2hUOXZ0WTNPeGJlYUVwUHhNS2NHRGhBSGg5U1lDbFdGTFVrem5TTW5VUg?oc=5" target="_blank">米、台湾への武器売却「過去政権が何度も止めた」 USTR代表 - 日本経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 23:11</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">米中関係は、経済、貿易、安全保障（台湾問題など）、人権、技術覇権など多岐にわたる分野で複雑な競争と協調の関係にあります。台湾は中国にとって「核心的利益」であり、米国が台湾に武器を売却することは中国の強い反発を招きます。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">トランプ政権下で米中貿易戦争が激化して以来、米国は中国に対する経済的・技術的デカップリング（切り離し）戦略を強めてきました。台湾海峡の緊張は高まり、米国は台湾への防衛支援を継続しています。米政府高官の発言は、この敏感な問題における米国のこれまでの対応と現在の政策スタンスを巡る議論の一部です。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5TTm5NRVZNXzRQLWM2azJwcF9zUzJyYzFFc3NjZ1JYZjQ5QUk4MXpWOEcwU0xYSnBFMk9vUlZyeDVsSVNXN3ZNam5DSkhaU2pUYVgyMkFLNDN3eldxTGNPM1l5Y05kcVp4MktSS1pTQ28zVkJMc2ZCNVQzU1diNjg?oc=5" target="_blank">米中首脳会談、曖昧さ残る経済・貿易成果 具体化は9月の習氏訪米まで持ち越しも（産経新聞） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-05-17 10:09</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">米中関係は、経済、貿易、安全保障など多岐にわたる分野で複雑な競争と協調の関係にあり、両国間の首脳会談は世界経済の安定に大きな影響を与えます。会談の成果の「曖昧さ」は、両国の根深い対立点や、一度の会談では解決しきれない複雑な問題が背景にあります。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">トランプ政権下での米中貿易戦争以降、両国間の経済・貿易摩擦は続いており、バイデン政権下でも中国への技術輸出規制などが強化されています。米中首脳会談は、両国の緊張緩和と対話維持を目的として定期的に開催されますが、多くの懸案事項は容易に解決せず、具体的な合意形成には時間がかかる傾向があります。9月の習氏訪米への持ち越しは、さらなる調整が必要であることを示唆します。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE54aVl5Vi0wVllsaTEtR09zNnQybTZwWUhkblNJcjEtSFoyRHpEVnR4Zmk3OTZlOUF3QjFwSFJKTEpkZlBUZlZzSVNma1dTSjNRZk8wMXliN19CRHJvNG9z?oc=5" target="_blank">米政府 米中首脳会談の合意内容公表 経済面強調 台湾言及せず - NHKニュース</a></h3>
+                        <div class="meta">📅 2026-05-17 21:45</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">米中関係は、経済、貿易、安全保障（台湾問題など）、人権、技術覇権など多岐にわたる分野で複雑な競争と協調の関係にあります。特に台湾問題は、中国の「核心的利益」とされ、米国が台湾への関与を強めるたびに中国の反発を招く敏感な問題です。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">トランプ政権下で米中貿易戦争が激化して以来、米国は中国に対する経済的・技術的デカップリング戦略を強めてきました。バイデン政権もこの路線を維持しつつ、対話の窓も開こうとしています。米中首脳会談は、両国の緊張緩和と対話維持を目的として定期的に開催されますが、米国が「経済面を強調し台湾に言及せず」と公表することは、現時点での優先事項や、外交上の配慮、あるいは合意に至らなかったデリケートな論点があったことを示唆しています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBqRWlhR2ZtTUYwQTlCSHN0XzR6UlpYOVFpQzNQVy05YVp2TWFXbnNibHNUcmViV0xmVFNDU2w3akpRZmdmN3k4WW5YbzhndEZmTThlVGRGTWNYSnBMWUU2dEJGU1d2eHV2TE1seWhrbTBrbjZIZGlZc3lHcFZzaG8?oc=5" target="_blank">「育休延長できる」と思っていたらまさかの申請却下…《親たちの大混乱》を招いた2025年4月からの厳格化に見る“落とし穴” - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 02:30</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">日本は少子化対策の一環として育児休業制度の拡充を図っており、育休手当や給付金が支給され、一定条件で育休期間の延長も認められています。しかし、制度は複雑で、申請条件や期間延長のルールがしばしば変更されます。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">政府は労働者の育児と仕事の両立を支援し、出生率向上を目指して育児介護休業法や関連制度の改正を繰り返してきました。特に近年は、男性の育休取得促進や、育休期間中の所得保障の強化が議論の焦点です。2025年4月からの厳格化は、制度の悪用防止や財源の制約の中でより公平な運用を目指すなどの意図があったと考えられますが、周知不足や複雑さが利用者の混乱を招いた可能性があります。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5VbG1vRVUyU2RCRklpSVpQT3lmUUxiRVJJX09DQnhWSzJpWWhZeTFLMzZjTEMyTkdMSGlsck10bVJ1QnB1VmdtcVE2bk1mcHpucFE?oc=5" target="_blank">流通経済大が新入生29名を公開！専大松戸の大型右腕、市船橋の右サイドなどが入部｜記事一覧 - 高校野球ドットコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 00:40</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">このニュースは「経済」カテゴリですが、内容は大学スポーツ（野球）に関するものです。日本の大学スポーツ界では、有力な高校生選手の獲得競争があり、スポーツ推薦入学者を公開することで、チームの強化や大学の知名度向上を図ります。大学の経営戦略として、スポーツの強化が学生募集やブランディングに繋がる側面があります。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">流通経済大学は、スポーツに力を入れている大学として知られています。特に野球やサッカーなどでは全国レベルの実績があり、プロ選手も輩出しています。新入生公開は、新チームの顔ぶれを披露するとともに、ファンや関係者への情報提供、そして新入生への期待感醸成を目的として、毎年恒例で行われるイベントの一つです。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5TUDA1QWtreU5hRUlzTl9MUG1MN2Nud2w3Zjl1c1FyM0I2cEFYMktBcDZPVE9fd29pSlpJRnVxWE82ckVoS1Rsakw5U2trbWdFOHJ2TmJvczhGT1U3Q3ZvazBkTFdIX3VNV0NScmVPZU9Kempaa2c?oc=5" target="_blank">ロシア、プーチン氏訪中で「G2」に並ぶ存在感アピールへ 景気減退下で経済協力拡大も - 産経ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 23:25</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">ロシアはウクライナ侵攻後、西側諸国からの経済制裁を受け、経済的・外交的に孤立を深めています。中国は、世界第二位の経済大国であり、ロシアにとって重要な経済協力パートナーであり、国際的な存在感を示す上での連携先でもあります。「G2」は、米国と中国が世界の二大超大国として国際政治・経済に大きな影響力を持つ、という見方を示唆する表現です。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">ロシアはウクライナ侵攻以降、西側諸国から厳しい経済制裁を課され、エネルギー輸出先の多角化や、国内産業の維持・発展のために中国との経済協力強化を加速させています。中国はロシア産の資源を輸入し、ロシアは中国製品の輸入を増やしています。プーチン大統領の訪中は、国際社会におけるロシアの孤立感を払拭し、中国との連携を通じて、西側主導の国際秩序に対抗する姿勢をアピールする狙いがあります。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTFBZRXZlQWZZdVZvXzJMRHBtWHRPTHd3ZGx0N1JOS3QxS0JfVnlabW5hc2JaSnNXV2RZNGRwNzBzc2M0elU3ZlpBQ09acWpuUHVqWGw0TXNLZ3V4dzc0czE4QkF1Sy1RY2ZlN2kwTXNsQVY4UXBCeVprMl9R?oc=5" target="_blank">貿易摩擦で団結試されるＧ７財務相、経済的不均衡の解消を模索 - ロイター</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 02:03</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">G7は、主要先進7カ国（米、日、独、仏、英、伊、加）の枠組みで、世界経済の課題や国際的な政策協調について議論します。貿易摩擦や経済的不均衡は、国際貿易システムにおける国家間の対立の原因となり、世界経済の安定を損なう可能性があります。特に、中国のような非市場経済国の台頭により、これらの問題は複雑化しています。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">近年、グローバル化の進展とともに、国家間の貿易摩擦が頻発し、特定の国（特に中国）の大規模な貿易黒字や産業補助金が問題視されてきました。G7各国は、自由で公正な貿易ルールの維持を重視しており、このような経済的不均衡を解消するための議論を重ねてきました。ウクライナ侵攻やサプライチェーンの混乱など、地政学リスクの高まりも貿易環境を複雑化させており、G7財務相は国際協調を通じてこれらの課題に対処しようと模索しています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9zb1B3STk3Ym81SWVaRDJsZFZ0RHpVWDZhRUJzdHBXVFFSd3RrUG9QTGRwWmdCSHM5a29ZOS1fYXZFajlya1ZoU0ladmd6NHZqZnI1MHd2dzY0RjVMclpiVUtyUVQ2NE0?oc=5" target="_blank">10～30代の政党選び、「イデオロギーより豊かさ」 経済対策重視 - 朝日新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 22:00</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">若年層の政治意識は、社会や経済状況によって変化します。日本では、バブル崩壊以降の「失われた30年」と呼ばれる経済停滞期を経験しており、特に若年層は非正規雇用の増加や賃金伸び悩み、社会保障制度の不安など、経済的な豊かさへの懸念を抱いています。イデオロギーとは、政治的な主義・主張や理念を指します。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">かつては、日本の政治ではイデオロギーに基づく政策論争が盛んでしたが、近年は経済格差の拡大、少子高齢化の進展、グローバル競争の激化などにより、国民の関心はより実生活に直結する「経済的な豊かさ」や「生活の安定」へとシフトしています。特に若年層は、SNSなどで多様な情報に触れる機会が多く、特定のイデオロギーに縛られず、自身の将来や生活に直結する経済対策を重視する傾向が強まっています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE1GNUJzUjBGNGE2eG1hbmNpTFNOaXhldkJhQWVWM3JxYndQaFhpV2dOcklMYTdXOEFkS3ZNTG5acEo3OVlPOGNkcm9aU2ZTaGI5cW1rZGZJV3o1Wkl3SmFxUnNNbnBaWGlacllMUQ?oc=5" target="_blank">激動する内外経済を徹底議論 きょう午後1時半から景気討論会 - 日本経済新聞</a></h3>
+                        <div class="meta">📅 2026-05-17 20:00</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">景気討論会とは、経済学者、政府関係者、企業経営者などが集まり、現在の経済状況、今後の見通し、および必要な政策について議論する場です。国内外の経済は相互に密接に影響し合っており、国際情勢の変動や主要国の経済動向が日本経済に大きな影響を与えます。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">近年、世界経済は新型コロナウイルスのパンデミック、ロシアによるウクライナ侵攻、サプライチェーンの混乱、インフレの進行、主要中央銀行による金融引き締めなど、複数の大きな変動要因に直面しています。日本経済も、円安の加速、物価高、人手不足といった課題を抱えつつ、景気回復の足取りは不確かです。このような状況を受け、様々な立場からの専門家が知見を共有し、現状認識を深め、将来の経済政策に資する議論を行う必要性が高まっています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMic0FVX3lxTFBHNjFuSGNEczhkRW43c0RraC15SWhBX2x1UEp3Q3VHQmZNMXhXSUhkY2pIX2M5d1RrUGIyM1NONXh5dE9BLUh5ZU5rYmdTUVBKeUNNOGVUU0VkOXI0amhzTlBGT0hZaVdjQVV4bDhLcmJRSzA?oc=5" target="_blank">「SX銘柄2026」「SX注目企業2026」を選定しました - meti.go.jp</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 01:01</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">「SX」（サステナビリティ・トランスフォーメーション）とは、企業が社会の持続可能性を追求する中で、自社のビジネスモデルや経営戦略を変革し、競争力を向上させる取り組みです。経済産業省（METI）は、企業に対してSXの推進を促すとともに、その取り組みを評価し、市場からの資金調達を支援する目的で「SX銘柄」や「SX注目企業」を選定しています。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">企業経営において、短期的な利益追求だけでなく、環境（Environment）、社会（Social）、ガバナンス（Governance）の要素を考慮するESG投資やSDGsへの関心が高まっています。これは、気候変動問題や人権問題など、グローバルな社会課題が顕在化し、企業がこれらに対し責任ある行動をとることが、長期的な企業価値向上に不可欠であるとの認識が広まったためです。経済産業省は、日本企業の競争力強化と持続的成長のため、SXを重要な経営戦略として位置づけ、その推進を政策的に支援しています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYkFVX3lxTE13WFZyd1JtbkVxakMxaHVXeHVEVEhyTTdUd2lUTWNaSWk3c1hMWnlENTRWbmk3Wl8wR19JUThnZXJKOUdJNjRTOW5sSXo1a082ZzFoLTFJN1RoRTZ0RE05ZG5B?oc=5" target="_blank">【経済】 本日の経済スケジュール ─ 中国小売売上高など - 株探</a></h3>
+                        <div class="meta">📅 2026-05-17 21:20</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">経済指標は、国や地域の経済状況を示す重要なデータであり、企業の投資判断や政府の政策決定に大きな影響を与えます。特に、小売売上高は個人消費の動向を示す指標であり、GDPの大きな構成要素であるため、景気判断に不可欠です。中国は世界第二位の経済大国であり、その経済指標は世界の金融市場に大きな影響を与えます。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">各国政府や中央銀行は、景気動向を把握するために様々な経済統計を定期的に発表しています。これらの指標は、金融市場参加者にとって重要な情報源であり、発表時刻に合わせて市場が大きく変動することも珍しくありません。中国の経済成長率は近年減速傾向にあり、特に不動産問題や国内消費の低迷が指摘されています。そのため、中国の小売売上高などの消費関連指標は、中国経済の現状と今後の見通しを測る上で、これまで以上に注目されています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE1QR1QwUUhfdHVtc25NeEZRYlFRN21TUmVCcnh4Z3poSkV0ZVBBYVM1THdoX2JmZzFsOFJMMnFwa3BQakxnck1Rb3gyV2E?oc=5" target="_blank">石油ショック、米経済に7兆円超の打撃 経済格差拡大 | The Wall Street Journal発 - ダイヤモンド・オンライン</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 03:03</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">「石油ショック」は、主に1970年代に中東の政治的緊張やOPECによる原油価格引き上げによって引き起こされた、原油価格の急騰とそれに伴う世界経済の混乱を指します。原油は現代経済の基幹エネルギー源であるため、価格変動は物価、産業活動、雇用、ひいては所得格差に甚大な影響を及ぼします。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">1973年の第一次石油ショックと1979年の第二次石油ショックは、世界の経済構造を大きく変え、特に日本や米国などの先進国に深刻なインフレと景気後退をもたらしました。当時の米経済は、原油価格の高騰により、企業コスト増、消費者購買力低下、インフレと失業率の同時進行（スタグフレーション）といった問題を経験しました。この記事は、過去の石油ショックが経済全体に与えた影響を再評価し、特に所得格差拡大との関連性を分析しているものと見られます。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTE1ZcmltV0N0REhDRkNNLW1FZi1xbUxYaEhXR1FENkJUcjRtejdya1RzZEVZTlRPNUxKY2xlRW9pZXdGSHN4YkZPMi1LbnJtZTE2V3VnYk1Pakc?oc=5" target="_blank">経済活動に支障が生じないよう対応と首相 - 京都新聞デジタル</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 03:30</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">首相が経済活動への支障を懸念する背景には、国内外の経済情勢（インフレ、エネルギー価格高騰、サプライチェーン問題、少子高齢化、国際情勢の不確実性など）があります。政府はこれらのリスクを緩和し、国民生活や企業活動を安定させる責務を負っています。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">近年、新型コロナウイルス感染症のパンデミック、ロシアによるウクライナ侵攻、急速な円安の進行などが経済に大きな影響を与え、物価高騰や企業の収益圧迫が社会問題化しています。政府はこれまでにも、経済対策として補助金や税制優遇、金融緩和などを実施し、経済の回復と安定を目指す取り組みを続けてきました。</div>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+        </body>
+        </html>
+        

@@ -1,0 +1,138 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>データ分析 - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">データ分析</h1>
+                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTFBNbXduWHFUMXM2VUF5ZkJvNXkzNHpCdWg0TFRVYXlqdmg1ZmtyMVRhWjZ0b1VCLWxKMlJ3REc5dk9lMjRWSjczNE1xS2pZTWpFQ1M3MGh0Yw?oc=5" target="_blank">飛び系アイアンの最適解？ ロフト設定が29度にカムバックしたピンゴルフ「i540アイアン」【ヘッドデータ分析で判明】 - golfdigest-minna.jp</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 22:00</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">このニュースは「データ分析」カテゴリですが、内容はゴルフ用品（アイアン）の技術と性能に関するものです。ゴルフ用品開発において、飛距離、方向性、打感などの性能向上は常に追求されています。ロフト角は、クラブフェースの傾斜角度で、ボールの打ち出し角や飛距離に大きく影響します。「飛び系アイアン」とは、比較的ロフトが立っており、高い飛距離性能を持つアイアンを指します。ヘッドデータ分析は、科学的な計測に基づいてクラブの性能を評価する手法です。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">ゴルフクラブの技術は、新素材、設計、重心位置の最適化などを通じて常に進化しています。特にアイアンにおいては、アマチュアゴルファーのニーズに応えるため、よりやさしく、より遠くに飛ばせるクラブが求められてきました。その結果、従来のアイアンよりもロフト角が立った「飛び系アイアン」がトレンドとなりましたが、ロフトを立てすぎると弾道の高さが不足したり、グリーンで止まりにくいという課題も生じます。ピンゴルフのようなメーカーは、これらの課題に対し、ヘッドデータ分析を通じて最適なロフト角や重心設計を模索し、性能バランスの取れた製品開発を行っています。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTFBKY2RNSTMxZk1UU1psU3B3Y2JrdFFzV29EQV8zTjhldi1JS0NfVEJENFZidV8taUxLYkplUFI1SzhZandNQXhqTzBFS1F1UkFDTFhfLWI4M2V4WEc1MExN?oc=5" target="_blank">名大とトヨタシステムズ、データ分析やAIで連携 名大構内に研究拠点：ニュース - 中日BIZナビ</a></h3>
+                        <div class="meta">📅 2026-05-17 08:12</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">企業が競争力を高めるためには、データ分析とAI技術の活用が不可欠です。大学は、最先端の研究成果や人材育成の拠点であり、企業との連携を通じて、共同研究、技術移転、人材交流などを進めることがあります。トヨタシステムズは、トヨタグループのIT戦略を担う企業であり、製造業におけるデータ分析やAIの活用は、生産効率の向上、品質管理、サプライチェーン最適化、新サービス開発などに直結します。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">日本では、産業界と学術界の連携強化が、イノベーション創出や国際競争力向上の鍵として重視されています。特にAIやデータサイエンスといった分野では、大学の研究力が企業のDX（デジタルトランスフォーメーション）を加速させる上で不可欠です。名古屋大学は、自動車産業が集積する地域にあり、工学分野で高い研究実績を持っています。トヨタシステムズとの連携は、自動車産業におけるデータ駆動型アプローチをさらに深化させ、次世代モビリティやスマートファクトリーなどの実現に向けた研究開発を加速させるものです。大学構内に研究拠点を設けることは、密接な連携と人材交流を促進します。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMizwFBVV95cUxPV056R05MSThxc2VfX184cUNuZWFjd1QwU2NvVUhyTlJkTHFIOV9PTXlqYlVqdXl5VVpNT0x1bW02NzNiRUN4MVVvX2VqaDc5aVl2MzdSZVgxQ3FVVVYxckxBemVHTTlLLU4xN0JiQnJ2dkZwQVVJa3BVNDJ3aUhUUXhtZHR5dzY5a0daZ0REUWhpQ21VSkRYTXdoWWJEUWtGTkp2dGpYdndLMi1WOG1DLVZQY2dOcGZGb0JwTUhlZ2tVVkVac2ZoTUhyV1RkWWPSAYwBQVVfeXFMTzN0TnhwU1hyWVF0cW9EcG5pcVpVYjhiaEZKWUlZNklnNXVOalRHSzNyNUpIN0FCM1l4Q3NoSVdGYVNuTnM3U0JlS0xpbGtaVDZCUzByY09Xd08zRVFCS2FxUXlOWlh1MEZhbWdLZU9yUFdWS3ZmZ1ktN2loQS1OcXpCWlVPZXNoek9WbFg?oc=5" target="_blank">ごみ収集無料は「ただ乗り」を招く？研究者のデータ分析で分かった有料化の効果とインセンティブとは - ｄメニューニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 22:00</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">ゴミ処理問題は、環境問題、財政問題、住民の協力など、多岐にわたる側面を持つ社会課題です。自治体にとって、ゴミの減量化と適切な処理は喫緊の課題であり、そのための政策手段として、有料化が議論されることがあります。「ただ乗り」とは、公共サービスを無料で利用できる場合、利用者がそのコストを意識せず過剰に利用してしまう行動経済学的な現象を指します。インセンティブ（誘因）は、人々の行動を特定の方向に促すための刺激です。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">日本の多くの自治体では、ゴミ収集は住民サービスとして税金で賄われ、無料で行われてきました。しかし、ゴミの量が増加し、処理コストや環境負荷が問題視されるようになると、有料化や分別強化の導入が検討されるようになりました。研究者によるデータ分析は、実際に有料化がゴミ減量にどれほどの効果があるのか、またどのようなインセンティブ設計が住民の行動変容を促すのかを客観的に評価するものです。これにより、感情論ではなく、科学的根拠に基づいた政策決定が可能になります。</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTE15RjAtRkFXNENudDkxM20wbUI1R3VTWXBBTGhpRmY3VGczVWI4eEQwby1yc2YwemN5VzFRWWE5UVhwODlCZnZjOTdsWFotNXZrLTVtN1IzellRQjlVN0M4TTAyWFhTekF5?oc=5" target="_blank">【オークス2026】伊吹雅也のピックアップ競馬データ～特選重賞データ分析編 - 競馬予想のウマニティ</a></h3>
+                        <div class="meta">📅 2026-05-17 07:33</div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">このニュースは「データ分析」カテゴリですが、内容は競馬予想に関するものです。競馬予想において、過去のレース結果、血統、馬場状態、騎手・調教師の成績、馬のコンディションなど、様々なデータを統計的に分析することは、的中率を高めるための重要な手法です。オークスは、3歳牝馬限定のG1レースであり、競馬ファンにとって注目度の高いビッグレースです。</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">競馬は、その複雑な要素から、長年にわたりデータ分析の対象となってきました。コンピュータ技術の発展に伴い、膨大な過去データを高速で処理し、様々なファクターを組み合わせて予想する手法が進化しています。伊吹雅也氏のような競馬予想家は、独自のデータ分析手法や視点を用いて、レースの傾向や有力馬を導き出します。データ分析は、競馬のような確率的要素の強い分野においても、不確実性を減らし、より合理的な意思決定を支援するツールとして活用されています。</div>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+        </body>
+        </html>
+        

@@ -4,9 +4,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Morning AI Briefing</title>
+        <title>Morning AI Portal</title>
         <meta name="description" content="AIが厳選・解説する最新ビジネスニュース">
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+        
         <style>
             :root {
                 --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -17,890 +18,116 @@
                 --accent-color: #38bdf8;
                 --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
             }
-            body {
-                margin: 0;
-                padding: 0;
-                background: var(--bg-gradient);
-                color: var(--text-main);
-                font-family: 'Outfit', 'Noto Sans JP', sans-serif;
-                min-height: 100vh;
-            }
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 40px 20px;
-            }
-            header {
-                text-align: center;
-                margin-bottom: 60px;
-                animation: fadeInDown 0.8s ease-out;
-            }
-            h1 {
-                font-size: 3rem;
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
                 font-weight: 800;
-                margin: 0;
-                background: var(--accent-gradient);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                letter-spacing: -1px;
-            }
-            .subtitle {
-                color: var(--text-muted);
-                font-size: 1.1rem;
-                margin-top: 10px;
-            }
-            .category-section {
-                margin-bottom: 50px;
-                animation: fadeIn 1s ease-out;
-            }
-            .category-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                border-bottom: 2px solid var(--card-border);
-                padding-bottom: 10px;
-                margin-bottom: 20px;
-                color: var(--accent-color);
-            }
-            .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-                gap: 24px;
-            }
-            .card {
-                background: var(--card-bg);
-                border: 1px solid var(--card-border);
-                border-radius: 16px;
-                padding: 24px;
-                backdrop-filter: blur(10px);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-                display: flex;
-                flex-direction: column;
-            }
-            .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-                border-color: rgba(56, 189, 248, 0.3);
-            }
-            .article-title {
-                font-size: 1.2rem;
-                font-weight: 600;
-                margin: 0 0 15px 0;
-                line-height: 1.5;
-            }
-            .article-title a {
-                color: var(--text-main);
-                text-decoration: none;
-                transition: color 0.2s;
-            }
-            .article-title a:hover {
-                color: var(--accent-color);
-            }
-            .ai-section {
-                background: rgba(0, 0, 0, 0.2);
+                padding: 3px 8px;
                 border-radius: 12px;
-                padding: 16px;
-                margin-top: auto;
-                border-left: 4px solid var(--accent-color);
-            }
-            .ai-label {
-                font-size: 0.8rem;
+                margin-left: 10px;
+                vertical-align: middle;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-                color: var(--accent-color);
-                margin-bottom: 8px;
-                font-weight: 800;
-                display: flex;
-                align-items: center;
-                gap: 6px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
             }
-            .ai-content {
-                font-size: 0.95rem;
-                color: #cbd5e1;
-                line-height: 1.6;
-                margin-bottom: 12px;
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
             }
-            .ai-content:last-child {
-                margin-bottom: 0;
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
             }
-            .meta {
-                font-size: 0.8rem;
-                color: var(--text-muted);
-                margin-bottom: 15px;
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
             }
-            @keyframes fadeInDown {
-                from { opacity: 0; transform: translateY(-20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         </style>
+    
     </head>
     <body>
         <div class="container">
             <header>
-                <h1>Morning AI Briefing</h1>
-                <div class="subtitle">AIが厳選・解説する最新ビジネスニュース</div>
+                <h1>Morning AI Portal</h1>
+                <div class="subtitle">トピックを選んで本日の最新ニュースとAI解説をチェック</div>
             </header>
+            <div class="grid" style="animation: fadeIn 1s ease-out;">
     
-            <div class="category-section">
-                <h2 class="category-title">経済</h2>
-                <div class="grid">
+                <a href="economy.html" class="card" style="">
+                    <div class="portal-card-title">経済</div>
+                    <div class="portal-card-count">最新ニュース 15件 ➔</div>
+                </a>
         
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMid0FVX3lxTFBNV05MYmR2Q29TVENVT1F0S0xGbUxGUTZxVllBNUlLbFVQRnd5TS0ySVdhOFBiamh0WlkwZTFQUDhJZENlZFE0akwtSk9ySHNRU3oyTlE5V0QwQ3pqdjJOako5aTdHQnNFb1hMUkV3aVI5aDBqUWpj?oc=5" target="_blank">中国経済が急減速、投資は予想外の減少に転じる－脆弱さ浮き彫り - Bloomberg.com</a></h3>
-                        <div class="meta">📅 2026-05-18 02:07:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">中国経済は長らく世界の成長エンジンであり、投資（特に不動産・インフラ）が成長を牽引してきました。しかし、過剰債務、不動産バブル、構造改革の必要性が指摘されており、投資の減速は単なる成長率低下だけでなく、内需の停滞や企業の設備投資意欲の低下、ひいてはグローバル経済への影響を示唆します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">過去数十年にわたる「世界の工場」としての急速な成長の後、2010年代後半から米中貿易摩擦が激化。新型コロナウイルス感染症パンデミック後の「ゼロコロナ政策」が経済活動を停滞させ、不動産大手（恒大集団など）の債務問題が表面化しました。政府は景気刺激策を打ち出すものの、効果は限定的で、若年層の失業率高止まりや消費意欲の低迷が続いています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQLS1aci1QNUJzWUdua2ZuTnI0aGsxMGdvZVZUTHFhaF9fcEk3QWtKMjZlUTVnU3Vna0NoLUhUNV9odE5lTkhhWU9GcEpjNnM3SVZpbnBsX040M3piWHFadDV1REUzb2hpZHJ6WDd5dktJSG1ldDNocTZPV3lpaF9BSFdEdXZuNzQ?oc=5" target="_blank">きょうの主な経済指標・スケジュール＞中国４月鉱工業生産・小売売上高、Ｇ７財務相・中央銀行総裁会議(ウエルスアドバイザー) - Yahoo!ファイナンス</a></h3>
-                        <div class="meta">📅 2026-05-17 22:43:03+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">経済指標（鉱工業生産、小売売上高）は、その国の経済活動の健全性や景気動向を測る上で非常に重要です。鉱工業生産は供給サイド、小売売上高は需要サイドの動きを示します。G7財務相・中央銀行総裁会議は、主要先進国の金融・財政当局が国際経済課題について協議する場で、その結果は国際金融市場に影響を与えます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">中国経済はゼロコロナ政策解除後、一時的な回復期待があったものの、不動産不況や輸出の減速で失速感が強まっています。一方、G7各国は高インフレ、高金利、地政学的リスク（ウクライナ戦争など）といった共通の経済課題に直面しており、サプライチェーンの強靭化や経済安全保障の観点からも協調した政策対応が求められています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYkFVX3lxTE13WFZyd1JtbkVxakMxaHVXeHVEVEhyTTdUd2lUTWNaSWk3c1hMWnlENTRWbmk3Wl8wR19JUThnZXJKOUdJNjRTOW5sSXo1a082ZzFoLTFJN1RoRTZ0RE05ZG5B?oc=5" target="_blank">【経済】 本日の経済スケジュール ─ 中国小売売上高など - 株探</a></h3>
-                        <div class="meta">📅 2026-05-17 21:20:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">小売売上高は、個人消費の動向を示す最も重要な指標の一つであり、景気の現状認識や将来予測に用いられます。特に、内需拡大を目指す中国のような国では、消費の動向が経済成長を左右する主要因となります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">中国は過去の投資主導型成長から消費主導型成長への転換を目指してきましたが、コロナ禍を経て消費者の心理は慎重になっています。政府は消費刺激策を模索中ですが、家計の貯蓄志向の強さや不動産市場の低迷などが消費回復の重しとなっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE95VXFKX2RQRVBlMkg0eTduMktSWmVGdUJQaUp6bm9rME1keHVReGhEQlRHVGJfV0pQRlkxamx6c0phZk1INmZqbXBqNkNHSjVuYjNkVWt3?oc=5" target="_blank">経済活動に支障が生じないよう対応と首相 - 佐賀新聞</a></h3>
-                        <div class="meta">📅 2026-05-18 03:30:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">政府の重要な役割の一つは、災害、パンデミック、経済危機などが発生した際に、国民生活や企業活動への影響を最小限に抑えることです。このため、財政出動、金融緩和、規制緩和などの政策が検討・実施されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日本は近年、新型コロナウイルス感染症パンデミック、ロシアによるウクライナ侵攻に伴う資源価格高騰、円安の進行など、内外から様々な経済的変動要因に直面してきました。特に、インフレ圧力が高まる中で、賃上げの推進、中小企業支援、エネルギー価格高騰対策などが政府の主要な課題となっており、首相はこれらの課題に対して「経済活動の維持」を政策の中心に据える姿勢を示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE1QR1QwUUhfdHVtc25NeEZRYlFRN21TUmVCcnh4Z3poSkV0ZVBBYVM1THdoX2JmZzFsOFJMMnFwa3BQakxnck1Rb3gyV2E?oc=5" target="_blank">石油ショック、米経済に7兆円超の打撃 経済格差拡大 | The Wall Street Journal発 - ダイヤモンド・オンライン</a></h3>
-                        <div class="meta">📅 2026-05-18 03:03:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「石油ショック」は、1970年代に中東の政治情勢を背景に原油価格が急騰し、世界経済に甚大な影響を与えた出来事を指します。供給制約によるインフレと景気後退（スタグフレーション）を引き起こし、産業構造やエネルギー政策の転換を促しました。原油価格は経済全体に大きなコストとして影響するため、その変動はマクロ経済に直結します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">1973年と1979年の2度にわたる石油ショック以降、各国は省エネルギー化や代替エネルギー開発を推進し、経済の石油依存度を低減する努力をしてきました。このショックは、製造業に大きな打撃を与え、産業構造の転換を加速させるとともに、一部の産業や地域で経済格差が拡大するきっかけにもなりました。現代のエネルギー問題やインフレへの対処を考える上で、過去の石油ショックは重要な教訓となっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE84Q0JmUEplY3VBWWwzYVA4enZqcWhHV2hhWXQzWDVSX2tqak5MNUY4MUVuaXd0Y3RFbWtpaE94SnJEV2hUOXZ0WTNPeGJlYUVwUHhNS2NHRGhBSGg5U1lDbFdGTFVrem5TTW5VUg?oc=5" target="_blank">米、台湾への武器売却「過去政権が何度も止めた」 USTR代表 - 日本経済新聞</a></h3>
-                        <div class="meta">📅 2026-05-17 23:11:26+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米国は「一つの中国」政策を堅持しつつも、「台湾関係法」に基づき台湾の自衛能力を支援する立場を取っています。台湾への武器売却は、中国が台湾を自国の一部と見なしているため、米中関係におけるデリケートな問題であり、中国が強く反発します。これは地政学的リスク、経済安全保障、特に半導体サプライチェーンに直結します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米国の歴代政権は、中国との関係や地域の安定を考慮し、台湾への武器売却のタイミングや規模を調整してきました。近年、中国の軍事力増強と台湾への圧力が強まる中で、米国は台湾の防衛力強化を一層重視する傾向にあります。米中関係は貿易、人権、技術覇権、台湾問題など多岐にわたる分野で緊張が高まっており、米国は台湾支援の姿勢を強化しつつも、中国との衝突は避けたいという複雑な外交政策を展開しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5TTm5NRVZNXzRQLWM2azJwcF9zUzJyYzFFc3NjZ1JYZjQ5QUk4MXpWOEcwU0xYSnBFMk9vUlZyeDVsSVNXN3ZNam5DSkhaU2pUYVgyMkFLNDN3eldxTGNPM1l5Y05kcVp4MktSS1pTQ28zVkJMc2ZCNVQzU1diNjg?oc=5" target="_blank">米中首脳会談、曖昧さ残る経済・貿易成果 具体化は9月の習氏訪米まで持ち越しも（産経新聞） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 10:09:14+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米中関係は世界の二大経済大国間の関係であり、その動向は世界経済全体に多大な影響を与えます。貿易、投資、サプライチェーン、技術協力など、あらゆる経済活動が米中関係の緊張度合いによって左右されます。首脳会談は両国間の懸案事項を直接議論し、関係改善や協力関係構築のきっかけとなり得ます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">トランプ政権下での米中貿易戦争勃発以来、両国関係は「競争」の側面が強調され、デカップリング（経済の切り離し）やデリスキング（リスク軽減）といった議論が活発化しています。バイデン政権も対中強硬姿勢を維持しつつ、気候変動や経済安定など一部の分野では協力の余地を探っていますが、台湾問題、南シナ海問題、人権問題などで意見の相違が大きく、経済・貿易分野での具体的な合意形成は困難な状況が続いています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE54aVl5Vi0wVllsaTEtR09zNnQybTZwWUhkblNJcjEtSFoyRHpEVnR4Zmk3OTZlOUF3QjFwSFJKTEpkZlBUZlZzSVNma1dTSjNRZk8wMXliN19CRHJvNG9z?oc=5" target="_blank">米政府 米中首脳会談の合意内容公表 経済面強調 台湾言及せず - NHKニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 21:45:47+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米中首脳会談後の発表内容は、各国の優先順位や外交戦略を反映します。経済協力は両国共通の利益になり得るため、緊張緩和の突破口となりやすい一方、台湾のような核心的利益に関わる問題は、双方の立場が譲れないため、あえて言及しないことで合意形成の障害を取り除くことがあります。これは対立の表面化を避け、関係の「安定化」を目指す意図を示します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米中両国は、激しい競争関係にある一方で、経済的相互依存度も依然として高いため、関係の完全な断絶は避けたいという思惑があります。首脳会談での「経済面強調」は、関係を完全に決裂させずに、対話の窓口を維持しようとする外交努力の一環であり、特に中国経済の減速が懸念される中、両国間の経済関係の安定は世界経済にとっても重要視されています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5VbG1vRVUyU2RCRklpSVpQT3lmUUxiRVJJX09DQnhWSzJpWWhZeTFLMzZjTEMyTkdMSGlsck10bVJ1QnB1VmdtcVE2bk1mcHpucFE?oc=5" target="_blank">流通経済大が新入生29名を公開！専大松戸の大型右腕、市船橋の右サイドなどが入部｜記事一覧 - 高校野球ドットコム</a></h3>
-                        <div class="meta">📅 2026-05-18 00:40:47+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">このニュースはスポーツ（高校野球選手の大学入部）に関するものであり、経済と直接的な関連はありません。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">経済に関するこれまでの経緯とは直接関連しません。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBuMnhpbGFTVDZ6MTV1V0c0TnpLbXJZeDBpaHg1QUtBSlQxUDdFNld0RTBSQjZoY1lhZmgzNjVFNHA0WUZhUTgwRWc3elJIbTlpc1RBU3dZUEExQW1nR3VlR0FzUkU4RWJYRjcwZ00tcXVaM2Z0VDJmbENJUDBlYXM?oc=5" target="_blank">【MMA】経済アナリスト森永康平、”ミルコばり”左ハイキックKO勝利！王座獲得で「41歳、プロデビューできたら」（イーファイト） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-18 02:43:08+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">このニュースは格闘技（MMA）に関するものであり、経済アナリストが選手として活躍したという個人的な出来事です。経済政策や市場動向とは直接関係ありません。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">経済に関するこれまでの経緯とは直接関連しません。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5TUDA1QWtreU5hRUlzTl9MUG1MN2Nud2w3Zjl1c1FyM0I2cEFYMktBcDZPVE9fd29pSlpJRnVxWE82ckVoS1Rsakw5U2trbWdFOHJ2TmJvczhGT1U3Q3ZvazBkTFdIX3VNV0NScmVPZU9Kempaa2c?oc=5" target="_blank">ロシア、プーチン氏訪中で「G2」に並ぶ存在感アピールへ 景気減退下で経済協力拡大も - 産経ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 23:25:27+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「G2」は、米国と中国を世界の主要な二大国とする概念です。ロシアはウクライナ侵攻後、西側諸国からの経済制裁を受け、経済的に孤立しつつあるため、中国との経済・軍事協力を強化し、西側に対抗する姿勢を強めています。これは地政学的リスク、エネルギー市場、国際貿易体制に影響を与えます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">2022年2月のロシアによるウクライナ侵攻後、米国、EU、日本などの西側諸国はロシアに対し、大規模な経済制裁を課しました。これにより、ロシア経済は西側市場からのアクセスを失い、原油・天然ガス輸出の販路を東側（特に中国、インド）にシフトしています。中国はロシアの主要な貿易相手国の一つであり、ロシアは中国との関係強化を経済的生命線と位置付け、西側への対抗軸を強化する意図があります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiT0FVX3lxTFBfRzNRY2NLVFZFdFJET1FiQUpmWERpMTdZSElicWlIS21fbWlDZ2VlS3o3SlpqdTE2dUp4QjJyT3pVcGx4VHllLVNacHZfeEk?oc=5" target="_blank">韓国経済崩壊の可能性も…李在明政権が激焦りする「サムソン電子労組のスト予告」の深刻度 - 現代ビジネス</a></h3>
-                        <div class="meta">📅 2026-05-17 02:32:15+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">韓国経済は輸出（特に半導体、自動車）に大きく依存しており、サムスン電子はその中核を担う世界的企業です。労使関係の不安定化は、企業の生産活動や国際競争力に直結し、ひいては国全体の経済に大きな影響を及ぼします。ストライキは労働者の権利ですが、基幹産業での大規模ストは経済全体のリスクとなります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">韓国はIMF危機（1997年）を経験し、構造改革を進めてきましたが、財閥中心の経済構造や労使間の対立構造は依然として存在します。近年、世界的な半導体需要の変動や米中対立の狭間で、韓国半導体産業は競争激化に直面しています。サムスン電子のようなグローバル企業での大規模ストは異例であり、韓国経済全体への打撃が懸念されています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTFBZRXZlQWZZdVZvXzJMRHBtWHRPTHd3ZGx0N1JOS3QxS0JfVnlabW5hc2JaSnNXV2RZNGRwNzBzc2M0elU3ZlpBQ09acWpuUHVqWGw0TXNLZ3V4dzc0czE4QkF1Sy1RY2ZlN2kwTXNsQVY4UXBCeVprMl9R?oc=5" target="_blank">貿易摩擦で団結試されるＧ７財務相、経済的不均衡の解消を模索 - ロイター</a></h3>
-                        <div class="meta">📅 2026-05-18 02:03:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">貿易摩擦は、特定の国や地域間での輸入制限（関税など）や輸出補助金などが原因で生じる国際的な経済問題です。これは国内産業の保護や自国に有利な貿易条件を目指す政策の結果として発生し、世界貿易の停滞やサプライチェーンの混乱を招きます。経済的不均衡は、一部の国が大幅な貿易黒字を続ける一方で、他の国が貿易赤字を抱える状況を指し、為替レートの変動や資本移動の歪みにつながる可能性があります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">長らく、米国と中国、EUと中国など、貿易不均衡が国際経済の主要な課題となってきました。特に、中国の国家主導型経済や知的財産権問題は、西側諸国から不公正な貿易慣行として批判されてきました。近年は、地政学的リスクや経済安全保障の観点から、友好的な国とのサプライチェーン強化や特定の国への過度な依存からの脱却といった動きが活発化しており、これが新たな形の貿易摩擦や国際協調の必要性を生んでいます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9zb1B3STk3Ym81SWVaRDJsZFZ0RHpVWDZhRUJzdHBXVFFSd3RrUG9QTGRwWmdCSHM5a29ZOS1fYXZFajlya1ZoU0ladmd6NHZqZnI1MHd2dzY0RjVMclpiVUtyUVQ2NE0?oc=5" target="_blank">10～30代の政党選び、「イデオロギーより豊かさ」 経済対策重視 - 朝日新聞</a></h3>
-                        <div class="meta">📅 2026-05-17 22:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">政治における「イデオロギー」は、特定の思想や信念体系に基づいた政治的主張。一方、「経済対策」は、雇用、所得、物価、税制など、人々の生活に直結する経済的な課題への具体的な政策を指します。特に若年層にとって、少子高齢化、年金不安、非正規雇用の増加、物価上昇など、将来への経済的な不安が大きく、それが政治選択に影響を与える傾向が強まっています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">「失われた30年」と言われる長期経済停滞の中で、日本の若年層は先行世代と比較して経済的な不安定さや将来への不安を抱える傾向が強まっています。非正規雇用の増加、実質賃金の伸び悩み、社会保障費負担の増大などが、若年層の生活感覚に深く影響してきました。そのため、政治家や政党が経済成長、格差是正、子育て支援、教育費負担軽減など、具体的な経済政策を提示することが、有権者（特に若年層）の支持を得る上で重要になっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE1GNUJzUjBGNGE2eG1hbmNpTFNOaXhldkJhQWVWM3JxYndQaFhpV2dOcklMYTdXOEFkS3ZNTG5acEo3OVlPOGNkcm9aU2ZTaGI5cW1rZGZJV3o1Wkl3SmFxUnNNbnBaWGlacllMUQ?oc=5" target="_blank">激動する内外経済を徹底議論 きょう午後1時半から景気討論会 - 日本経済新聞</a></h3>
-                        <div class="meta">📅 2026-05-17 20:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">景気討論会や経済会議は、専門家、政策立案者、ビジネスリーダーなどが集まり、現在の経済状況の分析、将来の予測、そして課題への対応策を議論する場です。このような議論は、企業の経営判断や政府の政策決定に影響を与える重要な情報源となります。内外経済の変動は、グローバル化が進む現代において、一国の経済に直接的・間接的に影響を与えます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年の世界経済は、コロナ禍からの回復、インフレ高進、主要国での金融引き締め、地政学的リスクの顕在化、米中対立の激化など、極めて変動が大きい状況が続いています。日本経済も円安、物価高、人手不足といった課題に直面し、持続的な賃上げや構造改革が求められています。このような複合的な要因が絡み合う中で、内外経済の動向を正確に把握し、適切な対策を講じる必要性が高まっており、専門家による議論の場が頻繁に設けられています。</div>
-                        </div>
-                    </div>
-            
-                </div>
+                <a href="market.html" class="card" style="">
+                    <div class="portal-card-title">マーケット</div>
+                    <div class="portal-card-count">最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gcp.html" class="card" style="">
+                    <div class="portal-card-title">Google Cloud Platform (GCP)</div>
+                    <div class="portal-card-count">最新ニュース 4件 ➔</div>
+                </a>
+        
+                <a href="claude.html" class="card" style="">
+                    <div class="portal-card-title">Claude</div>
+                    <div class="portal-card-count">最新ニュース 13件 ➔</div>
+                </a>
+        
+                <a href="gadget.html" class="card" style="">
+                    <div class="portal-card-title">ガジェット</div>
+                    <div class="portal-card-count">最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="data_analysis.html" class="card" style="">
+                    <div class="portal-card-title">データ分析</div>
+                    <div class="portal-card-count">最新ニュース 4件 ➔</div>
+                </a>
+        
+                <a href="character.html" class="card" style="">
+                    <div class="portal-card-title">キャラクター</div>
+                    <div class="portal-card-count">最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="entertainment.html" class="card" style="">
+                    <div class="portal-card-title">エンタメ</div>
+                    <div class="portal-card-count">最新ニュース 15件 ➔</div>
+                </a>
+        
             </div>
-        
-            <div class="category-section">
-                <h2 class="category-title">マーケット</h2>
-                <div class="grid">
-        
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTFBGTmFtdWZSMnJBNzE5ZFllT3BlZk1oN2dRUzhXY2JtWnR0UjBYZGQ1dnUtMEdKWHFjaVBkekNXWEFVM2VDTXJ3N0lKTFk0QnlKUGl0YzBZY19wMzFhVUhndg?oc=5" target="_blank">【市況】 １５日の米株式市場の概況、ＮＹダウ５３７ドル安 ナスダック３日ぶり反落 - 株探</a></h3>
-                        <div class="meta">📅 2026-05-17 23:12:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">株式市場は、企業の業績見通し、金利動向、マクロ経済指標（インフレ率、雇用統計など）、中央銀行の金融政策、地政学リスクといった多様な要因によって日々変動します。特に金利の上昇は、企業の資金調達コストを上げ、将来のキャッシュフローの現在価値を押し下げるため、株価にはマイナス要因となる傾向があります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米国では、高インフレを抑制するため、連邦準備制度理事会（FRB）が大幅な利上げを実施し、高金利環境が長らく続いています。これにより企業の収益見通しに不透明感が増し、AIブームなどで急騰した一部のIT株も含め、高値圏にあった株式市場では利益確定売りが出やすい状況にあります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQcFl2LWF5WEQwR3RTX1JVTUFaM1E2Q3ZPVjMwMUVKb2lDRUJscWxNalRReGxXQ2ZQRG40aEEzSkJZY1FTUGpUel8tVTJTZ3JPYXRsVmxSd3g3NTZxcWRaMlV6cV82N3RJTnhCLUxtMU9xRGt4eVFBenVfR0NjZmlXcw?oc=5" target="_blank">東京株式市場・前引け＝続落、一時1000円超安 金利高や利益確定で - ロイター</a></h3>
-                        <div class="meta">📅 2026-05-18 03:06:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">東京株式市場は、米国市場の動向、日米の金利差、円為替レート、企業決算、国内の経済指標など、国内外の様々な要因に影響されます。金利の上昇は、一般的に企業の資金調達コストを増加させ、将来のキャッシュフローの現在価値を押し下げるため、株価の重しとなることがあります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日経平均株価は近年、企業業績の改善や海外からの資金流入、政府の経済政策への期待などから歴史的な高値を更新してきました。しかし、米国での高金利長期化観測や、日本銀行のマイナス金利解除後の追加利上げへの警戒感、そしてこれまで大きく上昇したことに対する利益確定売りが重なり、調整局面に入っています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMikAFBVV95cUxQN3VfcEhDUWFfVi04eVM2LTV3VWJJamZEelRfQnBoNkVKR0tSRXh3ZlJtbHlFX0hQbVl5SzVXWE5fNkVoTjlPNUVEbGZMMzd0RGV6UENtdmFBRlBaQUI4c1ZURHlYQWY5bFJ2Q3c3a1JjQXg3NElKTnU0WDVwaVF0VHdWMllhMDBPN2RCQXYzSjU?oc=5" target="_blank">ドル円、為替介入の限界露呈とドル高加速で160円視野も、今週の見通し - IG Group</a></h3>
-                        <div class="meta">📅 2026-05-17 08:00:05+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">為替レート、特にドル円は、日米の金利差、経済成長率の差、貿易収支、金融政策（日銀・FRB）によって変動します。金利の高い通貨は買われやすく、金利差が拡大すると為替レートに大きな影響を与えます。為替介入は、政府・中央銀行が自国通貨の急激な変動を抑えるために市場で売買を行うことですが、その効果は市場規模が巨大なため、一時的・限定的になることが多く、介入の継続性や規模には限界があります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米国がインフレ抑制のため大幅な利上げを進める一方、日本は長らく超低金利政策を維持してきました。この「日米金利差の拡大」が、歴史的な円安・ドル高の主要因です。日本政府・日本銀行は、円安の行き過ぎを懸念し、過去複数回にわたり為替介入（円買い・ドル売り）を実施しましたが、持続的な効果は得られず、再び円安が進行してドル円が160円台を視野に入れる状況となっています。これは、市場の金利差要因が介入規模を上回っていることを示唆しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5QVXRxb2Q3OVZycV9qQXVfeU05d095cjBUOVY1VWM3dzdISWUtUUJodGJ6NHBCQTJCblpTVTExalRTX1hDZmpPMlpKbXRfU2FINW5WOA?oc=5" target="_blank">軟調続く国内REIT相場 買い場はいつくる？ - 日経CNBC online</a></h3>
-                        <div class="meta">📅 2026-05-18 01:45:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">REIT（不動産投資信託）は、投資家から集めた資金で不動産を購入し、その賃料収入や売却益を投資家に分配する商品です。REITの価格は、不動産市況、金利動向、景気見通し、賃料収入の安定性などに影響されます。特に金利の上昇は、REITの資金調達コストを増やし、不動産の評価額にも影響を与えるため、一般的にマイナス要因となります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">世界的な金利上昇局面は、日本のREIT市場にも逆風となっています。国内でも日本銀行がマイナス金利を解除し、さらなる利上げの可能性も示唆されていることから、今後の金利上昇による資金調達コストの増加や不動産価格への影響が懸念され、軟調な相場が続いています。一方で、金利上昇が一巡すれば、現在の軟調な状況が割安な買い場となる可能性も指摘されています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE82WjRDUmZYcDFjb19nWWlDSEJoOGZvV2lwbmpSVUdQRGJ0dXZRbk9LZGJ1UmJWaEFSb1k3XzRxS2d0WFFaYkJNSHdIT2Q3eU9QQ0wyeGxFYU5XczBGeERiWA?oc=5" target="_blank">【通貨】 今日の為替市場ポイント：米長期金利の上昇を意識 - 株探</a></h3>
-                        <div class="meta">📅 2026-05-17 22:52:12+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米長期金利（特に10年国債利回り）は、米国の景気見通し、インフレ期待、連邦準備制度理事会（FRB）の金融政策見通しを総合的に反映する重要な指標です。この米長期金利の上昇は、投資家にとってドル資産の魅力を高めるため、ドル買い・円売りの動きを加速させ、ドル円相場に強い影響を与えます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米国では、インフレ率が目標水準まで十分に低下せず、経済指標も堅調に推移していることから、FRBの利下げ開始時期が市場の当初想定よりも遅れるとの観測が強まっています。これにより、市場参加者が織り込む米長期金利は上昇傾向にあり、これが日米金利差をさらに拡大させ、円安・ドル高を加速させる要因となっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxPMWd2THZsNnUzZDRsWTh5QzR6VU5zWkJpYnNYSGdTNEhfb01RTkRyc04zOHlJRWlBMGRVX2dySTdyVGhxTVdCa1FkUlNBV0NrbnpKNGhMaGloM19fLS1uSENJaE9VNlJfV2hCTVZjWkxaS3FOclZNM1NrZldWdmR2Vw?oc=5" target="_blank">エヌビディアとウォルマートの決算に注目＝今週の米株式市場 - ロイター</a></h3>
-                        <div class="meta">📅 2026-05-17 22:09:29+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">個別企業の決算発表は、その企業の収益性、成長性、財務健全性を示す重要な情報であり、投資家が株式を評価する上での最重要指標の一つです。特に、その企業の属する産業全体のトレンドを左右するような大手企業や、市場の期待値が高い企業の決算は、市場全体の株価に大きな影響を与えることがあります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">エヌビディアはAI関連半導体の需要爆発を背景に、近年目覚ましい成長を遂げ、世界の株式市場を牽引してきました。ウォルマートは米国の消費動向を測る上で重要な小売大手であり、インフレや消費者の購買力への影響が注目されています。両社の決算は、米国のテクノロジーセクターと消費セクターの健全性を測る上で、市場から高い注目を集めています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9RaElZemhiNmdJTWlEcG9ySWdTaFFXVjdmXzRudEVIRHZFbEpPSFdJakQ2WnBsWV9JaEhzWjByM1VhM1M1RktlOE91M1JHand4QzVGb2xlQ3ViVWVrbVU1TlBtQ0RwSVlucFdmXw?oc=5" target="_blank">自由変動相場制とは 為替介入を最小限に抑える指針 - 日本経済新聞</a></h3>
-                        <div class="meta">📅 2026-05-17 19:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">自由変動相場制とは、為替レートが政府や中央銀行の介入なしに、市場の需給によって自由に変動することを原則とする制度です。この制度の下では、為替介入は例外的な措置とされ、市場の過度な変動や投機的な動きを抑える目的で行われますが、その効果は一時的であり、持続的な介入には限界があることが認識されています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日本は自由変動相場制を採用しており、為替介入は市場の安定化を目的として行われます。しかし、近年の日米金利差の拡大による急激な円安進行に対し、日本政府・日本銀行は何度か為替介入を実施しましたが、市場の強力な金利差圧力の前では効果が限定的であるという現実が明らかになっています。これは、為替介入が市場のファンダメンタルズと逆行する場合、その効果が持続しにくいことを示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFBzbWxqc1ltSU1ndEE0VElnZldUTGdyRVJpOTdKeXBsc0RDSm40dm9kLTJqaDZlOVpoR2E5eEZIX1o0bFR1SFR2N2k4WjRiTnN5dHVBTHJn?oc=5" target="_blank">米ドル/円【USDJPY】：外国為替相場FXレート・チャートをリアルタイム表示 - Yahoo!ファイナンス</a></h3>
-                        <div class="meta">📅 2026-05-18 00:07:27+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米ドル/円のような外国為替相場（FXレート）は、常にリアルタイムで変動しており、投資家や企業は為替リスク管理や取引判断のためにこの情報を利用します。レートは、日米の金利差、経済指標の発表、中央銀行総裁の発言、地政学リスク、原油価格など、瞬時に変化する様々な要因によって決定されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、米国の金融引き締めと日本の金融緩和政策の差から、ドル円は急速な円安・ドル高トレンドを経験してきました。日本政府・日銀による為替介入が行われた時期もありましたが、基本的な金利差構造は変わらず、市場は引き続きドル高・円安方向への圧力を受けている状況で、投資家やビジネスパーソンはリアルタイムのレート変動に高い関心を持っています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5NclZjMHJiRDM4c0JiWTNUaWJEd1NNWTR6NmlRVEdBSXl2Z05MNEVCUjRiZ1J3TEFsUmFIRE51ektTdTNVbXQ4OGh4dmNmTlBBbUc3ag?oc=5" target="_blank">日替わりコメンテーター解説・前場のマーケット(2026/05/18) - 日経CNBC online</a></h3>
-                        <div class="meta">📅 2026-05-18 02:00:47+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「マーケット」という用語は、株式、債券、為替、商品など、あらゆる金融商品の取引市場を指します。日々の市場の動き（特に午前中の前場）は、その日の経済指標、企業ニュース、海外市場の動向、そして投資家の心理によって形成され、様々なメディアで分析・解説されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">最近のマーケットは、米国のインフレと金融政策、日本の金融政策転換、そして世界経済の不透明感によって、ボラティリティが高い状態が続いています。特に東京株式市場は、日経平均株価が歴史的な高値をつけた後、利益確定売りや金利上昇への警戒感から調整局面を迎えており、日々の変動に投資家の関心が高まっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1ISW9rUXoxWFQ5V2N4dXctV3V5MkFKSTJIOGpMRXBCSjhpMHB1NDUxa1FSTWtvemp4OXh0VGh4ZWdTSWZObERSb1pTeTNlcnhXMG5MT0xnbjY5eFpVVVRpeA?oc=5" target="_blank">【通貨】 今日の為替市場ポイント:◆ユーロ編◆目先的にリスク回避的なユーロ売り・円買いは抑制される可能性 - 株探</a></h3>
-                        <div class="meta">📅 2026-05-17 22:58:33+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ユーロ/円のような通貨ペアの為替レートも、日欧の金利差、経済状況、金融政策（ECB・日銀）、地政学リスクなどによって変動します。リスク回避とは、経済や政治情勢が不確実な時に、投資家がより安全とされる資産（伝統的に円や米ドル、金など）に資金を移す動きを指します。これにより、リスク資産の売却と安全資産の購入が進み、関連する通貨ペアのレートに影響を与えます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ユーロ圏では、欧州中央銀行（ECB）がインフレ抑制のために利上げを実施してきましたが、経済成長の鈍化やインフレの落ち着きが見られる中で、今後の金融政策の方向性が注目されています。一方、日本では日銀がマイナス金利を解除したものの、追加利上げには慎重な姿勢を示しています。目先、世界の金融市場で大きなリスクオフイベントがなければ、これまでのようにリスク回避的なユーロ売り・円買いが進む動きは抑制される可能性があります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9saVN4OXg1clJBdlRMaUlQM3BDci0yRFJLNDM0VlkyRnkwMEdqZjRIYnJMeXZ6OC1jbS1GNjNYNFhuTVh4MDZDYm4yZnFUeWNTV3BiOG1neFhMVjBzaW5kWWxaYnNwX25NOHc?oc=5" target="_blank">マーケットエンタープライズ[3135]：「取締役会の実効性評価」結果の概要に関するお知らせ 2026年5月18日(適時開示) ：日経会社情報DIGITAL - 日本経済新聞</a></h3>
-                        <div class="meta">📅 2026-05-18 02:30:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">上場企業は、投資家保護と市場の透明性確保のため、株価に影響を与える可能性のある重要な情報を「適時開示」として公表する義務があります。この中には、決算情報だけでなく、経営戦略、人事、ガバナンスに関する情報も含まれます。「取締役会の実効性評価」は、企業の経営監視機能が適切に機能しているかを評価し、企業価値向上に資するための取り組みです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、コーポレートガバナンス改革の推進により、企業は取締役会の機能強化や透明性向上が求められています。そのため、多くの企業が定期的に取締役会の実効性評価を行い、その結果の概要を投資家や株主に対して開示する動きが広がっています。これは、企業の持続的な成長と株主への説明責任を果たすための重要なプロセスとして位置づけられています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTE44aUdGZlNIZTk0LWwxYkliR0VwVFpKOFdwR1lZSU1RNTB4RjFjc3BfNTJkQVozMW1SLVh2ai15ZVYtTDNfS0otcThGa3dkVEpVbGs2VmhGRzdHbFN0ODI4VDZTRlJobXJNUnlQOW44Q2tBV21EcjhoaA?oc=5" target="_blank">コラム：復活の中国株、投資家は銘柄選択でなお慎重さ欠かせず - ロイター</a></h3>
-                        <div class="meta">📅 2026-05-18 02:41:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">中国の株式市場は、中国経済の成長率、政府の経済政策、国内外からの投資動向、地政学リスクなど、多くの要因に影響されます。一般的に、経済成長の減速や政府の規制強化は株価にマイナス要因となりますが、景気刺激策や規制緩和はプラス要因となります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">中国経済は、不動産不況、消費の低迷、米中対立などの影響で近年成長が鈍化し、中国株市場も低迷が続いていました。しかし、政府が景気刺激策を打ち出し、一部の産業への規制緩和の動きも見られることから、一時的に市場のセンチメントが改善し、株価に回復の兆しが見られています。しかし、構造的な課題は残されており、投資家は依然として銘柄選択に慎重な姿勢を崩していません。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE01Q1VCNk5wVjZYSEJGRG1Sb2hzYV9DQ0xtdUo0Mm03ODI2OFgydVNYa21UWmkwYVZWS1VKdEdTUU40QVdST19kM1A1N2F4VjVKaExkeNIBV0FVX3lxTE1lc2d5ZG9DcE1yMHZXbjZFMFRZNFJQSTZxNnFXa3FxNDludEU1OHFzZnN6OENjRThqc0cxdHhIT3Z2M290aWd4YmIwQ0t0Nkl3eHMtT1JyRQ?oc=5" target="_blank">日経平均の今週の予想レンジは6万円-6万3500円 - マネクリ</a></h3>
-                        <div class="meta">📅 2026-05-17 23:37:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">株式市場では、専門家が今後の株価動向を予測し、「予想レンジ」として提示します。このレンジは、日経平均株価のような主要指数が一定期間内に変動すると見込まれる上限と下限を示し、投資家がリスク管理や投資戦略を立てる際の参考にされます。予測には、国内外の経済指標、企業業績、金融政策、地政学リスクなどが考慮されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日経平均株価は、近年、企業業績の改善やインフレ期待、円安効果などから大きく上昇し、一時的に歴史的な高値を更新しました。しかし、米国の高金利長期化観測や日本銀行の金融政策正常化への動き、そしてこれまでの株価上昇に対する利益確定売りなどにより、市場は高値警戒感と調整圧力に直面しています。このため、今後の変動幅を予測するレンジ設定が重要視されています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSEFVX3lxTE93QmJCd0hTUGd1ODZsQVV5SWR0eGpkU2lob2h0ekRuYllqRXFibU8tSThnOTc4enZLU2UzVTIwbHhIWm5LSlNDQQ?oc=5" target="_blank">FX/為替「ドル/円今日の予想」 外為どっとコム トゥデイ 2026年5月18日号 - - みんかぶ FX/為替</a></h3>
-                        <div class="meta">📅 2026-05-17 23:35:49+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">FX（外国為替証拠金取引）市場におけるドル/円の今日の予想は、前日の市場動向、日米の経済指標発表予定、主要金融当局者の発言、市場参加者のセンチメント、テクニカル分析など、多岐にわたる情報に基づいて形成されます。金利差の動向は特に重要な要素です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、米国の積極的な利上げと日本の長期にわたる超低金利政策が、歴史的な日米金利差を生み出し、ドル高・円安の主要な背景となってきました。日本政府・日銀による為替介入も何度か実施されましたが、市場のファンダメンタルズである金利差は依然として大きく、ドル円は高水準で推移し続けています。今後の日米金融政策の方向性や、米国のインフレ動向が、短期的なドル円の動きを左右する主要なテーマとなっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxPb1A3bzY3OENnbHQ3M2ZHb3h6ZmFNVmx1a0xTNXcxazFCU2kwbXJ2dmdqYTJUenVJVWZiY0JBY2dOTHV4dGN1dUJ2ZTJkWHg1RlNJM0wzdll5Zy1MZmNLT1hZMS1qYWdIWVdfMVlaUkpEdUZia24xZkc2cE11OEwwS2oydldmd3c?oc=5" target="_blank">１８日の東京株式市場見通し＝底堅い展開か(ウエルスアドバイザー) - Yahoo!ファイナンス</a></h3>
-                        <div class="meta">📅 2026-05-17 22:47:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">東京株式市場の見通しは、国内企業の業績予想、政府の経済政策、海外経済の状況（特に米国や中国）、為替レートの変動、日銀の金融政策、国際情勢など、複数の要因を総合的に分析して形成されます。これらの要因が複雑に絡み合い、市場全体のセンチメントを左右します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年の東京株式市場は、日経平均株価が大きく上昇した期間がありましたが、足元では、米国の高金利環境の長期化、日本銀行の金融政策正常化への期待と警戒、そしてこれまでの株価上昇に対する利益確定売りによって、変動の大きい展開となっています。市場参加者は、今後の日本経済の回復度合いや企業業績の動向、そして世界的な金融環境の変化を慎重に見極めながら、市場の方向性を見極めようとしています。</div>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
-            <div class="category-section">
-                <h2 class="category-title">Google Cloud Platform (GCP)</h2>
-                <div class="grid">
-        
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPODRjM3ljd0NOX1J1LWxpTzBpRTQyVmI3Y3dRVS1DbE1VU1RpYjA4ZTB5akJLaU5XU0ZRdl9fdU8yTVdILWRnTTJtbDVPcFNnZjdiWWR1MmpJS19OMUs4TEF1eW5rbWwxRDlkZG1kMlp1TzYycExFVHQzX3JQcmZJbGk5ellBUG5Pd3ZVOGExOS03bFltUHV5eEI1SQ?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect - multicloud」新機能をプレビュー。Google Cloudとの接続に続き - Publickey</a></h3>
-                        <div class="meta">📅 2026-05-17 18:10:21+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">マルチクラウド戦略は、複数の異なるクラウドベンダー（例：AWS, Google Cloud, Azure）を組み合わせて利用する企業戦略です。これにより、特定のベンダーへの依存を避け、各社の強みやコスト効率を最大限に活用できます。閉域網接続（Direct Connect, Interconnectなど）は、パブリックインターネットを介さず、専用の物理回線でクラウドと企業のデータセンター（または他のクラウド）を直接繋ぐサービスです。セキュリティの向上、通信の安定化、低レイテンシー（遅延の少なさ）が主なメリットです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">企業がITインフラをクラウドへ移行する中で、特定ベンダーへのロックインを避けるため、マルチクラウド戦略の採用が一般的になりました。しかし、異なるクラウド間でのデータのやり取りやシステム連携は、これまでは複雑でセキュリティリスクも伴う課題でした。各クラウドベンダーは独自の閉域網接続サービスを提供してきましたが、他社クラウドとの直接的な接続は限られていました。近年、よりシームレスなマルチクラウド環境を求める企業のニーズに応えるため、クラウドベンダーは自社のサービスを他社クラウドと直接接続できるようにする動きを加速させています。Google Cloudは早くからこの分野での対応を進めており、AWSが追随する形でGoogle CloudやOracle Cloudとの閉域網接続を強化しているのが現状です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5MVDZha2ROZFZIR2VnTklNb0dJcG5FbGdGbGdFWjRxNUxrbzZ3TUpralUzZnY2dkZXcExQX19vR2c3RDJPMWpReDFXVFlpQUlvWnc?oc=5" target="_blank">クラウドセキュリティのプロが目撃した、AIエージェントが変えるクラウド活用の新常識 ―「Google Cloud Next '26」現地参加レポート - CodeZine</a></h3>
-                        <div class="meta">📅 2026-05-17 12:48:06+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Google Cloud Nextは、Google Cloudが毎年開催する最大のイベントで、最新のテクノロジー、新サービス発表、顧客事例などが紹介されます。AIエージェントとは、生成AIなどの技術を基盤とし、人間からの指示を理解して自律的に複雑なタスクを実行するAIプログラムです。クラウドセキュリティは、クラウド上で稼働するシステム、データ、アプリケーションを保護する対策全般を指し、AI活用が広がる中で、AI自体のセキュリティ（誤動作、データ漏洩など）や、AIによって自動化されたシステムのセキュリティ管理が新たな焦点となっています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Googleは、AI研究において長年の歴史と世界をリードする技術力を持ち、特に深層学習や生成AIの分野で多くのブレイクスルーを生み出してきました。近年、生成AIの急速な進化により、企業はこれをビジネスプロセスに組み込むことを本格的に検討し始めています。Google Cloudは、Vertex AIなどのプラットフォームを通じて、企業がAIモデルを開発・運用できる環境を提供してきました。最新のトレンドとして、単にAIをツールとして提供するだけでなく、AIエージェントがクラウドの運用管理、セキュリティ監視、自動化といった領域で自律的に機能し、クラウド活用の常識自体を変えていくフェーズに入っています。Google Cloud Nextのようなイベントでは、こうしたAIとクラウドの融合が今後企業にどのような変革をもたらすかが発表されます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9RRHl6VGQ4Z1lOekdobkZTSjFLTGZVeDFOZWRyVGduWE5rX01wZ3AwM0VJcDdFYl84SXh4eGdtUUx4Q05LeFdtSExEdXROZG81Z1QzckY2c1JJYW1lNXRjSFo3OWtkbXo1eHp5Ug?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect-multicloud」新機能をプレビュー Google Cloudとの接続に続き - ITmedia</a></h3>
-                        <div class="meta">📅 2026-05-18 01:34:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">マルチクラウド戦略は、複数の異なるクラウドベンダー（例：AWS, Google Cloud, Azure）を組み合わせて利用する企業戦略です。これにより、特定のベンダーへの依存を避け、各社の強みやコスト効率を最大限に活用できます。閉域網接続（Direct Connect, Interconnectなど）は、パブリックインターネットを介さず、専用の物理回線でクラウドと企業のデータセンター（または他のクラウド）を直接繋ぐサービスです。セキュリティの向上、通信の安定化、低レイテンシー（遅延の少なさ）が主なメリットです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">企業がITインフラをクラウドへ移行する中で、特定ベンダーへのロックインを避けるため、マルチクラウド戦略の採用が一般的になりました。しかし、異なるクラウド間でのデータのやり取りやシステム連携は、これまでは複雑でセキュリティリスクも伴う課題でした。各クラウドベンダーは独自の閉域網接続サービスを提供してきましたが、他社クラウドとの直接的な接続は限られていました。近年、よりシームレスなマルチクラウド環境を求める企業のニーズに応えるため、クラウドベンダーは自社のサービスを他社クラウドと直接接続できるようにする動きを加速させています。Google Cloudは早くからこの分野での対応を進めており、AWSが追随する形でGoogle CloudやOracle Cloudとの閉域網接続を強化しているのが現状です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE9hMVA2azNOX0pmTHhJa1VuNkFWWkZiNy1aWnM2c19WZ0NlOEVFNXRJZEIxemZ5VHVlZnNiR2g0THNuVDdzUjRrQXVfaGFIMW9Na0tJczFVZDVGa25HZzZkdG9ieUNvZjR4Z1Y5VmtYejhXNUZETlNjQkxOZw?oc=5" target="_blank">クレッシェンドラボ、DAAC AI AgentでGoogle Cloud Ready - Gemini Enterprise認定を取得 - ニコニコニュース</a></h3>
-                        <div class="meta">📅 2026-05-18 01:00:43+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">GeminiはGoogleが開発した最先端の生成AIモデルで、テキストだけでなく画像、音声、動画など多様な情報を理解・生成できるマルチモーダルな能力を持ちます。Gemini Enterpriseは、このGeminiモデルを企業向けに特化させたバージョンで、データプライバシー、セキュリティ、信頼性、長期サポートなどが強化されており、Google CloudのVertex AIなどのプラサービスを通じて提供されます。Google Cloud Ready認定プログラムは、Google Cloudの主要サービスと連携し、品質と互換性がGoogleによって検証・推奨されたサードパーティソリューションに与えられる称号です。これにより、企業は安心してパートナーソリューションを導入できます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Googleは、Transformerモデルの発明など、AI分野における基礎研究で世界をリードしてきました。近年、生成AIの技術革新が加速する中で、Googleは2023年に高性能なマルチモーダルAIモデル「Gemini」を発表し、企業向けにはセキュリティとコンプライアンスを強化した「Gemini Enterprise」を提供開始しました。企業がAIをビジネスに本格導入する際には、AIモデルの性能だけでなく、既存システムとの連携、データの安全性、運用サポートが重要になります。そのため、Google Cloudは、サードパーティ企業がGemini Enterpriseを自社の製品やサービスに組み込み、企業が安心して利用できるようなエコシステムの構築に力を入れています。「Google Cloud Ready - Gemini Enterprise認定」は、パートナー企業がGoogleの最新AI技術をビジネスに活用し、その品質と信頼性をGoogleが公式に認めることで、企業のAI導入をさらに加速させるための取り組みです。</div>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
-            <div class="category-section">
-                <h2 class="category-title">Claude</h2>
-                <div class="grid">
-        
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE0xWTBkTUhFSG04MTMzeDYydXAwMkZ1RWVhNENmS29rTUhPY1VxSmIzZkcwVE5BUTgyZ0VOaV94dHZrZ0R2Z1JqaXRsZTR1dG1qc21z?oc=5" target="_blank">Anthropic、中小企業向けAIエージェント「Claude for Small Business」発表 - ビジネス+IT</a></h3>
-                        <div class="meta">📅 2026-05-17 07:25:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Anthropicが開発する大規模言語モデル（LLM）「Claude」は、OpenAIのGPTシリーズと並ぶ主要なAIモデルの一つです。これまでClaudeは主に開発者や大企業向けのAPIとして提供されてきましたが、中小企業はAI導入による業務効率化ニーズが高い一方で、コストや技術的障壁、専門知識の不足が課題となることが多くあります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">AnthropicがLLM市場でのプレゼンスを確立後、より幅広い顧客層へのリーチを目指し、特定のユースケースや顧客層（中小企業）に特化した製品を投入する段階に入ったことを示します。これは、汎用的なモデルだけでなく、顧客セグメントに合わせたソリューションを提供することで市場を拡大しようとするAI企業の一般的な成長戦略の一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5Xc3laWTgwQ0Y5NEhuSDFZV2FHM21lOGVockF6MF9uQkZtaThhNjNSNGhlaXVHSVlGRUFQMGlFVUQtQV8zaGpEZ3NmaTJGZ1RlbHB5bmhMdDlfMGlLTlVDVFhQdDdTUzl5SG13Y0w2NW1XakVPWjIyMkNn?oc=5" target="_blank">Microsoftが社内開発で使われるClaude Codeライセンスのキャンセルを開始か - GIGAZINE</a></h3>
-                        <div class="meta">📅 2026-05-18 03:13:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Claude Codeは、AnthropicのClaudeシリーズの中でも、特にプログラミングコードの生成、デバッグ、理解に特化したモデル（または機能）と考えられます。MicrosoftはOpenAI（ChatGPTの開発元）に巨額の投資を行い、自社製品やサービスへのOpenAIモデルの統合を強力に進めています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Microsoftが、OpenAIとの戦略的提携を深める中で、社内で試用していた他社のAIモデル（Claude Code含む）から、自社が主要株主であるOpenAI製品への一本化を進める動きと解釈できます。これは、特定のAIベンダーへの集中投資と連携強化により、効率的なAI活用エコシステムを構築しようとする企業の戦略的な意思決定を示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiigFBVV95cUxQN2NvT0hrQnl0NVN0UWJ6TEp3Yno0Rmt5LUxBRjlxNzdBWHFXNmNHSjBKV3ZOQ1QwaEstbUhsZnpTcjBSNXp5U0g1dmtuZEl2bzY4NE8tZTBia2trM3F5amtOcEdrenRsMjBlemE1X05zRGdzN2xwODVuRjFaUWlfdkprTjJOLWtGM3c?oc=5" target="_blank">Anthropicの「Mythos」に日本の3メガバンクがアクセスへ 金融システム防衛で官民連携 - Ledge.ai</a></h3>
-                        <div class="meta">📅 2026-05-17 23:01:50+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Mythosは、Anthropicが開発中の最先端モデル、または特定のセキュリティ・信頼性要件を満たすよう設計されたモデルのコードネームと推測されます。金融機関は、情報セキュリティ、プライバシー、システムの安定性に対する要求が極めて高く、AI導入には厳格な検証と信頼性が不可欠です。金融システムは国家の基幹インフラであり、その防衛には官民連携が重要視されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Anthropicが「安全なAI」を開発理念に掲げていることが、機密性の高い情報を扱う金融機関から評価されていることを示します。金融システム防衛のような重要インフラでは、特定ベンダーに依存しない複数ベンダー戦略（例：OpenAIとAnthropicの併用）が取られることも多く、Anthropicの技術が高度なセキュリティと信頼性要件を満たす能力を持っていると判断された経緯が見て取れます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBlMFBmWWpBeGM1M1V2OUxBckhIaEJFM3BlNS1CVkJQcmVFQk1PTE9QczBGY1AxTUVqeU1oamlLSVVld3A3ZldmSHJnTEZSZVlmcVVVdWVib1YyQ3dKSkdtelNWNExCTmh1QzhLNTRQZzZSLTRGXzQwc2ZOZk16Ym8?oc=5" target="_blank">2位とトリプルスコア ～ AnthropicバグバウンティプログラムでGMO Flatt SecurityのRyotaK氏が1位を記録（ScanNetSecurity） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 23:00:21+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">バグバウンティプログラムとは、企業が自社製品やサービスにおけるセキュリティ脆弱性を発見した外部のセキュリティ研究者に対し、報奨金を支払う制度です。これにより、製品のセキュリティ向上と信頼性確保を図ります。AIモデルの安全性（例：ハルシネーション抑制、プロンプトインジェクションへの耐性）は、Anthropicが特に重視する分野です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Anthropicが安全性と信頼性を重視する企業姿勢を具体的に示すものです。同社が「憲法的AI（Constitutional AI）」という倫理的なAI開発アプローチを掲げていることからも、外部の専門家による徹底的なセキュリティ検証を積極的に受け入れ、製品の堅牢性を高め、ユーザーからの信頼を得ようとしている経緯が伺えます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNQm1oei1RSVk1Vm16emduVHkyTFBaTWZSc3l2dm1KczBBYnFmOUlQeFZHVlVtcVBENVNRSXBVRVVZNUM1TG1qN1dhOXF2NHpRRmdROXB5TmhHY1RnYWFjMmtmdHVGS0tzcjdmTGZ3cHpoVFlLOUszUDN3T0dsOTRwaWtfUk9YRUdzNE53dmlvLWxoanpKZWpBSlZUTnRXQQ?oc=5" target="_blank">セールスフォースのCEOは、自社の Anthropicトークン利用額が、3億ドルに達するだろうと語った - Business Insider Japan</a></h3>
-                        <div class="meta">📅 2026-05-17 22:45:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「トークン利用額」とは、AIモデルのAPIを通じてデータ（プロンプトや生成される応答）を処理する際に発生する費用を指します。大規模な企業がAIモデルを全社的に活用する場合、この利用額は膨大なものとなります。セールスフォースはCRM（顧客関係管理）の最大手であり、顧客データの分析、営業支援、カスタマーサービスなど、幅広い業務にAIの導入を進めています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">セールスフォースが、自社のAIプラットフォーム「Einstein AI」などにAnthropicを含む複数のLLMを統合しており、顧客企業の多様なニーズに対応していることを示しています。この発言は、セールスフォースがAnthropicのAIを非常に広範囲かつ深く自社サービスや顧客向けソリューションに組み込んでおり、その利用規模が極めて大きいことを物語るもので、Anthropicのモデルがエンタープライズ分野で高い評価と採用を得ている経緯を示唆しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTFB5UUhHUHl6cEpMaURDVTFBc0hVd05kdWVhcjI1UUVsXzN4RW9KcjV2eEdXY2JlNTZ0NmVFNU5FbWdWcE1remxmai0xS0NLc3d4V3RYeTFwUW5LczZPWnc?oc=5" target="_blank">凄すぎ…「Gemma 4×Claude Code活用術」、API料金ゼロでAIエージェント制作の全手順 - ビジネス+IT</a></h3>
-                        <div class="meta">📅 2026-05-18 00:04:49+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Claude CodeはAnthropicのコード生成・理解に特化したAIモデルを指し、GemmaはGoogleが開発したオープンソースの軽量LLMです。API料金はAIモデル利用の主要なコストの一つであり、特に個人開発者や中小企業にとっては大きな検討事項となります。複数のAIモデルを組み合わせることで、それぞれの長所を活かしつつコストを最適化する手法が模索されています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">特定のAIモデルに依存せず、複数のモデル（特にオープンソースモデルと商用API）を組み合わせてコスト効率良くAI開発を行う手法が広がっていることを示します。これは、AI技術のコモディティ化が進む中で、開発者が利用モデルを自由に選択・組み合わせることで、特定のベンダーに縛られず、予算内で最適なソリューションを構築しようとする開発トレンドの一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxPS3ZyNnRsOVNyWnFBLVRIUXdoS2J1SGhuYy1nNUQ3amw1OU9ENW83a1l5SUpUcXdHUVRPLV91TDNRbUZpTWVvdTlsMkdZYVRqWTFQYXl2a19Kc1BfRXR2ckJnV3h2X3NpeWoyRFplZjd0Rm5mQ1hMM016VFBaTUYtNnUwQzl2aG1Z?oc=5" target="_blank">凄すぎ…「Gemma 4×Claude Code活用術」、API料金ゼロでAIエージェント制作の全手順（ビジネス＋IT） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 22:20:07+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ID:5と同じ。Claude CodeはAnthropicのコード生成・理解に特化したAIモデルを指し、GemmaはGoogleが開発したオープンソースの軽量LLMです。API料金はAIモデル利用の主要なコストの一つであり、特に個人開発者や中小企業にとっては大きな検討事項となります。複数のAIモデルを組み合わせることで、それぞれの長所を活かしつつコストを最適化する手法が模索されています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ID:5と同じ。特定のAIモデルに依存せず、複数のモデル（特にオープンソースモデルと商用API）を組み合わせてコスト効率良くAI開発を行う手法が広がっていることを示します。これは、AI技術のコモディティ化が進む中で、開発者が利用モデルを自由に選択・組み合わせることで、特定のベンダーに縛られず、予算内で最適なソリューションを構築しようとする開発トレンドの一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1VTmxMeFJ1b3E0cGZjNkdPM0NyVjlyWkxHU3NCcV9aNWZrZ2xPMUpSUFBhUkpzTkVkWVdVZ3RyM245Vm5KNmRHRVVScnNLd0lRUUtZ?oc=5" target="_blank">米国防総省がOpenAIなどAI調達拡大、Anthropic排除もMythos利用へ調整 GenAI.milを通じて軍関係者や請負業者に提供 - ビジネス+IT</a></h3>
-                        <div class="meta">📅 2026-05-17 06:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ID:2と同じく、MythosはAnthropicが開発中の最先端モデル、または特定のセキュリティ・信頼性要件を満たすよう設計されたモデルのコードネームと推測されます。米国防総省のような国家機関は、情報セキュリティ、プライバシー、倫理的な利用に関する要求が極めて高く、AI導入には厳格な検証が不可欠です。GenAI.milは、国防総省における生成AI技術の導入を管理・提供するプラットフォームと考えられます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">国防総省がOpenAIを含む複数のAI技術を調達する中で、Anthropicの特定のモデル（Mythos）に注目していることは、Anthropicの技術が特定の高セキュリティ要件や倫理的基準を満たす能力を持っていることを示唆します。これは、AIの倫理と安全性を重視するAnthropicの理念が、機密性の高い軍事分野においても評価され、採用を検討されている経緯を示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE4weTRtMXRORGFMNHJEZWFyU2gxbUxZeFBXM1hiVl85WEFkcktSMlVqcVgydXd1ZFF5dUMwRGFpMWxMMWs4c1lMbm9IM2FkUXRTaDZF?oc=5" target="_blank">Anthropicが描く2028年、米中AI競争の2つのシナリオ ─ 半導体規制が分ける未来 - innovaTopia</a></h3>
-                        <div class="meta">📅 2026-05-18 03:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">AI開発競争は、技術覇権を巡る米中間の戦略的な争いの一部であり、半導体はその開発に不可欠な基盤技術です。高性能AIチップの供給規制は、AI技術開発の速度や方向性に大きな影響を与えます。AIの進化は、経済、軍事、社会のあらゆる側面に影響を及ぼすため、各国がその主導権を握ろうとしています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Anthropicは単なる技術開発企業に留まらず、AIが社会に与える影響や国際政治における役割についても深く考察し、提言を行っています。これは、AIの倫理と安全性に重きを置く同社の理念と一致します。同社が半導体規制をキーファクターとして複数のシナリオを提示していることは、地政学的リスクがAI開発に与える影響を強く認識し、その未来洞察を共有している経緯を示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiREFVX3lxTE9nZnN0ZzU1cExxN2VZcE5aa2xWbUhtal9IeG9IbGpKQzNDUFBqc0VPV1huTFlmUHdhM3Jfb01Bek9pMVVB?oc=5" target="_blank">アクセンチュアがAIを中核に据えた企業改革の支援体制構築に向けてAnthropicとの協業体制を強化 - @DIME アットダイム</a></h3>
-                        <div class="meta">📅 2026-05-17 21:04:15+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">アクセンチュアは世界有数の総合コンサルティング企業であり、多くの大手企業のDX（デジタルトランスフォーメーション）やAI導入を支援しています。コンサルティングファームが特定のAIベンダーと協業を強化することは、そのAI技術がエンタープライズ領域で実用性、拡張性、信頼性が高いと判断されたことを意味します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">アクセンチュアがAnthropicとの協業を強化するという動きは、AnthropicのAIモデルが、企業レベルでの複雑な課題解決や大規模なシステム統合に耐えうる成熟度と性能を持っていることを示唆しています。これにより、より多くの企業がAnthropicのAIを活用した変革を進めることが期待され、Anthropicがエンタープライズ市場での存在感を高めている経緯が伺えます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE1fTHFkamhTZG9IdnJoSV9mUWRoSWIydmp5THZNUlZ6d1dfZGtMX2JVSlVGY3RXUXhHZmZFQVBnYW9GdUFyamNhQUVENzJQREQzaGhSMjlLZGdBVVF4S2dSb2lRWVI5dw?oc=5" target="_blank">Claude for Small Businessで 見つけたヒント - Substack</a></h3>
-                        <div class="meta">📅 2026-05-17 23:23:48+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ID:0と同じ。Anthropicが開発する大規模言語モデル（LLM）「Claude」は、OpenAIのGPTシリーズと並ぶ主要なAIモデルの一つです。これまでClaudeは主に開発者や大企業向けのAPIとして提供されてきましたが、中小企業はAI導入による業務効率化ニーズが高い一方で、コストや技術的障壁、専門知識の不足が課題となることが多くあります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ID:0と同じ。AnthropicがLLM市場でのプレゼンスを確立後、より幅広い顧客層へのリーチを目指し、特定のユースケースや顧客層（中小企業）に特化した製品を投入する段階に入ったことを示します。これは、汎用的なモデルだけでなく、顧客セグメントに合わせたソリューションを提供することで市場を拡大しようとするAI企業の一般的な成長戦略の一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE1NZGphTk9zaHRYdkNMakpDYm9PenA3aTc4bC1NN19zRHhha1Q3ZEU2UmwwUV9GUHhNVms5NHRPVDJNd3lQLXVVVEpyRTJWNzc1eGY5ZWJocw?oc=5" target="_blank">ホリエモンAI学校、弁護士によるブラインド採点で主要生成AIのリーガルレビュー性能を検証 - ICT教育ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 23:15:37+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">リーガルレビュー（法的文書の審査・作成）は、高度な専門知識と正確性が求められる業務であり、AIの活用は大きな効率化をもたらしうる一方で、誤りのリスク（ハルシネーションなど）も伴います。生成AIは多様な情報生成能力を持つ一方で、その出力の信頼性を専門家が検証することは重要です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIの普及に伴い、その性能検証、特に専門分野での実用性や信頼性を評価する動きが活発になっています。AnthropicのClaudeは、OpenAIのGPTシリーズなどと並び、長文処理能力や倫理的安全性に強みを持つため、こうした専門分野での評価対象となることが多いです。この検証は、AIがどの程度、専門業務に適用可能か、またその限界はどこにあるかを探る一般的な流れの一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9sZTY0bEZyamhsam9YNU9fQnBVNFIxV0Q0U1lCYXJsUzFYWmp2MTlKVGpFZVBFT0Q5Y1lKWWo3T3JMX1lZU1p5c00xeEkzNWVuanFGMA?oc=5" target="_blank">AIだけでゲームは作れるのか？ Codexに7本作らせて見えた実力と限界 (1/5) - ASCII.jp</a></h3>
-                        <div class="meta">📅 2026-05-17 22:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">OpenAIのCodexは、自然言語からプログラミングコードを生成するモデルであり、GitHub Copilotの基盤技術としても知られています。本記事は「Claude」に関するリストに含まれていますが、CodexはOpenAIの技術であり、直接的にAnthropicのClaudeとは異なります。しかし、広義の「AIによるコード生成」や「AIがクリエイティブなタスクにどこまで対応できるか」という生成AI全体のテーマで語られることが多いです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">AIによるコード生成やゲーム開発への応用は、プログラミング教育やソフトウェア開発の未来を考える上で重要なテーマです。この記事は、広範な生成AI技術の進展の中で、AIが特定のクリエイティブなタスク（ゲーム制作）にどの程度対応できるかを検証したものであり、生成AI全般の能力と課題を示す事例の一つとして挙げられていると考えられます。AnthropicのClaude Codeも同様の領域で活用される可能性があり、広義のAI開発トレンドとして捉えられている可能性があります。</div>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
-            <div class="category-section">
-                <h2 class="category-title">ガジェット</h2>
-                <div class="grid">
-        
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSEFVX3lxTE5EaWNiV015bEZDRGQ4bi10cWE1YXJzeGR6ZmxRQTByZXl3U1ZXTjR0b215cFNVbE10aDhldWNDdFNHVVZIdXlLNQ?oc=5" target="_blank">「ビバ・ラ・ジオ」7月21日のパーソナリティーにヤーレンズが決定 - giants.jp</a></h3>
-                        <div class="meta">📅 2026-05-18 03:03:34+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「ビバ・ラ・ジオ」はプロ野球チームの文化やファンコミュニティに根ざしたラジオ番組であり、デジタルガジェットそのものの技術や市場動向とは直接関連しません。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ラジオは古くから存在するメディア・ガジェットであり、デジタル化が進む現代でも、情報やエンターテイメントを提供する重要なツールとして、特定のコミュニティやニッチな層に支持され続けています。本件は、そのコンテンツ側面に焦点を当てたニュースです。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1adEN0YWRLRlJnY2VwdnF0ZV8xOHNfM2hWT2czRFB6N0FFeTlaMkRBU3Z5NW5sLTdoYUc4NXcydndhSFBhenc3dFl6bzM5b3NtWUNabFhsdDFydWhaT2M3NnBQTUtfRDgxUjhQV3lmS0tEWFFKdVlSQWViMC1oYU0?oc=5" target="_blank">スマートフォンアプリ「くら寿司 公式アプリ」に証明書検証不備の脆弱性（ScanNetSecurity） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 23:00:08+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートフォンアプリは、私たちの生活やビジネスにおいて不可欠なツールとなっていますが、同時にセキュリティリスクも抱えています。証明書検証不備の脆弱性は、アプリが通信相手を正しく確認できないことで、中間者攻撃（Man-in-the-Middle Attack）などにより情報が盗聴・改ざんされるリスクがあることを指します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートフォンアプリの普及とともに、個人情報や決済情報などを扱うアプリのセキュリティは常に重要な課題とされてきました。企業は脆弱性診断やセキュリティアップデートを継続的に行い、ユーザーはOSやアプリのアップデートを推奨されるなど、サイバーセキュリティ対策は終わりなき戦いとなっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQYkJfUExTZ2VPdnFhRngwaXE2blNsUGZHX1JfaHRLQ3d0TzNOQVgzN0FIN2YybFdZaU11MjhKZkhzbWZ6and3RF9NOWZpTXdpUTRJZFVabW8zcHI3ZWl1MHVnV1VWWElmYlBoR2hqaVE2eGJPRnRQbjZVd216bnlKX0hRc1daQTg?oc=5" target="_blank">「スマートフォンで盗撮された」女性のスカート内を撮影した男（46）逮捕 スマホには動画が…札幌 - 日テレNEWS NNN</a></h3>
-                        <div class="meta">📅 2026-05-17 23:56:49+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートフォンは高性能なカメラを搭載しており、日常の記録や情報共有に非常に便利ですが、その手軽さゆえに盗撮などの犯罪行為にも悪用されることがあります。個人のプライバシー侵害は重大な人権問題であり、法的な規制と技術的な対策が求められます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">携帯電話にカメラ機能が搭載されて以来、盗撮行為は社会問題として度々取り上げられてきました。スマートフォンの高性能化・普及により問題は深刻化し、各国で盗撮防止条例や法律が整備され、メーカー側もシャッター音の強制再生など対策を講じています。しかし、悪意ある利用を完全に防ぐことは難しく、個人の注意喚起も依然として重要です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTE9IQUZVVGxGVTM0RUVCVmNWYmdxSEVhVVRKdVpZN1lfa0U3cmVDZWVYeFhUcXczRUlYWUFQVC10N0JybURhMDdDSFdaRQ?oc=5" target="_blank">スマートウォッチはもう古い？「視界にAI」が常識になる最新スマートグラス2選 - GetNavi web</a></h3>
-                        <div class="meta">📅 2026-05-17 11:58:10+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ウェアラブルデバイスは、体に装着して利用する情報端末の総称です。スマートウォッチは手首に装着し、通知表示や健康管理が主機能ですが、スマートグラスは眼鏡型で、視界に直接情報や画像を重ねて表示するAR（拡張現実）機能を持ちます。AI（人工知能）との融合により、より自然で直感的な情報アクセスやインタラクションが可能になると期待されています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートウォッチは2010年代半ばから市場に定着しましたが、小型ディスプレイでの操作性や機能の限界も指摘されてきました。スマートグラスは過去にも製品化されましたが、デザイン性、バッテリー、価格、コンテンツ不足などの課題で普及には至りませんでした。しかし、AR技術やAIの進化、小型化技術の進展により、次世代のパーソナルデバイスとして再び注目が高まっています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMia0FVX3lxTE1QQTg2UVRCMDdtVjRjRDloQW1qMm05bUNoaW9JWE14WGthV3UwVEk4WXR4djVXZHA0SkxLMVhUWlhrS3o3bm9wRnk4Z0l1dkdDNGdvTTFmeDZ4elJDc2lkLUVNS2JVV3B2UXBv?oc=5" target="_blank">ドラゴンズファン必見！ 2026年版 中日ドラゴンズ承認 オリジナルスマートフォンケース モノグラムデザインモデルを販売開始 - Excite エキサイト</a></h3>
-                        <div class="meta">📅 2026-05-18 00:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートフォンケースは、デバイス保護だけでなく、ユーザーの個性や趣味を表現するファッションアイテム、ブランドマーケティングツールとして大きな市場を形成しています。企業やキャラクターの知的財産（IP）とのコラボレーションは、ターゲット層への訴求力を高める有効な手法です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートフォンの普及初期から、ケースや保護フィルムなどのアクセサリー市場が拡大しました。当初は機能性やシンプルなデザインが主流でしたが、次第にデザイン性やキャラクターコラボレーションが重視されるようになり、多様なメーカーが参入。今やスマートフォンケースは、ファッションの一部として捉えられています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE5yU0o4MWc4cms4NFhEemdpaTV0cjM5VWliRjlZZlhIdEVpMWlYb1gyUF9sT1V1bUJRVTVnVzBOMlc4VXlTQS1GYkxBZWw0MnBNNUtBcEpDS1hSRmVhc3c?oc=5" target="_blank">ソニーが新型スマートフォン「Xperia 1 VIII」のメディア向け体験会を開催 (2026年5月18日掲載) - ライブドアニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 22:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートフォン市場は競争が激しく、各メーカーは年に数回、最新技術を搭載した新モデルを発表し、差別化を図っています。ソニーのXperiaシリーズは、特にカメラやディスプレイ技術において独自性を追求することで知られています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">2007年のiPhone登場以降、スマートフォン市場は急速に拡大し、サムスン、Apple、Xiaomiなどが主要プレーヤーとなっています。ソニーはかつて世界的な携帯電話メーカーであり、現在はXperiaブランドでハイエンドモデルを中心に、写真や映像、音楽といった同社の強みを活かした独自の製品開発を続けています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE5BUnBCamtOdmlSV2l4MFJHY3hpcUE1NDdjSUNnb2lpWVlLXzZ5cGxPVFJ5WE9HSVZYWnhGdGs0WnEwMXFKVlI5ZjVGeHY?oc=5" target="_blank">【海外DIY】ソーラー＋E-InkでESP32スマートウォッチを9か月動かす個人プロジェクト「LightInk」が話題に - Smart Watch Life</a></h3>
-                        <div class="meta">📅 2026-05-18 01:22:23+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートウォッチのバッテリー持続時間は、ユーザーにとって重要な課題の一つです。E-Ink（電子ペーパー）ディスプレイは、表示書き換え時のみ電力を消費し、表示保持にはほとんど電力を必要としないため、省電力化に大きく貢献します。DIYプロジェクトは、大手メーカーとは異なるアプローチで技術革新の可能性を探る動きとして注目されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートウォッチは登場以来、バッテリー持続時間の短さが課題でした。メーカーは省電力チップ、OSの最適化、ディスプレイ技術の改良などでバッテリー寿命を延ばそうと努力してきました。E-Inkのような超低消費電力ディスプレイやソーラー充電の組み合わせは、バッテリー問題への一つの解決策として、個人開発者やニッチな製品で試みられています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE9EUkVkcXdmYW1IaVNkWkJIeFVQSVJ6bnNaNWJ0MVc2WHZ2MnNtRktlUlN2bVMyRElURTBJSktIUFliMFJBMEVOQXF6bDBpMWpWUzNEZEJhNlZId21jREp0QVlLOA?oc=5" target="_blank">Xiaomi REDMI Watch 6 －画面輝度アップに薄型・軽量化、ビジネスシーンでも映えそうなスマートウォッチ - ウインタブ</a></h3>
-                        <div class="meta">📅 2026-05-17 11:04:54+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートウォッチは、通知表示、健康管理（心拍数、活動量、睡眠など）、決済機能などが主要な機能です。ビジネスシーンでの利用では、デザイン性、薄型・軽量化、バッテリー持続時間、そしてスマートフォンとの連携のスムーズさが重視されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートウォッチは当初、フィットネス用途やテクノロジー愛好家が主なターゲットでしたが、健康意識の高まりや機能の向上、デザインの洗練により、より幅広い層に普及しました。Xiaomiのようなメーカーは、手頃な価格で高いコストパフォーマンスの製品を提供することで市場シェアを拡大しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMicEFVX3lxTFB2bVM1VDhCRGdQOGRPUWg3cW1DTVlGNFo3aGFjX0pSZnp1VWlrY1dqaTAyUFBmbGVWS1MwM0NsVzNoR09qSEp5NURwY05yS0JLV1hYMUNoQ2Zjb0xqcGV4TDBVb0ZPZEpPaEtMUkZOWXI?oc=5" target="_blank">GPS端末でおなじみのガーミン、でも「スマートウォッチは使いづらい」!? 最新のVenu 4を使ってみました - ASCII.jp</a></h3>
-                        <div class="meta">📅 2026-05-17 03:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ガーミンはGPS技術のパイオニアとして、カーナビ、アウトドア、スポーツ用デバイスで高い評価を得ています。しかし、その専門性がゆえに、一般的なスマートウォッチユーザーにとっては操作体系や機能が複雑に感じられ、「使いづらさ」として認識されることもあります。これは、ブランドが提供する機能性と、ユーザーが求めるシンプルさとの間のギャップを示唆します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ガーミンは元々、特定の目的（ナビゲーション、ランニングなど）に特化したデバイスで成功を収めました。スマートウォッチ市場に参入してからも、スポーツやヘルスケアに特化した高機能モデルを展開しています。多機能化するスマートウォッチ市場において、各社はユーザーインターフェース（UI）やユーザーエクスペリエンス（UX）の改善に継続的に取り組んでいます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTFA1VmdnaVJ4dV9BWWZvVVhaMHJhQ3lVYjZvUEZYaFRFai1HTzhiaFlzRzE1ZDhOQ3FBdzVZUDRDbkM0dldQNjJkMjA0Q1VVeWV2QzYxN1pOb281MmZQTmZfVzdUcTFZTjgwc1Y2VEdLZmoyamVQQ042NmdWVQ?oc=5" target="_blank">ドラゴンズファン必見！ 2026年版 中日ドラゴンズ承認 オリジナルスマートフォンケース モノグラムデザインモデルを販売開始 - ニコニコニュース</a></h3>
-                        <div class="meta">📅 2026-05-18 00:03:30+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートフォンケースは、デバイス保護だけでなく、ユーザーの個性や趣味を表現するファッションアイテム、ブランドマーケティングツールとして大きな市場を形成しています。企業やキャラクターの知的財産（IP）とのコラボレーションは、ターゲット層への訴求力を高める有効な手法です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートフォンの普及初期から、ケースや保護フィルムなどのアクセサリー市場が拡大しました。当初は機能性やシンプルなデザインが主流でしたが、次第にデザイン性やキャラクターコラボレーションが重視されるようになり、多様なメーカーが参入。今やスマートフォンケースは、ファッションの一部として捉えられています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxNakZWTm1HOHE4eHIzVUVWZ3k3cUdUN08xUUgtdEo1SW5kdXNyQjJSc1VSM1c5NkprRmZoLWtSc3d0eWJqa2tPT1RiS0lpU1B2TEllaVlKUmhUbWNGLURtS29aRkFVRkRoUFRWRmRBQ3RvRF81UWhIelVlOGNMWWViYXZIeFdwRTc1MmxlajNB?oc=5" target="_blank">GPS端末でおなじみのガーミン、でも「スマートウォッチは使いづらい」!? 最新のVenu 4を使ってみました (アスキー) - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 04:37:14+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ガーミンはGPS技術のパイオニアとして、カーナビ、アウトドア、スポーツ用デバイスで高い評価を得ています。しかし、その専門性がゆえに、一般的なスマートウォッチユーザーにとっては操作体系や機能が複雑に感じられ、「使いづらさ」として認識されることもあります。これは、ブランドが提供する機能性と、ユーザーが求めるシンプルさとの間のギャップを示唆します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ガーミンは元々、特定の目的（ナビゲーション、ランニングなど）に特化したデバイスで成功を収めました。スマートウォッチ市場に参入してからも、スポーツやヘルスケアに特化した高機能モデルを展開しています。多機能化するスマートウォッチ市場において、各社はユーザーインターフェース（UI）やユーザーエクスペリエンス（UX）の改善に継続的に取り組んでいます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE0ybk9peUNZVE1nLW1rT3JzdzhOT2J2UmU1NDR1VlFLVExObGYwTWdFdmFfQk4tdEZlRUh0RU5IY180WG5kLUZCYjR5VzF3YnJTUHp4Yy1TcGloLUx0UUE?oc=5" target="_blank">AIは“もう一人の医師”になれるのか / スマートウォッチ「REDMI Watch 6」【まとめ記事】 (2026年5月17日掲載) - ライブドアニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 14:00:42+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">AI（人工知能）は、スマートウォッチで収集される生体データ（心拍数、睡眠パターン、活動量など）を分析し、パーソナライズされた健康アドバイスや病気の早期兆候の検出に活用される可能性が期待されています。これにより、スマートウォッチが単なるデータ収集デバイスから、より能動的な健康管理ツールへと進化します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートウォッチの健康管理機能は、心拍数、活動量計から始まり、血中酸素飽和度、心電図、皮膚温度測定など高度化してきました。AI技術の進化により、これらの膨大なデータを解析し、ユーザーの健康状態をより詳細に把握し、個別のアドバイスを提供したり、将来の健康リスクを予測したりする研究・開発が進められています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBEWWRCNG04UUd0NlRTc2NKX3J3aC04dlVib09YcGNTMTMtT1k4ZnVSRm9tVkJ0QWdBLVVISlZZU1Q4enhodUxOLUdiZndvWFZqWFdrZUlwU1h3Y21YajVSclRLZ1VFclREcld6OWpzZVY4ME5yMkxfVktDaXJTNEE?oc=5" target="_blank">GPS端末でおなじみのガーミン、でも「スマートウォッチは使いづらい」!? 最新のVenu 4を使ってみました（アスキー） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-17 03:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ガーミンはGPS技術のパイオニアとして、カーナビ、アウトドア、スポーツ用デバイスで高い評価を得ています。しかし、その専門性がゆえに、一般的なスマートウォッチユーザーにとっては操作体系や機能が複雑に感じられ、「使いづらさ」として認識されることもあります。これは、ブランドが提供する機能性と、ユーザーが求めるシンプルさとの間のギャップを示唆します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ガーミンは元々、特定の目的（ナビゲーション、ランニングなど）に特化したデバイスで成功を収めました。スマートウォッチ市場に参入してからも、スポーツやヘルスケアに特化した高機能モデルを展開しています。多機能化するスマートウォッチ市場において、各社はユーザーインターフェース（UI）やユーザーエクスペリエンス（UX）の改善に継続的に取り組んでいます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE5aTmxKUWNTblBYVDl0emU2THAyNThSd0lhXzlqYWZMZUZoU2RYWkNrR2pPbXhJR1U2OURxdnUxYm9zVUZ4SVppdlVVSXQxNUxTMV9nX3JYUQ?oc=5" target="_blank">GPS端末でおなじみのガーミン、でも「スマートウォッチは使いづらい」!? 最新のVenu 4を使ってみました (2/2) - ASCII.jp</a></h3>
-                        <div class="meta">📅 2026-05-17 03:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ガーミンはGPS技術のパイオニアとして、カーナビ、アウトドア、スポーツ用デバイスで高い評価を得ています。しかし、その専門性がゆえに、一般的なスマートウォッチユーザーにとっては操作体系や機能が複雑に感じられ、「使いづらさ」として認識されることもあります。これは、ブランドが提供する機能性と、ユーザーが求めるシンプルさとの間のギャップを示唆します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ガーミンは元々、特定の目的（ナビゲーション、ランニングなど）に特化したデバイスで成功を収めました。スマートウォッチ市場に参入してからも、スポーツやヘルスケアに特化した高機能モデルを展開しています。多機能化するスマートウォッチ市場において、各社はユーザーインターフェース（UI）やユーザーエクスペリエンス（UX）の改善に継続的に取り組んでいます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMikAFBVV95cUxNRGZxcEY3bTFUb1FzVGR6a253Q29lQ192QTV5LXlWZzJQTWxPSXhYVklXUURseEZZSDh1V3ZrSlBJTk5qbUxOUGxHUDEwOHNsLWttWUdJb3BkbWlGNHlCelpmSll1X1BRWVlWQnBpdGYtU0MyLWc3Ynp6UFhvaXFWQ3hRalFYYVJQY09SS19wSDc?oc=5" target="_blank">OPPO Watch X3は、チタン製の高級スマートウォッチで、バッテリーは「1回の充電で2週間持続」します。 - Vietnam.vn</a></h3>
-                        <div class="meta">📅 2026-05-17 04:10:43+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">スマートウォッチ市場は、普及価格帯から高級志向まで多様な製品が存在します。チタンなどの高級素材の使用は、製品の耐久性、装着感、デザイン性を高め、ブランド価値向上に貢献します。また、バッテリー持続時間は、ユーザーが最も重視する機能の一つであり、各メーカーが技術革新に注力しています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">スマートウォッチは当初、プラスチックやアルミニウムが主な素材でしたが、Apple Watchの登場以降、高級素材（ステンレススチール、チタン、サファイアガラスなど）を採用したモデルが増え、ファッションアイテムとしての側面が強化されました。バッテリー技術も、OSの省電力化や新しいバッテリー素材の開発により、数日～数週間の持続時間を実現する製品が増え、ユーザーの利便性が向上しています。</div>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
-            <div class="category-section">
-                <h2 class="category-title">データ分析</h2>
-                <div class="grid">
-        
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTFBNbXduWHFUMXM2VUF5ZkJvNXkzNHpCdWg0TFRVYXlqdmg1ZmtyMVRhWjZ0b1VCLWxKMlJ3REc5dk9lMjRWSjczNE1xS2pZTWpFQ1M3MGh0Yw?oc=5" target="_blank">飛び系アイアンの最適解？ ロフト設定が29度にカムバックしたピンゴルフ「i540アイアン」【ヘッドデータ分析で判明】 - golfdigest-minna.jp</a></h3>
-                        <div class="meta">📅 2026-05-17 22:00:00+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">ゴルフアイアンの「ロフト角」は飛距離や弾道に影響し、ロフトが小さいほど飛距離が出る「飛び系アイアン」と称されます。製品開発では、設計・試打・市場データを分析し最適な仕様を決定します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、ゴルフメーカーは飛距離競争によりアイアンのロフト角を立てる（ストロングロフト化）傾向が強まりました。これにより飛距離は伸びたものの、番手間の飛距離差や弾道の高さに課題も生じていました。各メーカーは飛距離と操作性・打感のバランスを模索しており、ピンゴルフも同様に多様なロフト設定を試してきました。本記事は、データ分析に基づき、単なるストロングロフト化だけでなく、総合的な性能バランスを考慮した最適解として、過去の設定が再評価された可能性を示唆しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTFBKY2RNSTMxZk1UU1psU3B3Y2JrdFFzV29EQV8zTjhldi1JS0NfVEJENFZidV8taUxLYkplUFI1SzhZandNQXhqTzBFS1F1UkFDTFhfLWI4M2V4WEc1MExN?oc=5" target="_blank">名大とトヨタシステムズ、データ分析やAIで連携 名大構内に研究拠点：ニュース - 中日BIZナビ</a></h3>
-                        <div class="meta">📅 2026-05-17 08:12:34+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「産学連携」は企業と大学が協力し研究開発や人材育成を行うこと。「データ分析」はビジネス課題解決のためのデータ解析。「AI」は人間の知能を模倣した技術で、データ分析と組み合わせ高度な予測や自動化を可能にします。これらは「DX（デジタルトランスフォーメーション）」の中核をなす技術です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ビジネス環境の急速な変化とAI・IoT・ビッグデータ技術の進化により、企業はDX推進が不可欠となり、高度なAI・データ分析技術や人材の確保が重要性を増しています。企業単独での対応が難しいため、大学との産学連携が活発化しています。特にトヨタグループは、自動車産業の変革（CASE、MaaS）の中でAI・データ分析の重要性を認識し、投資や他機関との連携を強化してきました。今回の連携は、名古屋大学の情報科学分野の知見とトヨタシステムズのビジネス実装力を組み合わせ、DXを加速させる具体的な動きです。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTE15RjAtRkFXNENudDkxM20wbUI1R3VTWXBBTGhpRmY3VGczVWI4eEQwby1yc2YwemN5VzFRWWE5UVhwODlCZnZjOTdsWFotNXZrLTVtN1IzellRQjlVN0M4TTAyWFhTekF5?oc=5" target="_blank">【オークス2026】伊吹雅也のピックアップ競馬データ～特選重賞データ分析編 - 競馬予想のウマニティ</a></h3>
-                        <div class="meta">📅 2026-05-17 07:33:08+00:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「競馬予想」は競走馬の能力やコース適性などを分析しレース結果を予測すること。「データ分析」は過去の膨大なレースデータ（血統、タイム、着順など）を統計的に解析し、有利不利な傾向を導き出す手法です。「オークス」は日本中央競馬会（JRA）の3歳牝馬最高峰G1レースで、「重賞」は格の高いレース全般を指します。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">競馬予想は、かつて経験と勘に頼る部分が大きかったですが、コンピュータと統計ツールの進化により、膨大なデータを網羅的に分析するデータドリブンな手法が主流の一つとなりました。専門家は、長年の経験とデータ分析スキルを組み合わせ、競馬ファンに質の高い予想情報を提供しています。競馬業界では、専門誌、インターネットメディア、AI予想サービスなど、データ分析に基づいた予想が多様に提供されており、本記事はその一環として、特定の重賞レース（オークス）に特化した専門的なデータ分析を提供しています。</div>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
         </div>
     </body>
     </html>
