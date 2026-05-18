@@ -22,21 +22,41 @@
             header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
             h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
             .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
             .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
             .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
             .portal-card-count { font-size: 1rem; color: var(--text-muted); }
-            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
             .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
             .article-title a:hover { color: var(--accent-color); }
-            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: auto; border-left: 4px solid var(--accent-color); }
             .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
             .ai-content:last-child { margin-bottom: 0; }
-            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
             .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
             .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
             
             /* ✨ Newバッジのスタイル */
             .badge-new {
@@ -82,173 +102,206 @@
             <div class="container">
                 <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
                 <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">マーケット</h1>
-                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="assets/images/market.png" class="thumbnail-icon-small" alt="マーケット">
+                        マーケット
+                    </h1>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
                 </header>
                 <div class="grid" style="animation: fadeIn 1s ease-out;">
         
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTFBGTmFtdWZSMnJBNzE5ZFllT3BlZk1oN2dRUzhXY2JtWnR0UjBYZGQ1dnUtMEdKWHFjaVBkekNXWEFVM2VDTXJ3N0lKTFk0QnlKUGl0YzBZY19wMzFhVUhndg?oc=5" target="_blank">【市況】 １５日の米株式市場の概況、ＮＹダウ５３７ドル安 ナスダック３日ぶり反落 - 株探</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:12</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE8wbVQwNlAtZG1scDFqYkZMY2dpbDdYazNYZ3MtYVFYOVFJal83aFZXTGdScllYYlhhY0g4SkkxMXFyX3poRTB0Nmhmam92MW1CbGRZOVliVUdSdEJPaFpFeC1yQm8tY19kQld3YQ?oc=5" target="_blank">丸井G株価大幅反落 今期純利益見通しが市場予想に届かず、約1年ぶり安値圏（18日の株式市場） - 日本経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:30 | 🏢 配信元: <b>日本経済新聞</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">株式市場は、企業の業績、金利動向、マクロ経済指標、地政学リスクなど様々な要因によって変動します。NYダウやナスダックはそれぞれ米国を代表する株価指数で、経済の体温計とも言われます。金利が高まると、企業の借り入れコストが増加し、将来のキャッシュフローの現在価値が低下するため、株価にはマイナス要因となることがあります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、各国中央銀行の金融引き締め（利上げ）により、世界の金利は上昇傾向にあります。これにより、これまで低金利環境下で成長してきたハイテク株などが調整局面を迎えることがあります。米国の株価指数が大きく下落しているのは、金利上昇への警戒感や、過熱感からの利益確定売りなどが背景にあると推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQcFl2LWF5WEQwR3RTX1JVTUFaM1E2Q3ZPVjMwMUVKb2lDRUJscWxNalRReGxXQ2ZQRG40aEEzSkJZY1FTUGpUel8tVTJTZ3JPYXRsVmxSd3g3NTZxcWRaMlV6cV82N3RJTnhCLUxtMU9xRGt4eVFBenVfR0NjZmlXcw?oc=5" target="_blank">東京株式市場・前引け＝続落、一時1000円超安 金利高や利益確定で - ロイター</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 03:06</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMizAFBVV95cUxPTEVhdDNGNnIyWDBMX1ppU3gwMjY5V1JLNmc4TThFdlVzVnNZRnJTWU9fZURMTTJFQllDQk4xN3g3aGc5X203WmxIREYwYVFuOFpiMGtsaHBlcWFobExzOWdEcGZFVHhzYzFPZWJmSGJqM1RwTTFYRW9wWlVjdlFJX1dhTVpFS1FRVzFMTzNjNkcwMGJXcFFNTzY5SUFRUXlTTDJudlE0aEN2OWRJNU5tLVc1czZ3WGlpV2d5WDdYSU1WX05fR0Z2cDdsaXM?oc=5" target="_blank">マーケットＥ - 日本経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:00 | 🏢 配信元: <b>日本経済新聞</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">東京株式市場は、企業の業績、金利動向、国内外のマクロ経済指標、地政学リスクなど様々な要因によって変動します。日本の株式市場は特に米国市場の動向に強く影響を受けます。金利が高まると、企業の借り入れコストが増加し、将来のキャッシュフローの現在価値が低下するため、株価にはマイナス要因となることがあります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、日本銀行は金融緩和を続けてきましたが、欧米の中央銀行はインフレ抑制のために利上げを進め、その金利差から急速な円安が進行しました。日本国内でも物価高が進行し、金融政策の正常化への期待が高まる一方で、金利上昇は株価に重しとなる側面もあります。前日の米国市場の動向や、金融引き締めへの警戒感から、投資家がリスク回避のために利益確定売りを進めたことが、大幅下落の背景にあると推測されます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE51cmVOYXVnTHFiaFJ2anNuajlyM2hSZXJoV1FnbUtSNGVRajZwbmpWaFlMQ19GMlNHTGtHRVRUNC1uQ01Td3BzZThPSUZVLTdWVHJLWdIBV0FVX3lxTE1NRU1ZT2IzX292QldDVGJBWktWMWhqYXE4SWZCMFFyWFJMQ19YakZYY21DVVk2OUVfSkJZLVcwZkE0bXN0ek1vMW8xdHY5d0RDazM2R2N6bw?oc=5" target="_blank">【為替】「投機筋vs当局」攻防分岐点の120日MA - マネクリ</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 00:13</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">為替市場は、各国の経済状況、金利差、金融政策、地政学リスクなどによって変動します。日本は自由変動相場制を採用しており、為替レートは市場の需給によって決まるのが原則ですが、急激な変動が経済に悪影響を及ぼす場合、政府・中央銀行が「為替介入」を行うことがあります。「投機筋」は為替レートの変動を予測して利益を得ようとする市場参加者で、彼らの動きはレートに大きな影響を与えます。120日移動平均線（MA）はテクニカル分析で用いられる指標の一つです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、日米の金融政策の方向性の違い（日本は金融緩和継続、米国は利上げによる金融引き締め）により、金利差が拡大し、歴史的な円安・ドル高が進行しました。日本政府・日本銀行は、急激な円安の進行に対して過去に為替介入を実施し、市場の安定化を図ろうとしました。しかし、市場の根強いドル高・円安トレンドの中、投機筋と当局の攻防は続いており、特定のテクニカルラインがその分岐点と認識されています。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMikAFBVV95cUxQN3VfcEhDUWFfVi04eVM2LTV3VWJJamZEelRfQnBoNkVKR0tSRXh3ZlJtbHlFX0hQbVl5SzVXWE5fNkVoTjlPNUVEbGZMMzd0RGV6UENtdmFBRlBaQUI4c1ZURHlYQWY5bFJ2Q3c3a1JjQXg3NElKTnU0WDVwaVF0VHdWMllhMDBPN2RCQXYzSjU?oc=5" target="_blank">ドル円、為替介入の限界露呈とドル高加速で160円視野も、今週の見通し - IG Group</a></h3>
-                        <div class="meta">📅 2026-05-17 08:00</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTFBONEVqdm5OR3VkaGhEWEFNXy1DMzVpMUM5X2EyajlEYmVEVEp2eWxwcjhoMTNTdmVYVC1NTHdzbXJtWkxqQWZ1YzJsTUF2NGZmRHpydzJwOXlCVF9yNThRUUc2Y1pBRGtfcE56SQ?oc=5" target="_blank">キオクシア株がストップ高 4〜6月期、独自の強みを評価 - 日本経済新聞</a></h3>
+                        <div class="meta">📅 2026-05-18 04:12 | 🏢 配信元: <b>日本経済新聞</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">為替市場は、各国の経済状況、金利差、金融政策、地政学リスクなどによって変動します。ドル円レートは、日米の金利差に大きく影響されます。為替介入は、政府・中央銀行が通貨の安定化を図るために市場に介入することですが、市場のトレンドが強い場合、その効果には限界があります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、日本銀行の金融緩和継続と、米連邦準備制度理事会（FRB）の利上げによる金融引き締めという日米の金融政策の乖離が続き、日米金利差が拡大。これにより、歴史的な円安・ドル高が進行しました。日本政府・日本銀行は、急激な円安の進行に対して過去に為替介入を実施しましたが、市場のドル高圧力が強く、その効果は限定的でした。市場では、さらなるドル高・円安が進行し、1ドル160円台への到達も視野に入ると見られています。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5QVXRxb2Q3OVZycV9qQXVfeU05d095cjBUOVY1VWM3dzdISWUtUUJodGJ6NHBCQTJCblpTVTExalRTX1hDZmpPMlpKbXRfU2FINW5WOA?oc=5" target="_blank">軟調続く国内REIT相場 買い場はいつくる？ - 日経CNBC online</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:45</div>
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9saVN4OXg1clJBdlRMaUlQM3BDci0yRFJLNDM0VlkyRnkwMEdqZjRIYnJMeXZ6OC1jbS1GNjNYNFhuTVh4MDZDYm4yZnFUeWNTV3BiOG1neFhMVjBzaW5kWWxaYnNwX25NOHc?oc=5" target="_blank">マーケットエンタープライズ[3135]：「取締役会の実効性評価」結果の概要に関するお知らせ 2026年5月18日(適時開示) ：日経会社情報DIGITAL - 日本経済新聞</a></h3>
+                        <div class="meta">📅 2026-05-18 02:30 | 🏢 配信元: <b>日本経済新聞</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">REIT（不動産投資信託）とは、投資家から集めた資金でオフィスビルや商業施設などの不動産に投資し、賃料収入や売却益を投資家に分配する金融商品です。株式や債券とは異なる不動産という資産クラスに手軽に投資でき、比較的高い利回りが期待できるのが特徴です。金利上昇は、REITの資金調達コストを増加させ、不動産評価額にも影響を与えるため、相場が軟調になる要因となります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日本のREIT市場は、過去の低金利環境下で安定した利回り資産として人気を集めました。しかし、近年、金融引き締めによる金利上昇懸念、不動産市場の変動、特定のセクター（例：オフィス）における需要の変化などにより、その動向は複雑になっています。特に、金利が上昇するとREITの分配金利回りの魅力が相対的に低下するため、投資家がREITから他の金融商品へ資金を移す動きが見られることがあります。記事は、現在の軟調な相場の中で、投資家がREITを買い増すタイミングを見極めている状況を示唆しています。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiQ0FVX3lxTE1BS3ptSll6MlZjLW1wRU5FZEZlRFBDX0lZb2F5LWN4SldUREQtNWtkdFlZRXVieElFZlJhVUJwb01hdUk?oc=5" target="_blank">Nintendo Switch『メダロット カードロボトルRB』 「ゲームマーケット2026春」出展のお知らせ - Digital PR Platform</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 03:00</div>
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5NclZjMHJiRDM4c0JiWTNUaWJEd1NNWTR6NmlRVEdBSXl2Z05MNEVCUjRiZ1J3TEFsUmFIRE51ektTdTNVbXQ4OGh4dmNmTlBBbUc3ag?oc=5" target="_blank">日替わりコメンテーター解説・前場のマーケット(2026/05/18) - 日経CNBC online</a></h3>
+                        <div class="meta">📅 2026-05-18 02:00 | 🏢 配信元: <b>日経CNBC online</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">このニュースは「マーケット」カテゴリですが、内容はゲーム関連のイベント出展情報です。ゲームマーケットは、ボードゲームやカードゲームなどのアナログゲームの祭典であり、新作の発表や販売、交流の場として知られています。Nintendo Switchは任天堂の主要ゲーム機で、メダロットは人気のあるロボット対戦RPGシリーズです。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ゲーム業界は、デジタルゲームとアナログゲームの両方で活況を呈しています。任天堂Switchは世界的にヒットし、数多くのゲームタイトルがリリースされています。メダロットシリーズは長年のファンを持つIPであり、過去の作品を現代のプラットフォームでリメイク・リブートする動きは、既存ファンへのアピールと新規プレイヤー獲得の両方を狙ったものです。ゲームマーケットへの出展は、デジタルゲームだけでなく、カードバトルというアナログ要素を強調し、多様な層への訴求を意図していると考えられます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFBzbWxqc1ltSU1ndEE0VElnZldUTGdyRVJpOTdKeXBsc0RDSm40dm9kLTJqaDZlOVpoR2E5eEZIX1o0bFR1SFR2N2k4WjRiTnN5dHVBTHJn?oc=5" target="_blank">米ドル/円【USDJPY】：外国為替相場FXレート・チャートをリアルタイム表示 - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 00:07</div>
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5QVXRxb2Q3OVZycV9qQXVfeU05d095cjBUOVY1VWM3dzdISWUtUUJodGJ6NHBCQTJCblpTVTExalRTX1hDZmpPMlpKbXRfU2FINW5WOA?oc=5" target="_blank">軟調続く国内REIT相場 買い場はいつくる？ - 日経CNBC online</a></h3>
+                        <div class="meta">📅 2026-05-18 01:45 | 🏢 配信元: <b>日経CNBC online</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">外国為替市場（FX）は、異なる通貨を交換する市場で、世界中で24時間取引されています。米ドル/円（USDJPY）は、世界で最も取引量の多い通貨ペアの一つであり、日本の経済や企業の業績に大きな影響を与えます。リアルタイムのレートやチャートは、為替取引を行う投資家や企業にとって不可欠な情報です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">為替レートは、各国の経済状況（GDP成長率、インフレ率）、金利政策（中央銀行の利上げ・利下げ）、国際収支、地政学的リスクなど、様々な要因で変動します。近年では、日本と米国の金融政策の乖離（日本は金融緩和継続、米国は引き締め的）が続き、大規模な円安・ドル高トレンドが進行しています。投資家や企業は、これらの要因を分析し、リアルタイムの情報に基づいて取引判断を行っています。Yahoo!ファイナンスのようなプラットフォームは、こうした情報提供の重要な役割を担っています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE82WjRDUmZYcDFjb19nWWlDSEJoOGZvV2lwbmpSVUdQRGJ0dXZRbk9LZGJ1UmJWaEFSb1k3XzRxS2d0WFFaYkJNSHdIT2Q3eU9QQ0wyeGxFYU5XczBGeERiWA?oc=5" target="_blank">【通貨】 今日の為替市場ポイント：米長期金利の上昇を意識 - 株探</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:52</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">為替市場は、各国の経済状況、金利差、金融政策、地政学リスクなどによって変動します。特に「米長期金利」は、米国の金融政策や景気見通しを反映し、ドル円レートを含む世界の金融市場に大きな影響を与えます。米長期金利の上昇は、投資家にとって魅力的なドル建て資産の利回り向上を意味し、ドル買いを促す傾向があります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、米連邦準備制度理事会（FRB）はインフレ抑制のために積極的な利上げを実施し、米長期金利は上昇傾向にありました。一方で日本銀行は大規模金融緩和を継続してきたため、日米の金利差が拡大し、歴史的な円安・ドル高が進行しました。市場参加者は、FRBの今後の金融政策や、米国の経済指標発表を注視しており、米長期金利の動向がその日の為替市場の主要なポイントとなります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxPMWd2THZsNnUzZDRsWTh5QzR6VU5zWkJpYnNYSGdTNEhfb01RTkRyc04zOHlJRWlBMGRVX2dySTdyVGhxTVdCa1FkUlNBV0NrbnpKNGhMaGloM19fLS1uSENJaE9VNlJfV2hCTVZjWkxaS3FOclZNM1NrZldWdmR2Vw?oc=5" target="_blank">エヌビディアとウォルマートの決算に注目＝今週の米株式市場 - ロイター</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:09</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">株式市場は、企業の業績、特に「決算」発表に大きく左右されます。主要企業の決算は、個別銘柄だけでなく、そのセクターや市場全体の動向を示すシグナルとして注目されます。エヌビディアはAIチップの世界最大手で、AIブームの恩恵を受ける代表的企業、ウォルマートは世界最大の小売企業で、消費動向を測る上で重要です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、生成AIブームの加速により、エヌビディアのGPU需要が爆発的に増加し、同社の株価は急騰しました。一方、インフレや金利上昇は消費者の購買力に影響を与えるため、ウォルマートのような小売企業の業績は経済全体の健全性を測る上で重要な指標となります。投資家は、これらの主要企業の決算発表を通じて、AI関連市場の成長性や、米国経済全体の消費動向、ひいては景気見通しを判断しようとします。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9RaElZemhiNmdJTWlEcG9ySWdTaFFXVjdmXzRudEVIRHZFbEpPSFdJakQ2WnBsWV9JaEhzWjByM1VhM1M1RktlOE91M1JHand4QzVGb2xlQ3ViVWVrbVU1TlBtQ0RwSVlucFdmXw?oc=5" target="_blank">自由変動相場制とは 為替介入を最小限に抑える指針 - 日本経済新聞</a></h3>
-                        <div class="meta">📅 2026-05-17 19:00</div>
+                        <div class="meta">📅 2026-05-17 19:00 | 🏢 配信元: <b>日本経済新聞</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「自由変動相場制」とは、自国通貨の為替レートを市場の需給に任せ、原則として政府や中央銀行が為替介入を行わない制度のことです。これにより、国際収支の自動調整機能が働く一方、急激な為替変動のリスクも伴います。為替介入は、その変動が経済に悪影響を及ぼすと判断された場合に、通貨当局が市場に介入する行為です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">かつては固定相場制が主流の時代もありましたが、現在は多くの主要国が自由変動相場制を採用しています。これは、経済のグローバル化が進む中で、市場メカニズムに委ねる方が効率的であるという考え方が背景にあります。しかし、近年、急速な円安が進行し、日本政府・日本銀行が為替介入を実施したことは記憶に新しいです。自由変動相場制の原則がありつつも、極端な変動に対しては当局が介入する可能性があり、その「限界」が常に議論の対象となります。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE5NUWNxajNPcGEwdGJVTzFxMkNlVGNhOEVhTDRNUG9ITnd3S05CRlZKVTZFY1g0aS1xRElBeFh5UGdxV2hud1o0aHJCaXJSUEJlaDhKRGpzUEdkVXBnUk9CTk9PeHV0Um1BTzhwUQ?oc=5" target="_blank">非上場株取引、個人に門戸 中小企業役員らの参入へ金融庁が要件緩和 - 日本経済新聞</a></h3>
+                        <div class="meta">📅 2026-05-17 17:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE5NclZjMHJiRDM4c0JiWTNUaWJEd1NNWTR6NmlRVEdBSXl2Z05MNEVCUjRiZ1J3TEFsUmFIRE51ektTdTNVbXQ4OGh4dmNmTlBBbUc3ag?oc=5" target="_blank">日替わりコメンテーター解説・前場のマーケット(2026/05/18) - 日経CNBC online</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:00</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE1kdWJESnc2SjZMOW9fTllTYS02anpLd3p2a19rTmNBRVlpYUhsLThzcUg0SE9jamhpdWx1YkR0NVhrTEVoZWNvSXg0b1QzU2RieXZzMQ?oc=5" target="_blank">為替相場 １８日（日本時間１８時） - 中日新聞Web</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:51 | 🏢 配信元: <b>中日新聞Web</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">前場のマーケット解説とは、株式市場の午前中の取引動向を専門家が分析し、投資家やビジネスパーソンに情報を提供するものです。日経CNBCは、経済・金融情報に特化したテレビ局であり、専門家の知見をリアルタイムで提供することで、投資判断や経済情勢の理解に役立つ情報を提供しています。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">株式市場は、日中の様々なニュースや経済指標、海外市場の動向、企業の発表などによって刻々と変化します。特に、前場（午前中の取引時間）の動きは、その日の市場全体のトレンドを形成する重要な要素となることがあります。日替わりコメンテーターによる解説は、多様な視点からの市場分析を提供し、投資家が複雑な市場の動きを理解する手助けをしてきました。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE01Q1VCNk5wVjZYSEJGRG1Sb2hzYV9DQ0xtdUo0Mm03ODI2OFgydVNYa21UWmkwYVZWS1VKdEdTUU40QVdST19kM1A1N2F4VjVKaExkeNIBV0FVX3lxTE1lc2d5ZG9DcE1yMHZXbjZFMFRZNFJQSTZxNnFXa3FxNDludEU1OHFzZnN6OENjRThqc0cxdHhIT3Z2M290aWd4YmIwQ0t0Nkl3eHMtT1JyRQ?oc=5" target="_blank">日経平均の今週の予想レンジは6万円-6万3500円 - マネクリ</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:37</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxPRkUxMVpaZG9sMjhUOEg1TDNscXlQcFc0LUZqVTBpT2JqSjRTRTlNZThtNkgyczF3TjJEN2lzNGp3Wmd4RTB2Vk5VUGlSenVXU280TGtpMHl1UVpmMkVXb1RfWW5LTUNXQzNISlBITHI1bDNhOEVWYkxFcTNFNkpGYQ?oc=5" target="_blank">中国・香港株式市場・大引け＝下落、中東情勢や指標受けリスクオフ - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:40 | 🏢 配信元: <b>Reuters</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">日経平均株価は、東京証券取引所プライム市場に上場している日本を代表する225社の平均株価指数で、日本経済のバロメーターとされます。予想レンジとは、市場アナリストや専門家が、特定の期間（この場合は今週）における株価の上下の変動範囲を予測したものです。これは、投資家がリスク管理や取引戦略を立てる上で参考にされます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日本経済は「失われた30年」を経験した後、アベノミクス以降、金融緩和や企業改革を通じて株価は上昇トレンドにありました。しかし、近年は世界経済の変動、地政学リスク、国内の物価高騰や人手不足などの課題に直面しています。投資家は、これらの要因や企業業績、海外市場の動向などを総合的に判断し、日経平均株価の今後の動きを予測します。この予想レンジは、投資家が現在の市場環境における上値と下値の目安として活用する情報です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1ISW9rUXoxWFQ5V2N4dXctV3V5MkFKSTJIOGpMRXBCSjhpMHB1NDUxa1FSTWtvemp4OXh0VGh4ZWdTSWZObERSb1pTeTNlcnhXMG5MT0xnbjY5eFpVVVRpeA?oc=5" target="_blank">【通貨】 今日の為替市場ポイント:◆ユーロ編◆目先的にリスク回避的なユーロ売り・円買いは抑制される可能性 - 株探</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:58</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE9zSHhrYzR0bmJRck1EWTZtZkdlVnBBQXJJU2JwRzJ3Vm9WbTVlTzdzUllyM21RVXRqY3V2TV9RZE8xME0zaU8tZGxHWmo3RUFFWnc?oc=5" target="_blank">(株)サンドラッグ【9989】：株価・株式情報 - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:26 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">為替市場は、各国の経済状況、金利差、金融政策、地政学リスクなどによって変動します。「リスク回避的なユーロ売り・円買い」とは、世界経済の不確実性が高まった際に、相対的に安全資産とされる円が買われ、リスク資産と見なされやすいユーロが売られる傾向を指します。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">ユーロ圏経済は、ロシアによるウクライナ侵攻によるエネルギー価格高騰、地政学リスク、欧州中央銀行（ECB）の金融政策などに大きく影響されてきました。近年、世界情勢の不安定化に伴い、リスク回避の動きが強まる場面では、円が買われやすくなる傾向がありました。しかし、この記事の文脈では「抑制される可能性」とあるため、ユーロ圏経済の持ち直しや、金融市場のリスク許容度の回復など、リスク回避姿勢が緩和される要因が生じていると推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9saVN4OXg1clJBdlRMaUlQM3BDci0yRFJLNDM0VlkyRnkwMEdqZjRIYnJMeXZ6OC1jbS1GNjNYNFhuTVh4MDZDYm4yZnFUeWNTV3BiOG1neFhMVjBzaW5kWWxaYnNwX25NOHc?oc=5" target="_blank">マーケットエンタープライズ[3135]：「取締役会の実効性評価」結果の概要に関するお知らせ 2026年5月18日(適時開示) ：日経会社情報DIGITAL - 日本経済新聞</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:30</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxPQ1F1RnNHc3ZnWXJ1M3p4M2QxcV84WktUY25US0NHY0xaeW9SZ0J3OUQ4NnF2Ml83enNEcnFvZ1RXZlBHdHdFMEhFSU1HQVZ1WFN5V2VkZllKeFlxSXhhZ2liemRYU3VHQlRXYmtkYU5GSWd1Rk93d25oVGFCRTJERg?oc=5" target="_blank">東芝、キオクシアＨＤ株を5月に追加売却 16.10％に - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:24 | 🏢 配信元: <b>Reuters</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「取締役会の実効性評価」とは、企業が自社の取締役会が適切に機能し、企業価値向上に貢献しているかを客観的に評価する取り組みです。コーポレートガバナンス・コード（企業統治指針）において、上場企業にこの評価の実施と開示が求められています。これは、企業経営の透明性と健全性を高め、投資家からの信頼を得る上で非常に重要です。適時開示とは、上場企業が投資判断に影響を与える重要な情報を、速やかに開示することです。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">日本企業では、2015年に導入されたコーポレートガバナンス・コードにより、企業統治の強化が図られてきました。これは、企業の不祥事防止、経営の効率化、そして株主価値の最大化を目的としています。取締役会の実効性評価はその柱の一つであり、各企業は毎年この評価を実施し、その結果の概要を開示することで、経営の健全性と透明性を示すことが求められています。マーケットエンタープライズ（証券コード3135）もその要請に応じ、評価結果を公表したものです。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxPb1A3bzY3OENnbHQ3M2ZHb3h6ZmFNVmx1a0xTNXcxazFCU2kwbXJ2dmdqYTJUenVJVWZiY0JBY2dOTHV4dGN1dUJ2ZTJkWHg1RlNJM0wzdll5Zy1MZmNLT1hZMS1qYWdIWVdfMVlaUkpEdUZia24xZkc2cE11OEwwS2oydldmd3c?oc=5" target="_blank">１８日の東京株式市場見通し＝底堅い展開か(ウエルスアドバイザー) - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:47</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE1odXhXOHNneENwczB6N1FiMVN4djdSZnIzWjJSN19FY1dTQ1B1UGY3VkdTaW1fOEFrRGVrMnBaVTBwZHo2c0xqeXRnVkVzWGFJbHFRUEVwd1VMRTgwb0FickRYcw?oc=5" target="_blank">長期金利、一時２．８％に上昇 インフレ懸念、円と株も売られる - 時事ドットコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:15 | 🏢 配信元: <b>時事ドットコム</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">東京株式市場の見通しとは、市場アナリストや専門家が、その日の市場全体の動きや主要株価指数の動向を予測するものです。「底堅い展開」とは、株価が大きく下落することなく、一定の支持水準で推移する、あるいはわずかに上昇する傾向にある状態を指します。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">株式市場は前日の海外市場の動向、経済指標の発表、企業のニュースなど様々な要因によってその日の動きが決まります。日本市場は特に米国市場の動向に強く影響を受けます。前日に何らかのネガティブな要因があったとしても、それが既に織り込まれている場合や、買い材料が期待される場合には、「底堅い」という見通しが出ることがあります。投資家やビジネスパーソンは、このような見通しを参考に、その日の市場戦略や経済動向の把握に役立てます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTE8zVENmQUprRGVvYzRheEQ2TG9QZEl5dW5nXy1kRDRsUXB6QlpjVG96LThYeWluVTE5RzBMaHRJcTVZbTkxZGJZQjV5MkNBamVqbllXNFloMXBJMjFCQlFjTlhPMDBYVGF5dUxEOEl0U3hSanY4ZHdyVQ?oc=5" target="_blank">金利為替含む市場動向、極めて高い緊張感持って注視＝木原官房長官 - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:09 | 🏢 配信元: <b>Reuters</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE9RX1F0c3NoRW1WOGhKVzFzd0tzWTlBS0NtMVZFbUUyZm14Z1Y5VWhzMjctd201Y2RMTFhBSGx0Rmdqc0ZFY1R2VzZUUG9PVjdUaXc?oc=5" target="_blank">NYダウの指数情報・推移 - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:04 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             

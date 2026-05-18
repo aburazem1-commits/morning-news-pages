@@ -22,21 +22,41 @@
             header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
             h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
             .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
             .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
             .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
             .portal-card-count { font-size: 1rem; color: var(--text-muted); }
-            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
             .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
             .article-title a:hover { color: var(--accent-color); }
-            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: auto; border-left: 4px solid var(--accent-color); }
             .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
             .ai-content:last-child { margin-bottom: 0; }
-            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
             .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
             .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
             
             /* ✨ Newバッジのスタイル */
             .badge-new {
@@ -82,173 +102,206 @@
             <div class="container">
                 <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
                 <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">キャラクター</h1>
-                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="assets/images/character.png" class="thumbnail-icon-small" alt="キャラクター">
+                        キャラクター
+                    </h1>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
                 </header>
                 <div class="grid" style="animation: fadeIn 1s ease-out;">
         
                     <div class="card card-new-highlight" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE4ySGNBeWlKRkRtVDdQdElLRFA4MnNMeUNOMUx2eDNzZS1KaVg2T0MyVEljajhVRWdYV0FWTEhKb3BtWFlaaDFQUmhVZXcza2t4NzdRVTZ6OWFNeUFITThaNHo4dnRIX2VPZkE?oc=5" target="_blank">セブン‐イレブンとパペットスンスンがコラボ！7種のオリジナルパン&スイーツが5月26日よりセブン‐イレブンで順次発売 - PR TIMES</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:00</div>
+                        <div class="meta">📅 2026-05-18 01:00 | 🏢 配信元: <b>PR TIMES</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲーム、絵本などから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9ndERkODJZZDdNQnhOTzlCRGQ5RWljV0hGQ1ZKTHF5OWRLb3NhN2ZzcGhzZkVPbmNLM0YzSlZubDB5MEhtbGUweU1ZZHdzblY1dFpuclh4YkxzV05ZaEszZWZtQTJOX1hwX3hscVBEZVp6dVlOM1RNc1lOT3RSa2M?oc=5" target="_blank">セブン‐イレブンで「パペットスンスン」コラボが開催決定！スンスンの「ふわあっ♪」をキーワードにした、オリジナルパン＆スイーツなどを販売（インサイド） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:30</div>
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE55NXdiMmp1Wl9iWHY2cGtBOGM1NW52R2d4aVl6WFFrRHBYVDRrcmRqSEtkTng0R2VGb3FFT2tiU3hRWUhTUzNqV0dYOGlaVmhRdEtZNzcwRTE2a1YtTFhqdWhZWmFBR2V6ckE?oc=5" target="_blank">【全国初開催】すみっコぐらしと中国料理のコラボレーション「すみっコぐらし 飲茶日和」をヒルトン福岡シーホークにて開催！ - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-05-14 03:00 | 🏢 配信元: <b>PR TIMES</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE5iSkNxdWZwWFNMUlpqNzVKcUlGRGpNanRPTmZoVFhycWhrZHdReXFuSFRZZjMzOHhFbHB3OGhwNVdyQlNabU1mcjFDRlAzWGZyc3RVTDV3?oc=5" target="_blank">パペットスンスンとセブン‐イレブンが初コラボ “ふわあっ♪”テーマの『メロンパンシュー』や『プリン』など全7商品が集結 - オリコンニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:37</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE9qY3Fkc05uQl9MMVJ0WVZrNUlIbVBCNVpZakVhcVMzblZtMXMyVjFzYU9oTVZIN2F3Wk9ERHZrSi1aV2pwWTNUbC1Ob1h4TFRsQ0dmZi1Caw?oc=5" target="_blank">パペットスンスン×「セブンイレブン」がコラボ！ 7種のパン＆スイーツが5．26から登場 - クランクイン！</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:40</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE5YcEFQRWw3T3F2SkJuSFhPSUFGT3lXZllONk51bmVkaGZ3NmdFdF81aWViODl5N3R6SGRXOS1QZzdZYzFlNzd2aDZNOE50N1hyX0lF?oc=5" target="_blank">セブン-イレブン「パペットスンスン」“ふわあっ”食感のマシュマロ大福やメロンパン風シュークリーム - ファッションプレス</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:25</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE8xYlUxOHVtb2l4TWhhbDFuZTlnaGtjYWtOT0pFQnFNdWhYM3BTWFhBTWdCRkUyd3ZVQ2tudGJ6UUJWS0F0RnhHa2JKNkQ1dw?oc=5" target="_blank">「パペットスンスン」かわいいBIGクッションやぬいぐるみキーホルダーが展開！ 種のオリジナルパン＆スイーツも登場するセブン‐イレブンとのコラボが開催 - PASH! PLUS</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 03:21</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMia0FVX3lxTE93M0R3a0Z5eVRUQW5RLTA3QXI4d1BoVVRVYVVqakMxa3otQ2xHS0VFdW1aaW9Gc3hvSUxPcGc4RmxlbXJQM0J5S1FHck9nWGdxcHB1ejlRUFRpNjUyMHdFcDlNWVEzcTZTckZz?oc=5" target="_blank">Tamaverseイベント情報！「ハネムーンレーシングリバイバル」！ - たまごっち公式サイト</a></h3>
-                        <div class="meta">📅 2026-05-13 01:44</div>
+                        <div class="meta">📅 2026-05-13 01:44 | 🏢 配信元: <b>たまごっち公式サイト</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">たまごっちは、1990年代後半に社会現象となった携帯型育成ゲームで、世界中で大ヒットしました。その後も、時代に合わせて機能やデザインを刷新し、デジタルデバイスやアプリ、キャラクター商品として展開され続けています。「Tamaverse」は、たまごっちの世界観を拡張した仮想空間、あるいはメタバース的な展開を指すと考えられます。イベントの開催は、既存ファンへのアピールと新規ファン獲得の両方を目的とします。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">たまごっちは、デジタルペットというコンセプトで子供から大人まで幅広い層に受け入れられ、一大ブームを巻き起こしました。その後も、世代交代や技術進化を取り入れながら、様々なモデルや派生商品を展開してきました。近年は、スマートフォンの普及に合わせてアプリ版も登場し、さらにはメタバース的な仮想空間（Tamaverse）での展開も試みるなど、IPとしての進化を続けています。ロングセラーキャラクターとして、昔からのファンだけでなく、新しい世代にもアピールするために、多角的な商品展開やイベントを積極的に実施しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE1OYWNIMTF0YnJBZnJNNDRWb2lQUXA5UmFHMlFHbkhwcktFV2N5czdiMGxSekItTFdydWxJeVFJa0I4UkZuZGp6TmNFU3duM3d5cno3bElSbVNTd0JuZ2Rv0gFkQVVfeXFMT2Z5TEN5c3pBTHpJSERPS3gwYTdJaUp2UWxuRl9XeGNVN0dJV0hQcWQ4V052R3FTVkJmXzVJaFFDTzJ4WVJSYW9BV2RMS25HN1ZnQ3lqQ3lYcFVHdkd5aHMyWmc2TA?oc=5" target="_blank">セブン‐イレブンで「パペットスンスン」コラボが開催決定！スンスンの「ふわあっ♪」をキーワードにした、オリジナルパン＆スイーツなどを販売 | チバテレ＋プラス - 千葉テレビ放送株式会社</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 02:58</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE55aUJaeFltZU5Dc2RfSVFFVm9FY0dEblJ6a0FWM0FrUncwOEpoVUo2dUxlYjlTVEFRaS1KTzZGS0xhT3F0SGVKWDJkNDF5M2VvZWFBUG9jM1RMdndGcWZTZ1JUVjZLUHVfd0E?oc=5" target="_blank">「パペットスンスン」フェイスぬいぐるみに癒される！大きめサイズとふわふわの生地感が特徴、チャーム仕様で持ち運びも - インサイド</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-16 21:20</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。ぬいぐるみやキーホルダーなどのグッズは、キャラクターのファンにとって、愛着を示すコレクターズアイテムとなります。特に、人気キャラクターのグッズは、新たな顧客層の獲得やブランドイメージの強化に貢献します。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。キャラクターグッズの展開は、IP（知的財産）の価値を最大化し、ファンエンゲージメントを高めるための重要な戦略です。特に、実用性や癒し効果のあるグッズは、日常的にキャラクターを楽しむ機会を提供し、長期的なファンを獲得する上で有効です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE9yYkMxZ0xwSXJmZzFzNjhvWU02MFpvWmlGZzFYVU5YWXdkMGZvSDFiX0RIU1RJbWQxN1o5Q1lWdVhSdTl5Qlp3WlpKN2pFYXU2TWh4OEdRYmNqbzFH?oc=5" target="_blank">ピルクル400 × たまごっち みんなでつづけよう ! キャンペーン - 日清食品グループ</a></h3>
-                        <div class="meta">📅 2026-05-07 05:34</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE1CVUNsdXBuRWZ0WHJfZkFobjc5ckNQM2VMTmZaTndhdjFEYTFNcE1Wa29GNFpoTWc4RENtM0diV1ExWHdUdE83X3ZId2FiODdqdVRpekl5MjBKQ05WMENFUkRabm1wUVBJMUE?oc=5" target="_blank">「除菌できるシリーズ」初！すみっコぐらし「グミグミパーティー」デザインが登場『エリエール 除菌できるアルコールタオル ウイルス除去用 すみっコぐらしデザイン』6月1日（月）数量限定発売 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-05-13 01:00 | 🏢 配信元: <b>PR TIMES</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">たまごっちは、1990年代後半に社会現象となった携帯型育成ゲームで、世界中で大ヒットしました。その後も、時代に合わせて機能やデザインを刷新し、デジタルデバイスやアプリ、キャラクター商品として展開され続けています。「ピルクル400」のような食品メーカーとのコラボレーションは、ターゲット層の拡大やブランド認知度向上を狙う一般的なマーケティング戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">たまごっちは、デジタルペットというコンセプトで子供から大人まで幅広い層に受け入れられ、一大ブームを巻き起こしました。その後も、世代交代や技術進化を取り入れながら、様々なモデルや派生商品を展開してきました。ロングセラーキャラクターとして、昔からのファンだけでなく、新しい世代にもアピールするために、食品メーカーとのコラボキャンペーンを積極的に実施しています。これは、キャラクターIPの多角的な活用と、消費者の購買意欲を刺激するマーケティング手法の一例です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE5Ga3h0Y1lGcnZPQXBBenh4RWU5b05rNkpNRmN6SC1SYi05T2FDV0JkaU5LM2VGbHdUbTRDZUFNX050OWZUR043a1N0cFVrLUswU2JleUhn?oc=5" target="_blank">「パペットスンスン」Happyくじ初登場 おしゃべりぬいぐるみや録り下ろしボイス入りの時計も - jocr.jp</a></h3>
-                        <div class="meta">📅 2026-05-15 09:07</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE1WdE1ZeXByRDl0X3dQTUZQb2JfeXhPVmxqdlNGazRMMEtuU2JUbmxOVGxtTjZuVGpVMlBnQzhSS21NMUw2V0puekptejJqVDhoYU9hcnFyNHZ4SlVyMU1LeVB1XzVCdnpZSnc?oc=5" target="_blank">“世界のすみっこ”である南極を、すみっコぐらしの仲間たちが応援！南極観測70周年記念 特別展「大南極展」すみっコぐらしが公式応援キャラクターに就任 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-05-12 04:00 | 🏢 配信元: <b>PR TIMES</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。「Happyくじ」は、コンビニエンスストアなどで販売される、ハズレなしのキャラクターくじで、限定グッズなどが景品となります。ぬいぐるみやボイス入りの時計は、キャラクターのファンにとって、高いコレクション価値を持つアイテムです。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。Happyくじのようなキャラクターくじは、ファン層のエンゲージメントを高め、商品購買を促進する重要なマーケティング手法です。特に、録り下ろしボイスなど付加価値の高い景品は、ファン心理を強く刺激し、購買意欲を掻き立てます。これは、IP（知的財産）の多角的な活用と収益化戦略の一環です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5GbWptTU52NFBRZXhNOWJaTVZmbTkxTURNX1VXVFRUclhLVHE5Y3ZfdUJURWZNelE1X1VSemhmNXNIX2twN0kwblJFN1JFVXBWWWFIRGpWR3AyNE91VUNZMWhKWUpNMWJaSzllV2ZnTWRRcFJmNEdfTHFLVjJQT1E?oc=5" target="_blank">パペットスンスン×「セブンイレブン」がコラボ！ 7種のパン＆スイーツが5．26から登場（クランクイン！） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:40</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">キャラクタービジネスは、アニメ、漫画、ゲームなどから生まれたキャラクターが、商品化、イベント、コラボレーションなどを通じて収益を生み出す産業です。コンビニエンスストア（セブン-イレブンなど）は、広範な顧客層にアプローチできる販路であり、人気キャラクターとのコラボレーションは、限定商品の販売やキャンペーンを通じて、新たな顧客層の獲得、来店頻度の向上、ブランドイメージの強化を狙います。「パペットスンスン」は、SNSなどで人気のキャラクターと推測されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、SNSやYouTubeなどを起点に、独自のキャラクターコンテンツが人気を集めるケースが増えています。パペットスンスンもその一つで、若い世代を中心に人気を確立したと考えられます。コンビニエンスストア業界では、季節ごとのイベントや人気キャラクターとのコラボレーションが恒例となっており、顧客の購買意欲を刺激する重要なマーケティング戦略です。特に、限定品や景品付きの商品は、ファン心理をくすぐり、通常の商品以上の売上を期待できます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUEFVX3lxTE1zc3o2aHBOb3htTUNiUVNrZUgzdTZWclVZZThoZThsaTZJSlRDc0lxUFAxNTlhRDFncEhlQTdpRDg2dVphblItd0MwQnZwWkox?oc=5" target="_blank">たまごっちたちと歴代デバイスをデザインしたアクリル製マグネットは全15種類！「たまごっち」30周年を記念した食玩「キャラマグネッツ」が登場！ - 電撃ホビーウェブ</a></h3>
-                        <div class="meta">📅 2026-05-13 23:30</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">たまごっちは、1990年代後半に社会現象となった携帯型育成ゲームで、世界中で大ヒットしました。その後も、時代に合わせて機能やデザインを刷新し、デジタルデバイスやアプリ、キャラクター商品として展開され続けています。周年記念イベントやキャンペーンは、既存ファンへの感謝と新規ファン獲得の両方を目的とします。「食玩」は、玩具と菓子がセットになった商品で、子供だけでなくコレクター層にも人気があります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">たまごっちは、デジタルペットというコンセプトで子供から大人まで幅広い層に受け入れられ、一大ブームを巻き起こしました。その後も、世代交代や技術進化を取り入れながら、様々なモデルや派生商品を展開してきました。30周年記念は、その長い歴史と継続的な人気を祝うものであり、昔からのファンだけでなく、新しい世代にもアピールするために、限定グッズやキャンペーンを積極的に実施しています。食玩は、手軽にキャラクターグッズを集められる手段として、特に子供層へのアプローチに有効です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE50R01aUE9HYml1OVdrcGRKR2YxWTIyUUpJLW1vNHZtb3puMVBzWnNmLUVYdEtrNnk2M3BmNHlsbW13cFBtaTR2UUo0Q1phd0hOWDRlcWlkVXRoLVo0?oc=5" target="_blank">ピルクル400×たまごっち みんなでつづけよう！キャンペーン開催！ | NEWS | たまごっち公式サイト - たまごっち公式サイト</a></h3>
-                        <div class="meta">📅 2026-05-11 10:15</div>
+                        <div class="meta">📅 2026-05-11 10:15 | 🏢 配信元: <b>たまごっち公式サイト</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">たまごっちは、1990年代後半に社会現象となった携帯型育成ゲームで、世界中で大ヒットしました。その後も、時代に合わせて機能やデザインを刷新し、デジタルデバイスやアプリ、キャラクター商品として展開され続けています。「ピルクル400」のような食品メーカーとのコラボレーションは、ターゲット層の拡大やブランド認知度向上を狙う一般的なマーケティング戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">たまごっちは、デジタルペットというコンセプトで子供から大人まで幅広い層に受け入れられ、一大ブームを巻き起こしました。その後も、世代交代や技術進化を取り入れながら、様々なモデルや派生商品を展開してきました。ロングセラーキャラクターとして、昔からのファンだけでなく、新しい世代にもアピールするために、食品メーカーとのコラボキャンペーンを積極的に実施しています。これは、キャラクターIPの多角的な活用と、消費者の購買意欲を刺激するマーケティング手法の一例です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE9CMm1MN3VDNW1mSzRSWXlhYldpWkwydXdBNDU5X3hUa3A2Q2E1TnJReXNZX2pBREw2QmU0eFBtcHFxS21xajBRREdNR09hT0JCeF9HTV9aZFViVzFqUHc?oc=5" target="_blank">ファミリーマート限定すみっコぐらしグッズ発売 - san-x.co.jp</a></h3>
-                        <div class="meta">📅 2026-05-15 01:03</div>
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFB4SUdJanFQdUtraVZXYlEyU1pmMnZuSGJtTEhxeUc3ai1YQ3pLR1JNN0ZlZWszX29jTDFGeXppdklHOUx6Zk9lbTQ3Yk1wX0xFVThRWVVUeExEOVhSSXBiZXNzSnNDTW1LOENwNW00cnJ1WDZCZXFscGhiZXZ3ZUU?oc=5" target="_blank">「セブン-イレブン」×「パペットスンスン」コラボ！“青い大福”やナポリタンロールなど（全7品）が集結！（LASISA） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 09:15 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">すみっコぐらしは、サンエックスが展開する人気キャラクターシリーズで、その可愛らしいデザインと共感を呼ぶコンセプトから、幅広い年齢層に支持されています。キャラクタービジネスにおいて、コンビニエンスストア（ファミリーマートなど）は、消費者が日常的に利用する店舗であり、限定グッズやコラボ商品を販売することで、キャラクターの認知度を高め、購買意欲を刺激する効果があります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">すみっコぐらしは、SNSや文具、雑貨などを中心に人気を確立し、映画化されるなど、その人気は不動のものとなっています。コンビニエンスストア業界では、人気キャラクターとのコラボレーションや限定商品の展開が、集客や売上向上に直結する重要な戦略です。特に、ファンにとっては限定グッズの獲得が購買動機となるため、ファミリーマートのような大手チェーンとの連携は、キャラクタービジネスにおける成功要因の一つと言えます。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE8xYlUxOHVtb2l4TWhhbDFuZTlnaGtjYWtOT0pFQnFNdWhYM3BTWFhBTWdCRkUyd3ZVQ2tudGJ6UUJWS0F0RnhHa2JKNkQ1dw?oc=5" target="_blank">「パペットスンスン」かわいいBIGクッションやぬいぐるみキーホルダーが展開！ 種のオリジナルパン＆スイーツも登場するセブン‐イレブンとのコラボが開催 - PASH! PLUS</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:01 | 🏢 配信元: <b>PASH! PLUS</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTFBITjJFblNIeFF1SnA2dThZaXVtdnFDS21yN1g4T2NXVGZzSkY5bDQtWXpGUUpsekZwQ3BRQkhVejRXN2phN2xTYk9UWk9kcDhJcmhxSXppclM?oc=5" target="_blank">パペットスンスン×セブン‐イレブン、パン＆スイーツ7種が5月26日より順次発売 - 推し楽</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:42 | 🏢 配信元: <b>推し楽</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE9UWnhNWlZSek9IWWVCYTE2TzNueWtycldiVlluUXdTZll5OFZsa0NWc1V1QjZyOXVMbXFhNWpKNHhMZ3QydVg3SmRQTVlPLTNONHVGTTRYeFJZQU9IMUE?oc=5" target="_blank">【セブン‐イレブン×パペットスンスン】ふわあっ♪ な食感が楽しめるメロンパンシュー、大福などスイーツ・パン全7種発売 - ライブドアニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:25 | 🏢 配信元: <b>ライブドアニュース</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1ZamxtOFRNT1NOWExJRXRtNGdsN3ZEd1FCSWRfVXROSlBoN2EzZTcwdWhBRFM2RUROMktlUEtCcy1MM2UzQ0JYU3A5TmpqOU5fT0JwbG5sblRWbUo3VnZPWkxEOHlWbjZram1UamlTbkplWFp2cEF1emtWeUtNcTA?oc=5" target="_blank">パペットスンスン×セブンイレブン！“ふわあっ♪”食感のパン＆スイーツ全7種が登場（アニメ！アニメ！） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:00 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE1MS2NXTHRfVUxfYlNWdmVtSTlvWmtMQUsxbDRnYmdyRDh3Vi1VVnBIYUVoeGZtQjJIN2VFTTZQNmdUZ3ZGNnJWWkRmbE5DRWh4c0HSAVdBVV95cUxPWFVnUGphUC1qbmQ3eXJqWUtBV01jX0dkLU1SNUcxaE43UUY4U1ZSMXlZYlhBSUgzanNaTkRjNVJ5ZmxYT0t3WXZSUmFzMEZ4dU9UVFlfMWM?oc=5" target="_blank">セボンスターがネイルパーツに…！ 新作「きゃらねいるぱーつ」にはたまごっちやサンリオも参戦！不器用さんにもぴったりです！ - Pouch［ポーチ］</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:45 | 🏢 配信元: <b>Pouch［ポーチ］</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE1KZFNjdVh4NnBpaV92c05hUVYyZTRpN2xITzl5UlpNTXhBVXVZZkp4WDRWcFNZVWtrazlEazhDX0VBZHdzMXVnU0ZmRHdBR0drYlE2TDZTYjBUZw?oc=5" target="_blank">【パペットスンスン】ふわぁ♪なセブンイレブンコラボ開催。スイーツやパンなど、うんとおいしいタイアップ商品が多数登場！ - 電撃オンライン</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:15 | 🏢 配信元: <b>電撃オンライン</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTFA3VjhyUHc0ZlphRGUyS0JKWWpTWGlmZ19lbG1EdkdYbVJHcHBidkZUOWZZQkZFb2JJYWI0amJBclRDU0R6LWIzdUdfMkV4TXBNTXFNbjBwbjdnZkVSSDdVdk03WnhZTUh1UmZWSFpIek1vQTNtTEllXw?oc=5" target="_blank">セブン-イレブン「パペットスンスン」コラボパン・スイーツまとめ「スンスンのふわあっ♪食感のマシュマロ大福ブルーベリー」など7品 - えん食べ [グルメニュース]</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:00 | 🏢 配信元: <b>えん食べ [グルメニュース]</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTFAzNkh5MzBnbFdEbnFDd1hHNVpfTGR0a293ZGEwUHFScGppLUNpdTVvUmF4cXBQalBkcngyeGFwSldQMGY3WE5qNmltWmRQZ2NDUzg1WWF4aVhXWHU3SlN2c0dQcHk3c1ZxMnVPZnBKQndvb1ZEQzZUc0Fydw?oc=5" target="_blank">パペットスンスンがセブンがコラボ！？スンスンの「ふわあっ♪」を表現したスイーツ大集合 かわいさ満点のコラボスイーツや限定グッズを見逃すな - au Webポータル</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 05:42 | 🏢 配信元: <b>au Webポータル</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             

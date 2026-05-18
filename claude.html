@@ -22,21 +22,41 @@
             header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
             h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
             .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
             .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
             .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
             .portal-card-count { font-size: 1rem; color: var(--text-muted); }
-            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
             .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
             .article-title a:hover { color: var(--accent-color); }
-            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: auto; border-left: 4px solid var(--accent-color); }
             .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
             .ai-content:last-child { margin-bottom: 0; }
-            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
             .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
             .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
             
             /* ✨ Newバッジのスタイル */
             .badge-new {
@@ -82,151 +102,206 @@
             <div class="container">
                 <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
                 <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">Claude</h1>
-                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="assets/images/claude.png" class="thumbnail-icon-small" alt="Claude">
+                        Claude
+                    </h1>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
                 </header>
                 <div class="grid" style="animation: fadeIn 1s ease-out;">
         
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE0xWTBkTUhFSG04MTMzeDYydXAwMkZ1RWVhNENmS29rTUhPY1VxSmIzZkcwVE5BUTgyZ0VOaV94dHZrZ0R2Z1JqaXRsZTR1dG1qc21z?oc=5" target="_blank">Anthropic、中小企業向けAIエージェント「Claude for Small Business」発表 - ビジネス+IT</a></h3>
-                        <div class="meta">📅 2026-05-17 07:25</div>
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9KWWFOMzk5c2RwbVZEYU1OT2sydUZfVVdvejdJZjI2aVYxSkZwdHhsR2x0a3RHdVhMeHp2VUcwVHJ5TlVsVTRES0thNllTeUhqLUpHeXU3THNNU3hYOXJNMkdWLWdEeTNKMWI2ZXdtZTFYcHdpSnVoUW05Ui1OSzA?oc=5" target="_blank">仮想通貨トレーダーは、早期売却禁止にもかかわらず、依然としてIPO前のANTHROPICトークンを保有している - Cryptopolitan</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 09:11 | 🏢 配信元: <b>Cryptopolitan</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Claudeは、Anthropic社が開発した大規模言語モデル（LLM）に基づく生成AIで、OpenAIのChatGPTやGoogleのGeminiと並ぶ主要なモデルの一つです。安全性と信頼性を重視した設計思想が特徴とされています。AIエージェントは、特定の目標を達成するために自律的に行動するAIシステムです。中小企業にとって、AI導入は業務効率化や競争力強化の大きなチャンスですが、コストや技術的なハードルがあります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AI市場は急速に拡大し、大手企業だけでなく中小企業でもAI活用への関心が高まっています。しかし、汎用的な大規模AIモデルは、中小企業にとってはオーバースペックであったり、コストが見合わない場合があります。Anthropicは、これまで主に大手企業や開発者向けにClaudeを提供してきましたが、中小企業のニーズに応えるため、使いやすさやコスト効率を考慮した「Claude for Small Business」を開発しました。これは、AI技術の民主化と市場拡大を目指す動きの一環であり、より多くの企業がAIの恩恵を受けられるようにするための戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5Xc3laWTgwQ0Y5NEhuSDFZV2FHM21lOGVockF6MF9uQkZtaThhNjNSNGhlaXVHSVlGRUFQMGlFVUQtQV8zaGpEZ3NmaTJGZ1RlbHB5bmhMdDlfMGlLTlVDVFhQdDdTUzl5SG13Y0w2NW1XakVPWjIyMkNn?oc=5" target="_blank">Microsoftが社内開発で使われるClaude Codeライセンスのキャンセルを開始か - GIGAZINE</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 03:13</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZEFVX3lxTE8xamt4bGVSaVJOZzJNM3JDckk0T2U3cXNnOEQ5U3Q1MU8wTGo0TUUwSEZENThGTVFTRG5xN1NaUlltVkNjTW00Y05ZbDg2aF96RXM1dWtINnktbFB4eTJzbG5QdU8?oc=5" target="_blank">Claudeを「使ってみる」段階を超え、日本企業の変革フェーズへ｜アクセンチュアとAnthropicが連携を深めて本格始動 - ロボスタ</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:30 | 🏢 配信元: <b>ロボスタ</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Claude Codeは、AnthropicのClaudeを基盤としたコード生成やコードレビューに特化したAIモデルまたは機能と推測されます。MicrosoftはOpenAI（ChatGPTの開発元）に巨額の投資をしており、自社製品やサービスにOpenAIのAI技術を深く統合しています。企業は、コスト効率、セキュリティ、特定のユースケースへの最適化などを考慮して、社内で利用するAIモデルを選択します。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AI分野では、各社が自社モデルの開発競争を繰り広げると同時に、他社モデルとの連携や提携も行われています。MicrosoftはOpenAIの主要パートナーであり、自社開発能力も有しています。MicrosoftがClaude Codeのライセンスをキャンセルするという動きは、自社またはOpenAIのコード生成AI技術（例えばGitHub Copilotなど）の能力向上や戦略的な選択の結果と考えられます。これは、AI開発競争が激化する中で、企業が最も効率的で戦略的なAI活用を進めていることを示しています。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMic0FVX3lxTE9rbUJqVnhTU2UwZHNfUDB1OUdGMm95a1pzQlRONmhOcXZtazBvSndWYThGN09sM2RWN1p4Nlc5YnRqVzlEQ0NwY0JSR2I3SnpMLW9lT2ZLQmpkdWM3OW9nODlmalM0U3hFTXFxajk5NnpjTEE?oc=5" target="_blank">Claude Mythos・能動的サイバー防御─自民党が高市総理に提言、社会全体のレジリエンス強化へ - innovaTopia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 08:00 | 🏢 配信元: <b>innovaTopia</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTFBEZHhpRjJraW9OS3FqTjNGZEp3MzVaRVR3N01zZDQ2Q0JxeFhfRWhXSFV4Nl9wcWkxSFphLUM3d095d1dJSlE3SzhZUQ?oc=5" target="_blank">生成型人工知能(AI)企業のAnthropicが約300億ドル(約44兆ウォン)規模の新規投資誘致に乗り出した。 企業価値は9000億ドル（約1344兆ウォン）を超える見通しだ。 AI市場の成長速度が.. - 매일경제</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 07:17 | 🏢 配信元: <b>매일경제</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiigFBVV95cUxQN2NvT0hrQnl0NVN0UWJ6TEp3Yno0Rmt5LUxBRjlxNzdBWHFXNmNHSjBKV3ZOQ1QwaEstbUhsZnpTcjBSNXp5U0g1dmtuZEl2bzY4NE8tZTBia2trM3F5amtOcEdrenRsMjBlemE1X05zRGdzN2xwODVuRjFaUWlfdkprTjJOLWtGM3c?oc=5" target="_blank">Anthropicの「Mythos」に日本の3メガバンクがアクセスへ 金融システム防衛で官民連携 - Ledge.ai</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:01</div>
+                        <div class="meta">📅 2026-05-18 05:34 | 🏢 配信元: <b>Ledge.ai</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">日本の3メガバンク（三菱UFJ銀行、三井住友銀行、みずほ銀行）は、国内金融システムの重要な基盤を担っており、情報セキュリティ、金融犯罪対策、顧客対応などで高度なAI活用が求められています。Anthropicの「Mythos」は、高セキュリティ・高信頼性を追求したエンタープライズ向けのAIモデル、または特定の金融ユースケースに特化したAIソリューションと推測されます。官民連携は、政府や規制当局と民間企業が協力して社会課題解決に取り組むことを指します。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">金融業界は、サイバー攻撃、マネーロンダリング、詐欺などのリスクに常に晒されており、AIを活用したシステム防衛の必要性が高まっています。また、顧客対応の高度化や業務効率化のためにもAI導入は不可欠です。AnthropicはClaudeの開発において安全性と倫理性を重視しており、特に機密性の高いデータを扱う金融業界での採用は、その信頼性が評価された結果と考えられます。政府（金融庁など）も、金融システムの安定性確保のため、民間企業との技術連携や情報共有を推進しており、この動きはそうした官民連携の一環として位置づけられます。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBlMFBmWWpBeGM1M1V2OUxBckhIaEJFM3BlNS1CVkJQcmVFQk1PTE9QczBGY1AxTUVqeU1oamlLSVVld3A3ZldmSHJnTEZSZVlmcVVVdWVib1YyQ3dKSkdtelNWNExCTmh1QzhLNTRQZzZSLTRGXzQwc2ZOZk16Ym8?oc=5" target="_blank">2位とトリプルスコア ～ AnthropicバグバウンティプログラムでGMO Flatt SecurityのRyotaK氏が1位を記録（ScanNetSecurity） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">バグバウンティプログラムとは、企業が自社製品やサービスの脆弱性（セキュリティ上の欠陥）を発見した外部のセキュリティ研究者やハッカーに対して報奨金（バウンティ）を支払う制度です。これにより、製品のセキュリティ強化と、開発者が気づきにくい脆弱性の早期発見を促進します。Anthropicも、自社のAIモデル（Claudeなど）の安全性や信頼性を高めるため、このプログラムを実施しています。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIモデルは、その複雑性ゆえに、予期せぬ挙動や悪用されうる脆弱性（プロンプトインジェクション、ハルシネーションなど）を持つ可能性があります。AI開発企業は、これらのリスクを最小限に抑えるため、内部でのテストに加え、外部の専門家の知見を積極的に取り入れる必要性を認識しています。Anthropicのバグバウンティプログラムは、その取り組みの一環であり、セキュリティ専門家がAIモデルの弱点を探し出すことで、より安全なAIシステムの開発に貢献しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNQm1oei1RSVk1Vm16emduVHkyTFBaTWZSc3l2dm1KczBBYnFmOUlQeFZHVlVtcVBENVNRSXBVRVVZNUM1TG1qN1dhOXF2NHpRRmdROXB5TmhHY1RnYWFjMmtmdHVGS0tzcjdmTGZ3cHpoVFlLOUszUDN3T0dsOTRwaWtfUk9YRUdzNE53dmlvLWxoanpKZWpBSlZUTnRXQQ?oc=5" target="_blank">セールスフォースのCEOは、自社の Anthropicトークン利用額が、3億ドルに達するだろうと語った - Business Insider Japan</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:45</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Salesforceは、顧客関係管理（CRM）ソフトウェアの世界最大手企業です。同社は近年、AI技術を自社製品群に深く統合し、顧客データの分析、営業支援、顧客サービス自動化などを強化しています。Anthropicトークン利用額とは、SalesforceがAnthropicのAIモデル（Claudeなど）を自社サービスに組み込む際に支払う利用料金やAPI利用料のことで、利用規模の指標となります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIの登場は、ソフトウェア産業に大きな変革をもたらしており、各社はAIを自社製品の中核に据えることで競争力を高めようとしています。Salesforceもこの動きに乗り遅れまいと、AI投資を加速させ、自社のEinstein AIプラットフォームを強化しています。AnthropicのAIモデルを採用していることは、同社のAIが特定のユースケースや安全性要件において、Salesforceのニーズに合致していることを示しています。CEOの発言は、SalesforceがAnthropicのAIを非常に大規模に利用しており、AIへの巨額な投資を行っていることを示唆し、AIが同社の今後のビジネス戦略においていかに重要であるかを強調しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTFB5UUhHUHl6cEpMaURDVTFBc0hVd05kdWVhcjI1UUVsXzN4RW9KcjV2eEdXY2JlNTZ0NmVFNU5FbWdWcE1remxmai0xS0NLc3d4V3RYeTFwUW5LczZPWnc?oc=5" target="_blank">凄すぎ…「Gemma 4×Claude Code活用術」、API料金ゼロでAIエージェント制作の全手順 - ビジネス+IT</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 00:04</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">GemmaはGoogleが開発したオープンソースの軽量なAIモデルファミリーです。Claude Codeは、AnthropicのClaudeを基盤としたコード生成などに特化したAIモデルまたは機能と推測されます。API料金とは、AIモデルを利用する際に発生する費用を指し、これがゼロということは、利用者が費用をかけずにAIを活用できることを意味します。AIエージェントは、特定の目標を達成するために自律的に行動するAIシステムです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIの普及に伴い、企業や開発者は高額なAPI利用料が課題となるケースがあります。このため、Gemmaのようなオープンソースで軽量なAIモデルを活用し、コストを抑えつつAIソリューションを構築するニーズが高まっています。Claude Codeのような高機能なAIを、特定の用途でAPI料金をかけずに活用する術が紹介されることは、AI技術の民主化を促進し、より多くの開発者や企業がAIエージェントを制作する機会を提供します。これは、AI技術のコスト効率とアクセシビリティを高めるトレンドの一部です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxPS3ZyNnRsOVNyWnFBLVRIUXdoS2J1SGhuYy1nNUQ3amw1OU9ENW83a1l5SUpUcXdHUVRPLV91TDNRbUZpTWVvdTlsMkdZYVRqWTFQYXl2a19Kc1BfRXR2ckJnV3h2X3NpeWoyRFplZjd0Rm5mQ1hMM016VFBaTUYtNnUwQzl2aG1Z?oc=5" target="_blank">凄すぎ…「Gemma 4×Claude Code活用術」、API料金ゼロでAIエージェント制作の全手順（ビジネス＋IT） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:20</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">GemmaはGoogleが開発したオープンソースの軽量なAIモデルファミリーです。Claude Codeは、AnthropicのClaudeを基盤としたコード生成などに特化したAIモデルまたは機能と推測されます。API料金とは、AIモデルを利用する際に発生する費用を指し、これがゼロということは、利用者が費用をかけずにAIを活用できることを意味します。AIエージェントは、特定の目標を達成するために自律的に行動するAIシステムです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIの普及に伴い、企業や開発者は高額なAPI利用料が課題となるケースがあります。このため、Gemmaのようなオープンソースで軽量なAIモデルを活用し、コストを抑えつつAIソリューションを構築するニーズが高まっています。Claude Codeのような高機能なAIを、特定の用途でAPI料金をかけずに活用する術が紹介されることは、AI技術の民主化を促進し、より多くの開発者や企業がAIエージェントを制作する機会を提供します。これは、AI技術のコスト効率とアクセシビリティを高めるトレンドの一部です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1VTmxMeFJ1b3E0cGZjNkdPM0NyVjlyWkxHU3NCcV9aNWZrZ2xPMUpSUFBhUkpzTkVkWVdVZ3RyM245Vm5KNmRHRVVScnNLd0lRUUtZ?oc=5" target="_blank">米国防総省がOpenAIなどAI調達拡大、Anthropic排除もMythos利用へ調整 GenAI.milを通じて軍関係者や請負業者に提供 - ビジネス+IT</a></h3>
-                        <div class="meta">📅 2026-05-17 06:00</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTFB4WjR5TUVNTF9GbzJ6MUIyZ0k4aWRXMF8xck54ZnMwU1pVaHhJdGVKN0JNM1JJSkxmSV9aQ1dkZXZZYWdSN1ZqbUVCUTFSU09qUkZZYy02Z3E3bFE1R1E?oc=5" target="_blank">Claude・ChatGPT・Gemini・Grokの4つのAIモデルにラジオ運営を任せる実験、Claudeは革命を扇動しGeminiは平然と悲劇的な出来事を描写 (2026年5月18日掲載) - ライブドアニュース</a></h3>
+                        <div class="meta">📅 2026-05-18 03:29 | 🏢 配信元: <b>ライブドアニュース</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米国防総省（DoD）は、国家安全保障、情報収集、作戦支援など多岐にわたる分野でAI技術の導入を加速させています。OpenAI（ChatGPT開発元）やAnthropic（Claude開発元）のような最先端の生成AI企業は、その技術力から国防分野でも注目されています。AIの軍事利用においては、倫理的側面、セキュリティ、モデルの信頼性、サプライヤーのリスクが極めて重視されます。GenAI.milは、国防総省がAIサービスを内部に提供するためのプラットフォームと推測されます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米国は、中国とのAI技術覇権争いを背景に、国家安全保障に関わるAI技術の開発と導入に巨額の投資を行っています。国防総省は、生成AIが持つ可能性を認識しつつも、そのリスクを慎重に評価しています。特定のAIベンダーの排除や採用の調整は、セキュリティ要件、技術評価、サプライチェーンの信頼性、あるいは政治的・倫理的な懸念に基づくものと考えられます。Anthropicの「Mythos」が、国防総省の特定の要件（例えば、高セキュリティや特定のドメイン知識）を満たすため、別の形で採用が検討されている可能性があります。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE4weTRtMXRORGFMNHJEZWFyU2gxbUxZeFBXM1hiVl85WEFkcktSMlVqcVgydXd1ZFF5dUMwRGFpMWxMMWs4c1lMbm9IM2FkUXRTaDZF?oc=5" target="_blank">Anthropicが描く2028年、米中AI競争の2つのシナリオ ─ 半導体規制が分ける未来 - innovaTopia</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 03:00</div>
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5Xc3laWTgwQ0Y5NEhuSDFZV2FHM21lOGVockF6MF9uQkZtaThhNjNSNGhlaXVHSVlGRUFQMGlFVUQtQV8zaGpEZ3NmaTJGZ1RlbHB5bmhMdDlfMGlLTlVDVFhQdDdTUzl5SG13Y0w2NW1XakVPWjIyMkNn?oc=5" target="_blank">Microsoftが社内開発で使われるClaude Codeライセンスのキャンセルを開始か - GIGAZINE</a></h3>
+                        <div class="meta">📅 2026-05-18 03:13 | 🏢 配信元: <b>GIGAZINE</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">米中AI競争は、技術覇権を巡る両大国間の戦略的な競争であり、経済、安全保障、国際政治に深く影響します。AIの性能を左右する重要な要素が「半導体」、特に高性能AIチップ（GPUなど）です。米国は、中国のAI技術発展を抑制するため、半導体輸出規制を強化しており、これは中国のAI産業に大きな影響を与えています。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">米中間の技術競争は、特にトランプ政権時代から激化し、バイデン政権下でも半導体、AI、量子コンピューティングなどの先端技術分野で、輸出規制や投資制限といった形で顕著になっています。米国は、中国が軍事転用可能なAI技術を取得することを防ぐため、高性能半導体やその製造装置の中国への輸出を厳しく制限しています。AnthropicのようなAI企業は、このような地政学的な状況を深く理解し、将来のAI市場や技術開発の方向性を予測する上で、米中競争と半導体規制が重要な分岐点となると考えています。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE4weTRtMXRORGFMNHJEZWFyU2gxbUxZeFBXM1hiVl85WEFkcktSMlVqcVgydXd1ZFF5dUMwRGFpMWxMMWs4c1lMbm9IM2FkUXRTaDZF?oc=5" target="_blank">Anthropicが描く2028年、米中AI競争の2つのシナリオ ─ 半導体規制が分ける未来 - innovaTopia</a></h3>
+                        <div class="meta">📅 2026-05-18 03:00 | 🏢 配信元: <b>innovaTopia</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMic0FVX3lxTE5VSU1felVTZXVzbXBqc2xZeGRSVnBTRVVHdlY0UHBVc2FINEE2dS1hQ3pJQUxIc2xUVldsMkxMWFFrWjJYdEtab3ZaLXM2dHFhUlBIM1E5V1p6X3hkTFdWWUdnZlktQVVJQjJYWVFPLW9ReVE?oc=5" target="_blank">GMO Flatt SecurityのRyotaK、Anthropicバグバウンティで世界1位─Claude/Claude Codeの安全性に貢献 - innovaTopia</a></h3>
+                        <div class="meta">📅 2026-05-18 02:30 | 🏢 配信元: <b>innovaTopia</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTFB5UUhHUHl6cEpMaURDVTFBc0hVd05kdWVhcjI1UUVsXzN4RW9KcjV2eEdXY2JlNTZ0NmVFNU5FbWdWcE1remxmai0xS0NLc3d4V3RYeTFwUW5LczZPWnc?oc=5" target="_blank">凄すぎ…「Gemma 4×Claude Code活用術」、API料金ゼロでAIエージェント制作の全手順 - ビジネス+IT</a></h3>
+                        <div class="meta">📅 2026-05-18 00:04 | 🏢 配信元: <b>ビジネス+IT</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE1fTHFkamhTZG9IdnJoSV9mUWRoSWIydmp5THZNUlZ6d1dfZGtMX2JVSlVGY3RXUXhHZmZFQVBnYW9GdUFyamNhQUVENzJQREQzaGhSMjlLZGdBVVF4S2dSb2lRWVI5dw?oc=5" target="_blank">Claude for Small Businessで 見つけたヒント - Substack</a></h3>
+                        <div class="meta">📅 2026-05-17 23:23 | 🏢 配信元: <b>Substack</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE1NZGphTk9zaHRYdkNMakpDYm9PenA3aTc4bC1NN19zRHhha1Q3ZEU2UmwwUV9GUHhNVms5NHRPVDJNd3lQLXVVVEpyRTJWNzc1eGY5ZWJocw?oc=5" target="_blank">ホリエモンAI学校、弁護士によるブラインド採点で主要生成AIのリーガルレビュー性能を検証 - ICT教育ニュース</a></h3>
+                        <div class="meta">📅 2026-05-17 23:15 | 🏢 配信元: <b>ICT教育ニュース</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBlMFBmWWpBeGM1M1V2OUxBckhIaEJFM3BlNS1CVkJQcmVFQk1PTE9QczBGY1AxTUVqeU1oamlLSVVld3A3ZldmSHJnTEZSZVlmcVVVdWVib1YyQ3dKSkdtelNWNExCTmh1QzhLNTRQZzZSLTRGXzQwc2ZOZk16Ym8?oc=5" target="_blank">2位とトリプルスコア ～ AnthropicバグバウンティプログラムでGMO Flatt SecurityのRyotaK氏が1位を記録（ScanNetSecurity） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-05-17 23:00 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNQm1oei1RSVk1Vm16emduVHkyTFBaTWZSc3l2dm1KczBBYnFmOUlQeFZHVlVtcVBENVNRSXBVRVVZNUM1TG1qN1dhOXF2NHpRRmdROXB5TmhHY1RnYWFjMmtmdHVGS0tzcjdmTGZ3cHpoVFlLOUszUDN3T0dsOTRwaWtfUk9YRUdzNE53dmlvLWxoanpKZWpBSlZUTnRXQQ?oc=5" target="_blank">セールスフォースのCEOは、自社の Anthropicトークン利用額が、3億ドルに達するだろうと語った - Business Insider Japan</a></h3>
+                        <div class="meta">📅 2026-05-17 22:45 | 🏢 配信元: <b>Business Insider Japan</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
                         <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiREFVX3lxTE9nZnN0ZzU1cExxN2VZcE5aa2xWbUhtal9IeG9IbGpKQzNDUFBqc0VPV1huTFlmUHdhM3Jfb01Bek9pMVVB?oc=5" target="_blank">アクセンチュアがAIを中核に据えた企業改革の支援体制構築に向けてAnthropicとの協業体制を強化 - @DIME アットダイム</a></h3>
-                        <div class="meta">📅 2026-05-17 21:04</div>
+                        <div class="meta">📅 2026-05-17 21:04 | 🏢 配信元: <b>@DIME アットダイム</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">アクセンチュアは、世界最大級の総合コンサルティング会社で、企業のDX（デジタルトランスフォーメーション）や経営戦略を支援しています。近年、AI技術は企業の競争力を左右する重要な要素となっており、多くの企業がAIの導入・活用を模索しています。生成AIの急速な進化により、企業改革の可能性が大きく広がっています。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">多くの企業がAI導入の必要性を感じている一方で、どのAIモデルを選び、どのようにビジネスに統合するかという課題を抱えています。アクセンチュアのようなコンサルティング会社は、このような企業のニーズに応えるため、最先端のAI技術を持つ企業（Anthropicなど）との連携を強化し、顧客へのAI導入支援サービスを拡充しています。AnthropicのClaudeは、特に安全性と倫理性を重視した設計が評価されており、企業が安心してビジネスに導入できるAIとして注目されています。この協業強化は、アクセンチュアが顧客のAI戦略を支援する上で、Anthropicの技術力を重要な柱と位置づけていることを示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE1fTHFkamhTZG9IdnJoSV9mUWRoSWIydmp5THZNUlZ6d1dfZGtMX2JVSlVGY3RXUXhHZmZFQVBnYW9GdUFyamNhQUVENzJQREQzaGhSMjlLZGdBVVF4S2dSb2lRWVI5dw?oc=5" target="_blank">Claude for Small Businessで 見つけたヒント - Substack</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:23</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">Claudeは、Anthropic社が開発した大規模言語モデル（LLM）に基づく生成AIで、OpenAIのChatGPTやGoogleのGeminiと並ぶ主要なモデルの一つです。安全性と信頼性を重視した設計思想が特徴とされています。AIエージェントは、特定の目標を達成するために自律的に行動するAIシステムです。中小企業にとって、AI導入は業務効率化や競争力強化の大きなチャンスですが、コストや技術的なハードルがあります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AI市場は急速に拡大し、大手企業だけでなく中小企業でもAI活用への関心が高まっています。しかし、汎用的な大規模AIモデルは、中小企業にとってはオーバースペックであったり、コストが見合わない場合があります。Anthropicは、これまで主に大手企業や開発者向けにClaudeを提供してきましたが、中小企業のニーズに応えるため、使いやすさやコスト効率を考慮した「Claude for Small Business」を開発しました。これは、AI技術の民主化と市場拡大を目指す動きの一環であり、より多くの企業がAIの恩恵を受けられるようにするための戦略です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE1NZGphTk9zaHRYdkNMakpDYm9PenA3aTc4bC1NN19zRHhha1Q3ZEU2UmwwUV9GUHhNVms5NHRPVDJNd3lQLXVVVEpyRTJWNzc1eGY5ZWJocw?oc=5" target="_blank">ホリエモンAI学校、弁護士によるブラインド採点で主要生成AIのリーガルレビュー性能を検証 - ICT教育ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 23:15</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">生成AIは、テキスト生成能力が高いため、契約書レビューや法務文書作成といったリーガルテック分野での応用が期待されています。しかし、AIの生成する情報には「ハルシネーション（もっともらしいが事実ではない情報を生成すること）」のリスクや、著作権、個人情報保護といった法的な課題も伴います。リーガルレビューとは、契約書などの法務文書が法的に問題ないか、リスクがないかなどを弁護士がチェックする作業です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">生成AIの普及に伴い、その活用領域が急速に拡大しています。特に専門知識を要する分野でのAI活用には高い精度と信頼性が求められます。法務分野は、誤りが許されない性質を持つため、AIの性能検証は極めて重要です。ホリエモンAI学校のような教育機関や研究組織が、弁護士という専門家を巻き込み、主要な生成AIモデルのリーガルレビュー能力を客観的に評価する試みは、AIのビジネス適用における信頼性を確立し、実用化を加速させる上で非常に価値があります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9sZTY0bEZyamhsam9YNU9fQnBVNFIxV0Q0U1lCYXJsUzFYWmp2MTlKVGpFZVBFT0Q5Y1lKWWo3T3JMX1lZU1p5c00xeEkzNWVuanFGMA?oc=5" target="_blank">AIだけでゲームは作れるのか？ Codexに7本作らせて見えた実力と限界 (1/5) - ASCII.jp</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-17 22:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">CodexはOpenAIが開発したAIモデルで、特にコード生成に特化しています。ゲーム開発は、プログラミング、グラフィックデザイン、サウンド制作、シナリオ作成など、多岐にわたる専門知識と創造性を要する複雑なプロセスです。AIがこれらの作業のどこまでを自動化・支援できるのかは、ゲーム産業だけでなく、ソフトウェア開発全般における大きな関心事です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">AIはこれまでもゲーム内のNPCの行動パターン生成やコンテンツ自動生成に活用されてきましたが、生成AIの登場により、より高度で創造的な側面でのAI活用が期待されています。OpenAIのCodexのようなコード生成AIは、開発者のコーディング作業を大幅に効率化する可能性を秘めています。この記事は、AIがゲーム開発プロセス全体をどれだけ自律的にこなせるか、その実力と限界を検証しようとするものです。これは、クリエイティブ産業におけるAIの役割の進化と、人間のクリエイティビティとの協調のあり方を模索する動きの一環です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             

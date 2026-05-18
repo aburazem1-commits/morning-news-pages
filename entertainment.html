@@ -22,21 +22,41 @@
             header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
             h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
             .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
             .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
             .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
             .portal-card-count { font-size: 1rem; color: var(--text-muted); }
-            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
             .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
             .article-title a:hover { color: var(--accent-color); }
-            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: auto; border-left: 4px solid var(--accent-color); }
             .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
             .ai-content:last-child { margin-bottom: 0; }
-            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
             .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
             .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
             
             /* ✨ Newバッジのスタイル */
             .badge-new {
@@ -82,173 +102,206 @@
             <div class="container">
                 <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
                 <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">エンタメ</h1>
-                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="assets/images/entertainment.png" class="thumbnail-icon-small" alt="エンタメ">
+                        エンタメ
+                    </h1>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
                 </header>
                 <div class="grid" style="animation: fadeIn 1s ease-out;">
         
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTFBZUHR4b2pGQ3Noc2Rkazl4MXFQVXkzYlVuR0h1bkZtdkdqNC10WFA4TDBxTGNNdUVjb3dIeEVIdTV4c2NwT1dtb3VFdzVaWG1XaVJ3TzRzdnpKeUtNTEtCWGQ5Y0Q1T1NLUkpGQWhTWQ?oc=5" target="_blank">藤森慎吾の信州観光協会 » ゲストは佐久市出身！INI・藤牧京介（2026年5月24日の放送内容) - abn 長野朝日放送</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 00:34</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE1DRHNVV05sQ1RsUFhyOE8tbHo2YU0wSzdJRGNLNUgxUDVON3Y0aU4yZGloSEZiNVhCSUNNNTh3YU9BTW1nVDdIU0tKX1FJLVFSb0FhZnE2ckRHOHhUTHc?oc=5" target="_blank">『Talking Rock! FES.2026』에 INI의 출연이 결정! - INI OFFICIAL SITE</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:15 | 🏢 配信元: <b>INI OFFICIAL SITE</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">INI（アイエヌアイ）は、日本の11人組男性アイドルグループで、オーディション番組「PRODUCE 101 JAPAN SEASON2」から誕生しました。ファンコミュニティが強く、音楽活動だけでなく、テレビ、ラジオ、雑誌など多方面で活動しています。ラジオ番組のパーソナリティやゲスト出演は、ファンとの交流を深め、新規ファンを獲得するための重要なプロモーション戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">韓国発のオーディション番組「PRODUCE 101」シリーズの日本版は、練習生がサバイバル形式でデビューを目指すプロセスが視聴者の共感を呼び、大きな人気を博しました。INIは、その番組から生まれたJO1に続く人気グループとして、デビュー以来、楽曲リリース、ライブ活動、メディア露出を積極的に行っています。メンバー個々の活動も活発であり、ファンはグループだけでなく、個々のメンバーの成長や活躍も応援しています。地方局の番組出演は、全国のファンへのアプローチとしても機能します。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE40MEdWTWFJQ3U0M0p6Vy1aSVlKU1UxaUhnRDIzWEVrN0gtVlNveUpoNDVHUkxqQUNjUEszYkk1YWNaaFdyNjJvdHgwSVpwVGhhNWNV?oc=5" target="_blank">「All 4 U」パフォーマンスシェアキャンペーンの開催が決定！ - INI OFFICIAL SITE</a></h3>
-                        <div class="meta">📅 2026-05-09 03:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">INI（アイエヌアイ）は、日本の11人組男性アイドルグループで、オーディション番組「PRODUCE 101 JAPAN SEASON2」から誕生しました。ファンコミュニティが強く、音楽活動だけでなく、テレビ、ラジオ、雑誌など多方面で活動しています。新曲のリリースに伴う「パフォーマンスシェアキャンペーン」は、ファンがSNSなどでパフォーマンスを共有することで、楽曲の拡散や認知度向上を狙うマーケティング戦略です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">INIは、オーディション番組で多くのファンの支持を得てデビューし、その後も精力的に活動を続けています。現代の音楽業界では、デジタル配信やSNSを活用したプロモーションが不可欠であり、ファン参加型のキャンペーンは、楽曲を広める上で非常に有効です。このようなキャンペーンは、ファンがクリエイティブな形で参加できる機会を提供し、グループへのエンゲージメントをさらに深める効果があります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1BcTdIOHpOMElES2ZEa2VNZUItOHBOcmZhcmRhNzRZOFpoMzJKd2lzU0hGVm5CTHVPMm4wY0tuREg5Tzk4ek1nYnpxSnVJSDZla0phelRfaldiUXpWU1Zic0tOLUdERHdrTkM0dGdpdFBNWUlWVGxHNmVMNEdkOGc?oc=5" target="_blank">「日プ新世界」練習生が選ぶ“ビジュアルセンター”1位はパク・シヨン 4位は同率で3人ランクイン（モデルプレス） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-12 06:58</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。「ビジュアルセンター」は、グループの顔となるような外見的魅力に優れたメンバーを指し、アイドルの重要な要素の一つとされます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、韓国Mnetのフォーマットを日本でライセンス制作したもので、JO1やINIといった人気グループを輩出し、日本のアイドル文化に大きな影響を与えました。これらの番組は、練習生たちの努力や成長、友情、挫折といった人間ドラマを映し出すことで、視聴者に強い感情移入を促します。練習生同士が選ぶ「ビジュアルセンター」は、番組内の話題性を高め、視聴者の関心を引く要素の一つです。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYkFVX3lxTE9tSWVMVEIxaHZVMjZkMURybDhDZU93dEdCMVBzaW9BekRBQUlRVnJZRWcwTlB2NXlEcDR0V3lpR3VQN2hZTjFZbEFwZ01MZkFQN3lJSkN4WnozelpqdnVPQ2Nn?oc=5" target="_blank">INI佐野雄大＆藤牧京介、リスナーの夢を全力で応援する新コーナー担当 文化放送『レコメン！』内でOA - Billboard JAPAN</a></h3>
-                        <div class="meta">📅 2026-05-15 09:30</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">INI（アイエヌアイ）は、日本の11人組男性アイドルグループで、オーディション番組「PRODUCE 101 JAPAN SEASON2」から誕生しました。ファンコミュニティが強く、音楽活動だけでなく、ラジオ番組など多方面で活動しています。ラジオ番組での新コーナー担当は、メンバーの個性や魅力を引き出し、リスナーとの親近感を高めることで、グループの人気を拡大するプロモーション戦略です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">INIは、オーディション番組で多くのファンの支持を得てデビューし、その後も精力的に活動を続けています。ラジオは、アイドルがファンと直接的かつ親密にコミュニケーションをとれる重要なメディアの一つです。メンバーがリスナーの夢を応援する企画は、ファンの共感を呼び、グループへの支持をさらに深める効果が期待されます。これは、多角的なメディア露出を通じてグループのブランド価値を高める継続的な取り組みです。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE02Mm9iYkM2ZmlENktoVE9CWHdJXzhGVk1OODZHdDgwUGdGekpDN3dILWVkWnNFSTRWNUF1WkpZUlROWTBLZlFQV2pUWUTSAUhBVV95cUxOYkM1SjVtbVc2NUlLWlZseDByUmR0V2NrajJ2ZVlXUjBOaXZsdGU5enpONkRnVklBWXgyMjlSZmxySlBkNndyLS0?oc=5" target="_blank">「日プ新世界」脱落の金安純正、INIは「これからも僕の人生の目標」直筆で亡くなった父への思い吐露 - モデルプレス</a></h3>
-                        <div class="meta">📅 2026-05-15 05:50</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。脱落は、番組の厳しさとドラマ性を象徴するものです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、韓国Mnetのフォーマットを日本でライセンス制作したもので、JO1やINIといった人気グループを輩出し、日本のアイドル文化に大きな影響を与えました。練習生は、デビューを目指して厳しい競争を繰り広げますが、全ての練習生が夢を叶えられるわけではありません。脱落した練習生が、番組やデビューグループに対する尊敬や憧れを語ることは、番組が多くの若者にとっての目標であり、大きな影響力を持っていることを示しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTE5vd0NVTkhnLWtlQUtiNjg2RmVUdmNrdFJGcXpBcWxxTWktSUVPUnJ2UGxBbUFWRVlWUENCQzZ2N3Y5VFFjQ202cU1lRzFfc1JoRXQ1MjR5d0Q?oc=5" target="_blank">JO1とINIのサッカー好きメンバー12人によるユニット“JI BLUE”『ViVi』史上初の“つながる”表紙に登場 - THE FIRST TIMES</a></h3>
-                        <div class="meta">📅 2026-05-15 00:59</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">JO1とINIは、いずれも「PRODUCE 101 JAPAN」シリーズから誕生した日本の人気男性アイドルグループです。両グループとも強固なファンベースを持ち、音楽活動だけでなく、ファッション誌やCMなど多方面で活躍しています。雑誌の表紙を飾ることは、グループの知名度向上や、新たなファン層（特に女性層）へのアプローチとして重要なプロモーション活動です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、日本にK-POP式のオーディション番組ブームをもたらし、JO1とINIという2つの国民的アイドルグループを生み出しました。両グループは「兄弟グループ」として知られ、合同での活動や交流も積極的に行っています。ファッション誌『ViVi』の表紙に「サッカー好きメンバー12人によるユニット“JI BLUE”」として登場することは、グループの多様な魅力やメンバー個々の個性を打ち出すことで、さらに幅広い層からの支持を得るための戦略です。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTFA3eXc4Mm5TZWR1cjR2X0lwY1NBRlpNY3BGcmZRYjZNRnh4Z3VUY0x5UzRDdTRCdkJDYkdnd3E4Ujc5cXNwWWxYMmk5aXZuSl9JRFVHS2FKeE5XT1lkNkhKY0xya0VRRUUy?oc=5" target="_blank">『日プ新世界』ポジション評価の最終結果発表へ INIがサプライズでアドバイス - 山陽新聞デジタル｜さんデジ</a></h3>
-                        <div class="meta">📅 2026-05-13 23:57</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。「ポジション評価」は、練習生が特定のポジション（ボーカル、ダンス、ラップなど）で実力を披露し、評価を受ける重要なステージです。INIは、この番組の先輩グループであり、練習生たちにとって目標となる存在です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。INIのような先輩グループが、かつて自分たちも経験したオーディションの現場にサプライズで登場し、アドバイスを送ることは、練習生にモチベーションを与えるとともに、番組のドラマ性を高め、ファンにとっても感動的な瞬間となります。これは、番組とデビューグループ間の良好な関係を示し、グループのブランディングにも貢献します。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBCRkljY2dZNklybDVHeG9WcnowZ0g1SEdWWU1YMWprNThROEp6Nmc1QTBEZkxYUDQ3N3BqMi16S2h4dTFaNnN3OG1OQUx0WFRJc2JaZHVqMVBKLUQ5NzYwdG0weTVBWXVSbVRYZXJaUXB4TG13ZVUySFlyQVVnM3M?oc=5" target="_blank">＜日プ新世界＞第2回順位発表式で次のステージに進む35人が決定…書き下ろし楽曲を披露する“コンセプト評価”もスタート - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-14 11:48</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。「順位発表式」や「コンセプト評価」は、番組の進行における重要なフェーズで、脱落者が出ることでドラマ性が高まり、視聴者のエンゲージメントを深めます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。順位発表式は、視聴者投票の結果が明かされ、多くの練習生が脱落する厳しい局面です。生き残った練習生は「コンセプト評価」という新たな課題に挑戦し、デビューメンバー入りを目指します。これらのプロセスは、番組の話題性を維持し、ファンが応援する練習生を最終デビューまで導くための投票行動を促す上で不可欠です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxOLUU2QWdhVHc0ZWxwX2t3VlhSVUxod1NCUXpGOFJaMlBibTZKenkzNHZHYWcwZWplSlRDdnZzUU5HY3FLNG9Wblp5bjk5MmFFdUNva2FBdlBnbFRQUEtwaVF4LVRqWlJ1dmg1SXc5VkNnUE5FMGRMRXgzLVhKR1ExNGF1RVBkVTZDVW5JOGRn?oc=5" target="_blank">『日プ新世界』第2回順位発表 50人→35人に…ファイナルは地上波生放送【1位～35位練習生一覧あり】（ENCOUNT） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-16 05:10</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE94Uk5mTFp5UnY0NzlMeGVOQk14NHMwc1dITkUyZnd4cGFzN2JOaElLVHhpam1FV2hKaF90TGRraE5abWdOSC02eFpHVG8?oc=5" target="_blank">横浜＆神戸「Talking Rock! FES.」にキュウソ、ハンブレ、INI、ハク。ら出演決定 - ナタリー</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:00 | 🏢 配信元: <b>ナタリー</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。「順位発表式」は、視聴者投票の結果が明かされ、多くの練習生が脱落する厳しい局面です。「ファイナルは地上波生放送」は、番組の注目度の高さと、デビューメンバー決定の瞬間をより多くの視聴者と共有するための戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。順位発表式は、視聴者投票の結果が明かされ、多くの練習生が脱落する厳しい局面です。番組は、段階的に練習生の数を絞り込みながら、視聴者の期待感を高めていきます。最終回の地上波生放送は、番組の集大成として、国民的イベントとしての側面を強調し、最高視聴率を狙う一般的な手法です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMi0gFBVV95cUxQZ2hSaGVaODQ4R09fX3otUjJDb2NFMGFRVnNqTUdHaVBlXzgzVFhTbk84VzhaSWFodTBTaXg3N25GRTJwSzU4LWwxcERCNHFIRm9OZTlhQWJoUTR3aTUwMzk1TkpwWm5vVThsa3hnYTFfTlFraTR1bElrOTJlejVsdlVZQWRuLTVObUF4NjB6cTdGNGdRRmVTVy1uQUk3X29GNGpTWDc5cm5odFJuZ1R0LVYzSFRfRWR0M29KTW5iWnU0TER2ZTlWMDZRZ3NxNkVaMWc?oc=5" target="_blank">横浜＆神戸で開催『Talking Rock! FES.2026』INI、ハンブレッダーズ、キュウソネコカミら最終出演アーティスト15組を発表 全40組出そろう（SPICE） - ｄメニューニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 06:00 | 🏢 配信元: <b>ｄメニューニュース</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTFBZUHR4b2pGQ3Noc2Rkazl4MXFQVXkzYlVuR0h1bkZtdkdqNC10WFA4TDBxTGNNdUVjb3dIeEVIdTV4c2NwT1dtb3VFdzVaWG1XaVJ3TzRzdnpKeUtNTEtCWGQ5Y0Q1T1NLUkpGQWhTWQ?oc=5" target="_blank">藤森慎吾の信州観光協会 » ゲストは佐久市出身！INI・藤牧京介（2026年5月24日の放送内容) - abn 長野朝日放送</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-18 00:34 | 🏢 配信元: <b>abn 長野朝日放送</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE9fUWpUUklZVTUwM2dLNjQtZThGX0Y3Z3BrdHl4Q2htdTNmWTBBZXhoeTNhQzNtMmd3bExCeG5KcE51VWxJWU8zMjR3?oc=5" target="_blank">JO1・INI・ME:Iのオーディション番組発ガールズグループ IS:SUE (イッシュ)、sweet×ダーマレーザーとトリプルコラボ決定！渋谷に限定広告登場 - 韓スタ！</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 14:24 | 🏢 配信元: <b>韓スタ！</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE9YU2lNQTQyekhLSU1pb0xBcDloVHFFYXEtTDBRbmNLay1keFdrclJEbnVpTFozbGR5c1ItOXhHTDg4aThCYy1vNWhnU0ZfTVNQenFENHBwWUp6dFpVbjhzRjk4Sm10NFJFMXl0Mnc2ajRycUti?oc=5" target="_blank">INI 8TH SINGLE『PULSE』タイトル曲「All 4 U」 公式リミックスのデジタル配信が決定！ - USEN</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-17 00:06 | 🏢 配信元: <b>USEN</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE1qQ0FVYUdvV045RHRFTi1kTEVtYmU2ZHNRN1ppeVZQV2pfUFQzWkh4Y0FET3gtam9UekdnUjNXaENRalJWdDk1VUZ3?oc=5" target="_blank">【番組レポ】JO1・INI・ME:I発のオーディション第4弾｢PRODUCE 101 JAPAN 新世界｣#8 Leminoで独占無料配信―第2回順位発表式、次に進む35人が決定 - 韓スタ！</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-05-16 13:56 | 🏢 配信元: <b>韓スタ！</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE90bVh1b1BHXzJuRlpmSU90eS1Dc0RqQkFPZjFLZzhsUDNickctczFhU3B5c3hiTHhYYkFYX1pHcFdwUU9Gd24wT3JFS0dmOGh4TTVsTWhNY3Z2WGdzaWQzd0RLM0cxZTVnd3lUOEd4TjlIVE85U2VfeHRYY0hYRnM?oc=5" target="_blank">日プ新世界、次のステージに進出する35人が決定（vois ヴォイス） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-15 14:02</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTE9wQzdpY0FZZzlpeTg4R1B2X2ZYSV91WGEtQ1dqeUlKaHRkR1lWTy03S3dGR3Bpd2VMVmZTU1RkakRKTVdPQlJQdEZOY9IBR0FVX3lxTFBXQnR4WGZFRzRVdHJKVjJPQVZkYW9YbDJhNENUN0I5ZFF3Uk9KWlpTRDZWc1Z3MXlkYjY2T0FoaE9Bd2FZcFJn?oc=5" target="_blank">「日プ新世界」練習生、餃子にまぜそば…ラーメンアレンジの手料理披露「発想力すごい」「お店レベル」と反響続々 - モデルプレス</a></h3>
+                        <div class="meta">📅 2026-05-16 07:51 | 🏢 配信元: <b>モデルプレス</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。次のステージに進出するメンバーの決定は、番組のドラマ性を高め、視聴者のエンゲージメントを深めます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。番組は、段階的に練習生の数を絞り込みながら、視聴者投票を通じてデビューメンバーを決定するプロセスを進めます。次のステージに進出するメンバーの発表は、ファンにとって重要な情報であり、番組の話題性を維持し、応援する練習生を最終デビューまで導くための投票行動を促す上で不可欠です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5Oc3VubElQRm12OC1MR1k2djF4TVo4RTU3WGdWUzM3bVJjTHVoT1E0R1ZIVzJXZ2xLNmdjVmRxQ3I4Vnh3bG95YldwMXk3YnhuM3N2N0ZCWE5sVmd0MDhSMFJ5UFNKTU5MRU9uQWJ2QjVLZkozcENmMGJabDhoUUk?oc=5" target="_blank">INI佐野雄大＆藤牧京介、リスナーの夢を全力で応援する新コーナー担当 文化放送『レコメン！』内でOA - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-15 09:35</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTFA4VVlLOURhcE1rMHk5TW5qZC1JTzNjaEpTZ2xGaUdxNFZmRk1XZHBHS1Noc3NYS2ZyRlBFY2hqZWZRQUd0Rl9iVWdGMHXSAUhBVV95cUxPakxVcUtCQWhZR0VVS2pZdEpLenV1ZUEtaEdCVUxMeGthaWM3X2VlSElYQU54azJLcFFkYk11ZDVmVUVNMFhfNGs?oc=5" target="_blank">「日プ新世界」“脱落後にトレンド入り”アーチャー・ウイ、4ヶ国語の直筆メッセージ＆自撮り写真公開「全部字綺麗」「前髪ありビジュ神」と話題 - モデルプレス</a></h3>
+                        <div class="meta">📅 2026-05-16 05:57 | 🏢 配信元: <b>モデルプレス</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">INI（アイエヌアイ）は、日本の11人組男性アイドルグループで、オーディション番組「PRODUCE 101 JAPAN SEASON2」から誕生しました。ファンコミュニティが強く、音楽活動だけでなく、ラジオ番組など多方面で活動しています。ラジオ番組での新コーナー担当は、メンバーの個性や魅力を引き出し、リスナーとの親近感を高めることで、グループの人気を拡大するプロモーション戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">INIは、オーディション番組で多くのファンの支持を得てデビューし、その後も精力的に活動を続けています。ラジオは、アイドルがファンと直接的かつ親密にコミュニケーションをとれる重要なメディアの一つです。メンバーがリスナーの夢を応援する企画は、ファンの共感を呼び、グループへの支持をさらに深める効果が期待されます。これは、多角的なメディア露出を通じてグループのブランド価値を高める継続的な取り組みです。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9vRjFIbWxaWk1EbVBoQ0dFQjhoblQ5X0p0cjBtRXByUlo1Y2Q1dFBnY2k4LWFjNzRwLVE0NVpwbFVPZTdCMG9wRTU2MzNNaXluZ2lOcUtwS2NFMmdjQjNDX3kweEt6WTNOSVFIMlVBc3p5WFNmdi1TeVpjU0Z0VGM?oc=5" target="_blank">【KCON JAPAN】『日プ新世界』練習生50人、レッドカーペット＆ステージに登場 それぞれの魅力をアピール【写真多数掲載】 - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-12 09:10</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE9GbnZkb0dRNmdZWHBObmRFaFR1cXpTbWNVbDgwVGl3Wno1azVYa21BbmNsZmlSb09wY0plOUh1Z19zQ19XSjZ5QllxSnJZTlJ0a2dDMlJKWTNGdnhndkpGR0g3WXRPMXlHcHRiMmVVOENSU2pvYVpTcUFiQQ?oc=5" target="_blank">INI佐野雄大＆藤牧京介、『レコメン！』新コーナー出演 6月1日スタート…リスナーの夢を全力応援 - au Webポータル</a></h3>
+                        <div class="meta">📅 2026-05-16 05:37 | 🏢 配信元: <b>au Webポータル</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「KCON JAPAN」は、K-POPとKカルチャーの祭典で、韓国の人気アーティストや、日本で人気のK-POP/J-POPアイドルが出演します。「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズンを指し、練習生がサバイバル形式でデビューを目指します。大型イベントへの参加は、練習生の知名度向上と番組のプロモーションに繋がります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、日本のアイドル文化に大きな影響を与えました。KCON JAPANのようなイベントは、K-POPファンだけでなく、日本のアイドルファンにとっても大きな注目を集めます。オーディション番組の練習生がこのような大舞台に立つことは、デビュー前の彼らにとって貴重な経験であり、多くの人々に自分たちの魅力をアピールする絶好の機会です。これは、番組の視聴者層を拡大し、最終的なデビューメンバーのファンベースを構築する上で重要な戦略です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1NSUpXVkw4WVBvNnB5Z1hXSnhGcGNNWGdrakUycHlqWVN4b3Q5YUdDck1mVWtFWkYtcjlNWjJ0TE1IdjFsaEFvQmJSdGpVV1V3M2dZWG14VVc2bDVteXBxN0RWZTRUMDAwOEVPVjlnRVhiREVoR3FWWFdZMGJRLTg?oc=5" target="_blank">『日プ新世界』15人脱落で50人→35人 熾烈なトップ争いに（オリコン） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-14 10:29</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxOLUU2QWdhVHc0ZWxwX2t3VlhSVUxod1NCUXpGOFJaMlBibTZKenkzNHZHYWcwZWplSlRDdnZzUU5HY3FLNG9Wblp5bjk5MmFFdUNva2FBdlBnbFRQUEtwaVF4LVRqWlJ1dmg1SXc5VkNnUE5FMGRMRXgzLVhKR1ExNGF1RVBkVTZDVW5JOGRn?oc=5" target="_blank">『日プ新世界』第2回順位発表 50人→35人に…ファイナルは地上波生放送【1位～35位練習生一覧あり】（ENCOUNT） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-05-16 05:10 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。脱落は、番組の厳しさとドラマ性を象徴するもので、視聴者のエンゲージメントを深めます。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。番組は、視聴者投票によって練習生の数を段階的に絞り込み、脱落者を選んでいきます。この「熾烈なトップ争い」は、番組の緊張感を高め、ファンが応援する練習生を最終デビューまで導くための投票行動を促す上で不可欠です。脱落者が出るたびに、SNSなどで大きな話題となります。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE4xMWNNREotQkNpMjRsUEhibkt5ejM2WHV0aFZIQWRTVEdRYUlMUWhjYmhiVGNlVmVPVWRwSkJSbDlLNUxBNmcxTjB2U2xLLTlhV1NwcWsyVF9Bd0FrekVVUGlRTW1VZVI2U3hjT184Q2t3bXlrTkI3SjBkbFdQMms?oc=5" target="_blank">INI、8thシングル「PULSE」タイトル曲「All 4 U」の公式リミックスをデジタル配信（THE FIRST TIMES） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-15 10:02</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTFAxTUQ2cFc5LUozY1RfQVpKcHBZQ09tM0F5Y3l2TWNPREhvTkpQR3VqRzVHWElsRmQ0YUpHVWIzUks0eEJSM1V4RE1JQ3djeGFxdVZKRkZONA?oc=5" target="_blank">INI 高塚大夢が魅せる5年の成長 自己実現をかなえる天才、自分と向き合いさらなる高みへ＜結成5年記念連載＞ - クランクイン！</a></h3>
+                        <div class="meta">📅 2026-05-16 01:00 | 🏢 配信元: <b>クランクイン！</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">INI（アイエヌアイ）は、日本の11人組男性アイドルグループで、オーディション番組「PRODUCE 101 JAPAN SEASON2」から誕生しました。ファンコミュニティが強く、音楽活動だけでなく、多方面で活動しています。「シングル」はCD発売を指し、「デジタル配信」はストリーミングやダウンロードサービスを通じて楽曲をリリースすることです。公式リミックスは、原曲とは異なるアレンジやサウンドを持つ楽曲です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">INIは、オーディション番組で多くのファンの支持を得てデビューし、その後も精力的に活動を続けています。現代の音楽業界では、CD販売だけでなく、デジタル配信が収益の主要な柱となっています。新曲のリリースに際し、公式リミックスをデジタル配信することは、楽曲の多様な楽しみ方を提供し、既存ファンの満足度を高めるとともに、新たなリスナー層へのアプローチを強化する戦略です。これは、グループの音楽性を広げ、ブランド価値を高める継続的な取り組みです。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1BeGwwbG9MbDA0TEhyVDhod1M5dFNVR1RYdnlqdXhsRDEzTlpacHpUdFdrSTdFSmtzaGxpTnJ0QUZOQmd4YklkeEU0M0VadkFxWm9QRS1SY1R3dDFHQnc2SS1ibkROSW5nSlJ2U19qSGZyekV6SFJHbGVwX0pyRG8?oc=5" target="_blank">『日プ新世界』50人→35人 1位は加藤大樹「1位の責任感を持って頑張りたい」【50人順位一覧】（オリコン） - Yahoo!ニュース</a></h3>
-                        <div class="meta">📅 2026-05-14 14:32</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFA3MDc1OFhzSkl1NWZpcW1YZHVQMU5iamctdUxqTFMtbGJaWkExa29lQ2xqcjc5TGI2RnYyeERTZlRWd0pnTzdxRjZlSEt1eUFWZ2Y2WFBFUEJBeVYyaHJ3SFNrV1FSajhCOGllbFE3LVpFN1lJVmVXQ256QWV2bnM?oc=5" target="_blank">＜日プ新世界＞加藤大樹、“第2回順位発表式”でも1位をキープ「責任感を持って頑張りたい」練習生が50人から35人に - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-05-15 23:00 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「日プ新世界」は、人気オーディション番組「PRODUCE 101 JAPAN」の新シーズン（あるいは派生シリーズ）を指します。この種の番組は、視聴者（国民プロデューサー）の投票によってメンバーが選ばれるサバイバル形式であり、練習生は歌、ダンス、パフォーマンスなどのスキルを競い合います。「順位発表」は、視聴者投票の結果が明かされ、多くの練習生が脱落する厳しい局面です。1位の練習生は、デビューへの期待を一身に背負い、「責任感」を持つことになります。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">PRODUCE 101 JAPANシリーズは、JO1やINIといった人気グループを輩出し、その過程での練習生たちの成長と努力が視聴者の共感を呼んできました。順位発表は、視聴者投票の結果が明かされ、多くの練習生が脱落する厳しい局面です。番組は、段階的に練習生の数を絞り込みながら、視聴者の期待感を高めていきます。上位にランクインした練習生は、デビューメンバーとして期待される一方、そのプレッシャーも増大します。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiRkFVX3lxTE5jYXltcW53TVIwbEZCMWotMFBFRHdTWlc2TVV1b05kRnIyb1JhWWRnb3N3cmNGc0N4ZUFMX1psaXhIbVpFUkE?oc=5" target="_blank">韓国通ヘアメイクGeorgeが提案！【約1万円】で最新トレンドメイク - VOCE</a></h3>
+                        <div class="meta">📅 2026-05-15 23:00 | 🏢 配信元: <b>VOCE</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
+                        </div>
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxOc0liQ2NSak9PSHVwVHM1V3RpMFZLWk51aXRIUTFPb284aF9VY3dWUXV1MHVoRUtBRXNEVjRTXzIzNDg2SGN0Ynp0Mjk0cERIQWd2ZlRlVXV0WkQ0VjJKY1B4Qkx4czFCYmV6ZURlb3lXUllPUWFfbkN1d21tbjh5dElqcEwxSHFITWVpag?oc=5" target="_blank">INI・池﨑理人が見た空山基展「SORAYAMA 光・透明・反射 －TOKYO－」。半世紀におよぶ光の追求と孤高の創作姿勢に何を感じた？ - Tokyo Art Beat</a></h3>
+                        <div class="meta">📅 2026-05-15 20:05 | 🏢 配信元: <b>Tokyo Art Beat</b></div>
+                        <div class="ai-section">
+                            <div class="ai-label">✨ AI 前提知識</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">📜 AI これまでの経緯</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             

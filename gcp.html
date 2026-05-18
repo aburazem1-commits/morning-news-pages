@@ -22,21 +22,41 @@
             header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
             h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
             .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
             .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
             .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
             .portal-card-count { font-size: 1rem; color: var(--text-muted); }
-            .article-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
             .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
             .article-title a:hover { color: var(--accent-color); }
-            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 16px; margin-top: auto; border-left: 4px solid var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: auto; border-left: 4px solid var(--accent-color); }
             .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
             .ai-content:last-child { margin-bottom: 0; }
-            .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
             .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
             .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
             
             /* ✨ Newバッジのスタイル */
             .badge-new {
@@ -82,52 +102,37 @@
             <div class="container">
                 <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
                 <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0;">Google Cloud Platform (GCP)</h1>
-                    <div class="subtitle">AIが厳選・解説する最新ニュース</div>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="assets/images/gcp.png" class="thumbnail-icon-small" alt="Google Cloud Platform (GCP)">
+                        Google Cloud Platform (GCP)
+                    </h1>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
                 </header>
                 <div class="grid" style="animation: fadeIn 1s ease-out;">
         
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPODRjM3ljd0NOX1J1LWxpTzBpRTQyVmI3Y3dRVS1DbE1VU1RpYjA4ZTB5akJLaU5XU0ZRdl9fdU8yTVdILWRnTTJtbDVPcFNnZjdiWWR1MmpJS19OMUs4TEF1eW5rbWwxRDlkZG1kMlp1TzYycExFVHQzX3JQcmZJbGk5ellBUG5Pd3ZVOGExOS03bFltUHV5eEI1SQ?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect - multicloud」新機能をプレビュー。Google Cloudとの接続に続き - Publickey</a></h3>
-                        <div class="meta">📅 2026-05-17 18:10</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE11YjJnSHJRN19UVkdIZDRBU2xpSzBVaFNnWXA1Q3JGUEtuRUM4MDBuS2oxTkNnNGdGMm81M01RVndobVpfbmozR25TS2R2Rld0VVdVRmtPRmxSMXNCbmJhTlltSTdIQQ?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect-multicloud」新機能をプレビュー Google Cloudとの接続に続き - ITmedia</a></h3>
+                        <div class="meta">📅 2026-05-18 01:34 | 🏢 配信元: <b>ITmedia</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">クラウドコンピューティングは、インターネット経由でコンピューティングサービスを提供するモデルです。Amazon Web Services (AWS)、Google Cloud Platform (GCP)、Oracle Cloudなどが主要プロバイダーです。企業が複数のクラウドサービスを併用する「マルチクラウド」戦略が増加しており、異なるクラウド間をセキュアかつ高速に接続する「閉域網（プライベートネットワーク）」は、データ連携や運用において重要です。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">クラウドの普及に伴い、特定のベンダーに依存しないマルチクラウドやハイブリッドクラウドの利用が増加しました。これにより、各クラウドベンダーは、自社サービスを他のクラウドやオンプレミス環境と連携させるためのソリューションを強化してきました。AWSは業界最大手であり、他社との連携も積極的に進めています。以前からGoogle Cloudとの接続サービスを提供しており、今回、Oracle Cloudとの閉域網接続を開始することで、さらにマルチクラウド環境の利便性とセキュリティを向上させる動きです。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
                     <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5MVDZha2ROZFZIR2VnTklNb0dJcG5FbGdGbGdFWjRxNUxrbzZ3TUpralUzZnY2dkZXcExQX19vR2c3RDJPMWpReDFXVFlpQUlvWnc?oc=5" target="_blank">クラウドセキュリティのプロが目撃した、AIエージェントが変えるクラウド活用の新常識 ―「Google Cloud Next '26」現地参加レポート - CodeZine</a></h3>
-                        <div class="meta">📅 2026-05-17 12:48</div>
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE9hMVA2azNOX0pmTHhJa1VuNkFWWkZiNy1aWnM2c19WZ0NlOEVFNXRJZEIxemZ5VHVlZnNiR2g0THNuVDdzUjRrQXVfaGFIMW9Na0tJczFVZDVGa25HZzZkdG9ieUNvZjR4Z1Y5VmtYejhXNUZETlNjQkxOZw?oc=5" target="_blank">クレッシェンドラボ、DAAC AI AgentでGoogle Cloud Ready - Gemini Enterprise認定を取得 - ニコニコニュース</a></h3>
+                        <div class="meta">📅 2026-05-18 01:00 | 🏢 配信元: <b>ニコニコニュース</b></div>
                         <div class="ai-section">
                             <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">AIエージェントは、特定のタスクを自律的に実行するAIプログラムです。クラウドプラットフォーム上でのAIの活用は、データ処理、機械学習モデルのデプロイ、アプリケーション開発の自動化など多岐にわたります。Google Cloud Nextは、Google Cloudが開催する年次の大規模イベントで、最新のテクノロジーやソリューションが発表されます。クラウドセキュリティは、クラウド環境におけるデータ保護、アクセス管理などを指します。</div>
+                            <div class="ai-content">AI要約エラー</div>
                             <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">近年、生成AI技術の急速な進化により、AIは単なるデータ分析ツールから、より複雑なタスクをこなす「エージェント」へと進化しています。企業は、AIエージェントを導入することで、業務プロセスの自動化、意思決定の支援、顧客対応の効率化などを目指しています。Google Cloudは、AI分野で長年の研究開発を行っており、その成果をクラウドサービスに統合することで、顧客のAI活用を強力に推進しています。このレポートは、AIエージェントがクラウド環境における開発・運用・セキュリティのあり方を根本的に変えつつある現状を示唆しています。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9RRHl6VGQ4Z1lOekdobkZTSjFLTGZVeDFOZWRyVGduWE5rX01wZ3AwM0VJcDdFYl84SXh4eGdtUUx4Q05LeFdtSExEdXROZG81Z1QzckY2c1JJYW1lNXRjSFo3OWtkbXo1eHp5Ug?oc=5" target="_blank">AWS、Oracle Cloudと閉域網で直結する「AWS Interconnect-multicloud」新機能をプレビュー Google Cloudとの接続に続き - ITmedia</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:34</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">クラウドコンピューティングは、インターネット経由でコンピューティングサービスを提供するモデルです。Amazon Web Services (AWS)、Google Cloud Platform (GCP)、Oracle Cloudなどが主要プロバイダーです。企業が複数のクラウドサービスを併用する「マルチクラウド」戦略が増加しており、異なるクラウド間をセキュアかつ高速に接続する「閉域網（プライベートネットワーク）」は、データ連携や運用において重要です。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">クラウドの普及に伴い、特定のベンダーに依存しないマルチクラウドやハイブリッドクラウドの利用が増加しました。これにより、各クラウドベンダーは、自社サービスを他のクラウドやオンプレミス環境と連携させるためのソリューションを強化してきました。AWSは業界最大手であり、他社との連携も積極的に進めています。以前からGoogle Cloudとの接続サービスを提供しており、今回、Oracle Cloudとの閉域網接続を開始することで、さらにマルチクラウド環境の利便性とセキュリティを向上させる動きです。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE9hMVA2azNOX0pmTHhJa1VuNkFWWkZiNy1aWnM2c19WZ0NlOEVFNXRJZEIxemZ5VHVlZnNiR2g0THNuVDdzUjRrQXVfaGFIMW9Na0tJczFVZDVGa25HZzZkdG9ieUNvZjR4Z1Y5VmtYejhXNUZETlNjQkxOZw?oc=5" target="_blank">クレッシェンドラボ、DAAC AI AgentでGoogle Cloud Ready - Gemini Enterprise認定を取得 - ニコニコニュース</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-18 01:00</div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">「Google Cloud Ready - Gemini Enterprise」認定とは、Google Cloudの生成AIモデルであるGemini Enterpriseと連携し、エンタープライズ環境で高いパフォーマンスと信頼性を持つソリューションであることをGoogleが公式に認めるものです。AIエージェントは、特定の目的のために設計された自律的なAIシステムを指します。企業がクラウド上にAIソリューションを導入する際、このような認定は、技術的な信頼性と互換性を示す重要な指標となります。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">Googleは、OpenAIのChatGPTの登場以降、生成AI分野での競争を加速させ、自社の最新かつ最強のモデルであるGeminiを開発・公開しました。Gemini Enterpriseは、企業顧客向けにセキュリティ、プライバシー、安定性などを強化したバージョンです。クレッシェンドラボのような企業が開発するAIエージェントがこの認定を取得することは、Geminiエコシステム内での製品の信頼性と市場競争力を高めることにつながります。これは、企業が生成AIをビジネスに活用する際の選択肢を広げ、AI導入を加速させる動きの一環です。</div>
+                            <div class="ai-content">AI要約エラー</div>
+                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
+                            <div class="ai-content">AI要約エラー</div>
                         </div>
                     </div>
             
