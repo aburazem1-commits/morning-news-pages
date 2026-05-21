@@ -1,12 +1,13 @@
 
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>データ分析 - Morning AI Briefing</title>
-            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-            
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Morning AI Portal</title>
+        <meta name="description" content="AIが厳選・解説する最新ビジネスニュース">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+        
         <style>
             :root {
                 --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -127,51 +128,69 @@
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         </style>
     
-        </head>
-        <body>
-            <div class="container">
-                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
-                <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="assets/images/data_analysis.png" class="thumbnail-icon-small" alt="データ分析">
-                        データ分析
-                    </h1>
-                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
-                        Morning Briefing (2026-05-20 02:17)
-                    </div>
-                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
-                </header>
-                <div class="grid" style="animation: fadeIn 1s ease-out;">
-        
-                    <div class="card card-new-highlight" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE4wTGI5SHFFWEFhVUJaVjZGV1FHNHVUeWctc195c1dPT3RLUEJkU05ReTRsVjBObWRGcGhreG93UlVlQS1SdGdSY0VBak3SAU9BVV95cUxOcVFPMER6YWFhUEtIWl9xZ1pwRzRGZUFaUkZIdWh2MFJESVR2N3E2RmxybkVRNzlDem1XeC1OWUJqQzJqbGUtWmxDemVvSW5F?oc=5" target="_blank">【ベスト経済書2026・6位】『男女賃金格差の経済学』著者の大湾秀雄早大教授が人事データ分析に見た処方箋「優れた管理職が増えれば企業の男女格差は縮小」 - ダイヤモンド・オンライン</a><span class="badge-new">New</span></h3>
-                        <div class="meta">📅 2026-05-20 19:35 | 🏢 配信元: <b>ダイヤモンド・オンライン</b></div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">男女賃金格差は世界的な社会経済課題であり、企業にとってはDEI（Diversity, Equity, Inclusion）推進の重要な側面です。日本では、上場企業に対して男女間賃金格差の開示が義務付けられるなど、企業への対応が強く求められています。人事データ分析は、客観的な事実に基づいて課題を特定し、解決策を導き出すための強力なツールです。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">長年指摘されてきた男女賃金格差に対し、近年は持続可能な経営やESG投資の観点から、企業が積極的に是正に取り組むべき課題として認識されています。過去には属人的な評価や昇進機会の偏りなどが格差を生む要因とされてきましたが、データに基づいた分析が解決策の一つとして注目されています。</div>
-                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
-                            <div class="ai-content">「優れた管理職が増えれば企業の男女格差は縮小」という処方箋は、管理職の公平な評価や育成が重要であることを示唆していますが、男女賃金格差は複合的な要因（育児・介護との両立支援、採用・昇進プロセスの公平性、職種間の賃金体系、無意識のバイアスなど）によって生じるため、一つの要因だけで完全に解決できるものではありません。この処方箋が具体的な行動計画や他の施策とどのように組み合わされるのか、また、どのようなデータ分析によってこの結論が導かれたのか、その詳細な根拠を確認する必要があります。</div>
-                        </div>
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMi_wRBVV95cUxQUlJLVllNNm5JVDU0UWVZSS1NUlhDb3J6bGhEVERJdEI2cHZpMjB6Ynk0d2RTYnQ3SGVkeThxdkdSbF8wMWpXY0w2RG9HdkN4eUlJeERBZkRIdTY0UVpma1g3dnloem4ycFFHcTlPT2xxdWlvWnliRkhHTnVBSkJpYzVyeVhYNjNma1g3a1k5blZuclFUWWlzV0xkaC16VkxfaVBfMmRIWjA1ZW5BUS1HUDdFeEwxMC1PVElmNlI5YVhhZzZDTE0xZmt6SmRfZXhRWDV0eDA3N2paQzVIY3lPS0liTkUya0JFYWQyekxjYV9acmQ3cFpBbEt3bU5BS2xtajJLbmJHN0VDb1o3S1FEUXZXQXpsWVN3eEViY2p3Z1V6a0ltVWg2WGw4T054UTB2cmhXVXo1MzBhUG1QUmhteWlNZEZMZVZtSk1LRk1vS3NISWd4OTkzUXpNcWoxYXNHUHc4dXR6cEIxQnRPaThkaDkxbmpTZ3dnNUZoZ0NrUlVZT1dSQksweXZFVEZCelRpYlBsVmdrU1FKSXRNUkp4ZkJoeDNMeC1tdFQ5dFc5MVR6RWl1ZXdvajU1bDZzWF8wQThzY3MxYzc4c0RBb2RVWklsQmFJM3lXTk1hUEtiOUpkb3pyYzBTOFlUMFZpWWlNOWV1ZmJJQ2JpUlgyQVhpXy1QMVpNelIwNHExUm4zbTZiYVdPZ1c4Yk1NQWZ5Z0w4bUcxTExfZ01fMjVrd2h1eHAyX0kyZVZEMFc2Tk9qMWRhWVR5bHVSX2ExY1dyS1dNcS0zcWZseWNJcDd6Q2N3ZXhycTcwbzJDYjF5VW5yY2w3b09TMlFXekxQNHNOMVE?oc=5" target="_blank">「ボルボ」購入者データ分析で明らかになった「ベンツ」や「BMW」とは明らかに異なる独特の価値基準 - MSN</a></h3>
-                        <div class="meta">📅 2026-05-20 00:52 | 🏢 配信元: <b>MSN</b></div>
-                        <div class="ai-section">
-                            <div class="ai-label">✨ AI 前提知識</div>
-                            <div class="ai-content">自動車メーカーは、顧客の購入動機や価値観を深く理解するために、顧客データの分析を非常に重視しています。ブランドイメージは、製品性能だけでなく、安全性、デザイン、環境性能、そして特定のライフスタイルへの適合性など、多岐にわたる要素によって構築されます。</div>
-                            <div class="ai-label">📜 AI これまでの経緯</div>
-                            <div class="ai-content">高級車市場では、メルセデス・ベンツ、BMW、アウディなどが長年のブランド力で市場をリードしてきました。ボルボは、特に「安全性」をブランドの中核に据えてきましたが、近年はデザイン性や環境性能、ライフスタイル提案にも力を入れ、独自の顧客層を開拓しています。顧客購買データの分析は、このようなブランド戦略の検証と改善に不可欠です。</div>
-                            <div class="ai-label">👁️ AI 別の切り口・フラットな視点</div>
-                            <div class="ai-content">「ベンツ」や「BMW」とは異なる「独特の価値基準」という指摘は興味深いものの、その「独特の価値基準」が具体的に何を指すのか（例: 安全性へのこだわり、サステナビリティ志向、特定のライフステージでのニーズなど）、どのような顧客属性データや行動データに基づいて分析されたのかが不明瞭です。分析の対象となったデータセットの規模、偏り、および分析手法にバイアスがないかを確認する必要があります。また、分析結果が企業のマーケティング戦略にどのように活用されるのかも注視すべき点です。</div>
-                        </div>
-                    </div>
-            
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>Morning AI Portal</h1>
+                <div style="font-size: 1.5rem; color: var(--accent-color); margin-top: 15px; font-weight: bold; letter-spacing: 2px;">
+                    Morning Briefing <span style="font-size: 1.2rem; color: var(--text-muted);">(2026-05-22)</span>
                 </div>
+                <div class="subtitle">トピックを選んで本日の最新ニュースとAI解説をチェック</div>
+            </header>
+            <div class="portal-grid" style="animation: fadeIn 1s ease-out;">
+    
+                <a href="economy.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/economy.png" class="thumbnail-icon" alt="経済">
+                    <div class="portal-card-title">経済</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="market.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/market.png" class="thumbnail-icon" alt="マーケット">
+                    <div class="portal-card-title">マーケット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gcp.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/gcp.png" class="thumbnail-icon" alt="Google Cloud Platform (GCP)">
+                    <div class="portal-card-title">Google Cloud Platform (GCP)</div>
+                    <div class="portal-card-count">良質な最新ニュース 4件 ➔</div>
+                </a>
+        
+                <a href="claude.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/claude.png" class="thumbnail-icon" alt="Claude">
+                    <div class="portal-card-title">Claude</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gadget.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/gadget.png" class="thumbnail-icon" alt="ガジェット">
+                    <div class="portal-card-title">ガジェット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="data_analysis.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/data_analysis.png" class="thumbnail-icon" alt="データ分析">
+                    <div class="portal-card-title">データ分析</div>
+                    <div class="portal-card-count">良質な最新ニュース 8件 ➔</div>
+                </a>
+        
+                <a href="character.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/character.png" class="thumbnail-icon" alt="キャラクター">
+                    <div class="portal-card-title">キャラクター</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="entertainment.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="assets/images/entertainment.png" class="thumbnail-icon" alt="エンタメ">
+                    <div class="portal-card-title">エンタメ</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
             </div>
-            
+        </div>
+        
         <!-- ✨ フローティング目安箱 -->
         <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
         <div class="feedback-modal" id="feedbackModal">
@@ -216,6 +235,6 @@
         }
         </script>
     
-        </body>
-        </html>
-        
+    </body>
+    </html>
+    
