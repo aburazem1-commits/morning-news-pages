@@ -1,12 +1,13 @@
 
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>データ分析 - Morning AI Briefing</title>
-            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-            
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Morning AI Portal</title>
+        <meta name="description" content="AIが厳選・解説する最新ビジネスニュース">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+        
         <style>
             :root {
                 --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -127,63 +128,82 @@
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         </style>
     
-        </head>
-        <body>
-            <div class="container">
-                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
-                <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="assets/images/data_analysis.png" class="thumbnail-icon-small" alt="データ分析">
-                        データ分析
-                    </h1>
-                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
-                        Morning Briefing (2026-05-25 07:49)
-                    </div>
-                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
-                </header>
-                <div class="grid" style="animation: fadeIn 1s ease-out;">
-        
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTE9HaW1CUFpGUHdOaDcxcmNoeGpVclA1bFFXQlpvY3NJRF9FWXdERlEzTG1rRXdXMk5QeHBaYXhDXzRFb1lwaDYxSHJHRl9lTHhaNVhNWF85RFB0SGdNeGxLOGU2dk5vVVN0?oc=5" target="_blank">【日本ダービー2026】伊吹雅也のピックアップ競馬データ～特選重賞データ分析編 - 競馬予想のウマニティ</a></h3>
-                        <div class="meta">📅 2026-05-24 07:30 | 🏢 配信元: <b>競馬予想のウマニティ</b></div>
-                        
-                        <div class="ai-section">
-                            <div class="ai-label">📝 AI 要約</div>
-                            <div class="ai-content">本文取得エラーのため要約なし</div>
-                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">競馬において過去のレース結果や血統、枠順などのビッグデータを用いて確率を予測する「データ予想」というジャンルが存在する。</div>
-                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">情報のオープン化が進み、競馬ファンは個人の経験則だけでなく、統計的優位性のあるパターンを重視する傾向が強まっている。</div>
-                            
-                            <div class="ai-label">👁️ AI ワンポイント</div>
-                            <div class="ai-content">過去データは相関関係を示すが、競馬は突発的な天候変化や馬の体調という非定量的要素も大きく、統計だけで勝率を保証するものではないというバイアスに注意が必要。</div>
-                
-                        </div>
-                
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE51NmNMMXlVRS1PbHo1blYtUnRUX1ZnUTJyNTQwZTY1THJLZm51Zllpam5tZXh3NnMxMzZqeFhIakpfZmxJY242VkRIaXZ3WTJ3NzNMTkFNY3FncVdMWnkw?oc=5" target="_blank">【オークスデータ分析】連対率75％の激走パターン！桜花賞の上位人気＆連対馬が強い理由 - ライブドアニュース</a></h3>
-                        <div class="meta">📅 2026-05-24 02:00 | 🏢 配信元: <b>ライブドアニュース</b></div>
-                        
-                        <div class="ai-section">
-                            <div class="ai-label">📝 AI 要約</div>
-                            <div class="ai-content">本文取得エラーのため要約なし</div>
-                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">オークスなどの重賞レースに対し、前哨戦（桜花賞など）の成績や血統傾向から連対確率を導き出す手法は、競馬ファンにとって標準的な分析手法。</div>
-                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">データ解析ツールの普及と競馬データベースの整備により、素人でもプロ並みの条件絞り込みが可能になり、競馬を「ギャンブル」から「シミュレーションゲーム」として捉える層が増えた。</div>
-                            
-                            <div class="ai-label">👁️ AI ワンポイント</div>
-                            <div class="ai-content">「連対率75％」といった強い数字は、あくまで特定の条件下での過去成績であり、個体ごとの成長やコース適性という質的データが無視されやすい点に注意が必要。</div>
-                
-                        </div>
-                
-                    </div>
-            
-                </div>
+    </head>
+    <body>
+        <div class="container">
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <a href="../../../../../index.html" class="back-btn" style="margin-bottom: 0;">⬅ 最新のエディション（トップ）へ戻る</a>
             </div>
-            
+    
+            <header>
+                <h1>Morning AI Portal</h1>
+                <div style="font-size: 1.5rem; color: var(--accent-color); margin-top: 15px; font-weight: bold; letter-spacing: 2px;">
+                    Morning Briefing <span style="font-size: 1.2rem; color: var(--text-muted);">(2026-05-25)</span>
+                </div>
+                <div class="subtitle">トピックを選んで本日の最新ニュースとAI解説をチェック</div>
+                
+                <div style="text-align: center; margin-top: 20px; animation: fadeIn 1.2s ease-out;">
+                    <div style="display: inline-block; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; color: #38bdf8; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <span style="font-weight: bold;">🤖 API実行コスト:</span> 約 0.39 円 
+                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 8px;">(入力: 4,777 / 出力: 7,528 トークン)</span>
+                    </div>
+                </div>
+        
+            </header>
+            <div class="portal-grid" style="animation: fadeIn 1s ease-out;">
+    
+                <a href="economy.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/economy.png" class="thumbnail-icon" alt="経済">
+                    <div class="portal-card-title">経済</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="market.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/market.png" class="thumbnail-icon" alt="マーケット">
+                    <div class="portal-card-title">マーケット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="#" class="card" style="opacity: 0.6; cursor: default;; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/gcp.png" class="thumbnail-icon" alt="Google Cloud Platform (GCP)">
+                    <div class="portal-card-title">Google Cloud Platform (GCP)</div>
+                    <div class="portal-card-count">良質な最新ニュース 0件 </div>
+                </a>
+        
+                <a href="claude.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/claude.png" class="thumbnail-icon" alt="Claude">
+                    <div class="portal-card-title">Claude</div>
+                    <div class="portal-card-count">良質な最新ニュース 8件 ➔</div>
+                </a>
+        
+                <a href="gadget.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon" alt="ガジェット">
+                    <div class="portal-card-title">ガジェット</div>
+                    <div class="portal-card-count">良質な最新ニュース 12件 ➔</div>
+                </a>
+        
+                <a href="data_analysis.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/data_analysis.png" class="thumbnail-icon" alt="データ分析">
+                    <div class="portal-card-title">データ分析</div>
+                    <div class="portal-card-count">良質な最新ニュース 2件 ➔</div>
+                </a>
+        
+                <a href="character.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/character.png" class="thumbnail-icon" alt="キャラクター">
+                    <div class="portal-card-title">キャラクター</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="entertainment.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/entertainment.png" class="thumbnail-icon" alt="エンタメ">
+                    <div class="portal-card-title">エンタメ</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+            </div>
+        </div>
+        
         <!-- ✨ フローティング目安箱 -->
         <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
         <div class="feedback-modal" id="feedbackModal">
@@ -228,6 +248,6 @@
         }
         </script>
     
-        </body>
-        </html>
-        
+    </body>
+    </html>
+    
