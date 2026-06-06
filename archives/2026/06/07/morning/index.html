@@ -1,12 +1,13 @@
 
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Google Cloud Platform (GCP) - Morning AI Briefing</title>
-            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-            
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Morning AI Portal</title>
+        <meta name="description" content="AIが厳選・解説する最新ビジネスニュース">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+        
         <style>
             :root {
                 --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -127,63 +128,82 @@
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         </style>
     
-        </head>
-        <body>
-            <div class="container">
-                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
-                <header>
-                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="assets/images/gcp.png" class="thumbnail-icon-small" alt="Google Cloud Platform (GCP)">
-                        Google Cloud Platform (GCP)
-                    </h1>
-                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
-                        Morning Briefing (2026-06-07 07:56)
-                    </div>
-                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
-                </header>
-                <div class="grid" style="animation: fadeIn 1s ease-out;">
-        
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTFBubWgyV3ctR1VjMGl6aGhsaWY5bmZTWjhVbXI0TTFDWHNqNFI4Z1JTVk9aeHowWFpPdXZtNG1QcnNUQkZ4R2ZxN0NKSnhYZw?oc=5" target="_blank">Canonical、Google Cloudが提供するTPU仮想マシン向けに最適化Ubuntuイメージ提供開始 - CodeZine</a></h3>
-                        <div class="meta">📅 2026-06-06 03:51 | 🏢 配信元: <b>CodeZine</b></div>
-                        
-                        <div class="ai-section">
-                            <div class="ai-label">📝 AI 要約</div>
-                            <div class="ai-content">本文取得エラーのため要約なし</div>
-                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">Google CloudのTPU（Tensor Processing Unit）は、AIの学習や推論に特化したGoogle独自のアクセラレータです。Ubuntuは開発環境として最も普及しているOSです。</div>
-                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">従来、クラウド上の最適化された環境構築には時間がかかることがありましたが、公式な最適化イメージが提供されることで、開発の利便性と実行パフォーマンスの向上が期待されています。</div>
-                            
-                            <div class="ai-label">👁️ AI ワンポイント</div>
-                            <div class="ai-content">特定のOSへの依存度が高まると、ベンダーロックインの懸念が生じる可能性もあります。実運用時はコスト対効果を冷静に見る必要があります。</div>
-                
-                        </div>
-                
-                    </div>
-            
-                    <div class="card" style="cursor: default;">
-                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE01YjVLMXh3UVlXOEJfeFQ1RzNLSlR0N25lT2k1eF9VTkdxQkpIeDkzRjNsSzB4V2xKc3VKTUg3Vzk3Wmd5UFFmUlBOOUc1VWc?oc=5" target="_blank">AIは部下になるのか？ Google Cloud Next ’26で見えた新しい働き方 - DXマガジン</a></h3>
-                        <div class="meta">📅 2026-06-06 01:00 | 🏢 配信元: <b>DXマガジン</b></div>
-                        
-                        <div class="ai-section">
-                            <div class="ai-label">📝 AI 要約</div>
-                            <div class="ai-content">本文取得エラーのため要約なし</div>
-                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">Google Cloud Nextは、同社の年次イベントで、AIを活用した生産性向上（Geminiの統合など）が主要なテーマとなっています。</div>
-                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
-                            <div class="ai-content">「AIは道具」という認識から、AIを自律的なタスクの遂行者として扱う「エージェント型AI」へのパラダイムシフトが進行中です。</div>
-                            
-                            <div class="ai-label">👁️ AI ワンポイント</div>
-                            <div class="ai-content">「AIが部下になる」という表現は誇張の可能性があります。現段階では「AIによる業務の自動化・支援」が現実的なラインです。</div>
-                
-                        </div>
-                
-                    </div>
-            
-                </div>
+    </head>
+    <body>
+        <div class="container">
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <a href="../../../../../index.html" class="back-btn" style="margin-bottom: 0;">⬅ 最新のエディション（トップ）へ戻る</a>
             </div>
-            
+    
+            <header>
+                <h1>Morning AI Portal</h1>
+                <div style="font-size: 1.5rem; color: var(--accent-color); margin-top: 15px; font-weight: bold; letter-spacing: 2px;">
+                    Morning Briefing <span style="font-size: 1.2rem; color: var(--text-muted);">(2026-06-07)</span>
+                </div>
+                <div class="subtitle">トピックを選んで本日の最新ニュースとAI解説をチェック</div>
+                
+                <div style="text-align: center; margin-top: 20px; animation: fadeIn 1.2s ease-out;">
+                    <div style="display: inline-block; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; color: #38bdf8; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <span style="font-weight: bold;">🤖 API実行コスト:</span> 約 0.40 円 
+                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 8px;">(入力: 4,871 / 出力: 7,657 トークン)</span>
+                    </div>
+                </div>
+        
+            </header>
+            <div class="portal-grid" style="animation: fadeIn 1s ease-out;">
+    
+                <a href="economy.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/economy.png" class="thumbnail-icon" alt="経済">
+                    <div class="portal-card-title">経済</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="market.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/market.png" class="thumbnail-icon" alt="マーケット">
+                    <div class="portal-card-title">マーケット</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="gcp.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/gcp.png" class="thumbnail-icon" alt="Google Cloud Platform (GCP)">
+                    <div class="portal-card-title">Google Cloud Platform (GCP)</div>
+                    <div class="portal-card-count">良質な最新ニュース 2件 ➔</div>
+                </a>
+        
+                <a href="claude.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/claude.png" class="thumbnail-icon" alt="Claude">
+                    <div class="portal-card-title">Claude</div>
+                    <div class="portal-card-count">良質な最新ニュース 6件 ➔</div>
+                </a>
+        
+                <a href="gadget.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon" alt="ガジェット">
+                    <div class="portal-card-title">ガジェット</div>
+                    <div class="portal-card-count">良質な最新ニュース 11件 ➔</div>
+                </a>
+        
+                <a href="data_analysis.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/data_analysis.png" class="thumbnail-icon" alt="データ分析">
+                    <div class="portal-card-title">データ分析</div>
+                    <div class="portal-card-count">良質な最新ニュース 3件 ➔</div>
+                </a>
+        
+                <a href="character.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/character.png" class="thumbnail-icon" alt="キャラクター">
+                    <div class="portal-card-title">キャラクター</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+                <a href="entertainment.html" class="card" style="; align-items: center; text-align: center;">
+                    <img src="../../../../../assets/images/entertainment.png" class="thumbnail-icon" alt="エンタメ">
+                    <div class="portal-card-title">エンタメ</div>
+                    <div class="portal-card-count">良質な最新ニュース 15件 ➔</div>
+                </a>
+        
+            </div>
+        </div>
+        
         <!-- ✨ フローティング目安箱 -->
         <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
         <div class="feedback-modal" id="feedbackModal">
@@ -228,6 +248,6 @@
         }
         </script>
     
-        </body>
-        </html>
-        
+    </body>
+    </html>
+    
