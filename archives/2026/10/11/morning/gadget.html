@@ -1,0 +1,404 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ガジェット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon-small" alt="ガジェット">
+                        ガジェット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-10-11 09:35)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFB2MFFKTjZtT2gtVzZTNnRwYXMxR2JtVkl4aE5ZUElIaTh5UUFkNlVKWjBrLU91RjZWSjUzMTJma0FUZnozN3NSVUI2Z1loaXc1dmRUQnY4QVEtVmEzMHN5TzM4OWJ5ZXVJQ2xBY0FvTGd5UDh6anNDRWowUkhQTlU?oc=5" target="_blank">【自分のスマホがAI秘書ロボに進化】仕事環境が劇的に変わる「次世代ガジェット」が凄かった！165W急速充電器内蔵など話題のLoona Deskmateを体験してみた（MonoMax Web） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-10 23:07 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI搭載ロボットは、単なるエンターテインメントからデスクワークの効率化を支援する「パーソナルエージェント」へと進化しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来の卓上ロボットはキャラクター性が重視されてきましたが、近年は急速充電やハブ機能といった実用性を付加し、デスク環境の最適化を担うガジェットが登場しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「AI秘書」という言葉は抽象度が高いため、実用的な作業効率向上にどこまで寄与するのか、あるいは単なるガジェット愛好家のためのツールなのかを見極める必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTFBJdm8zeWhjZjFxbkRxNFpsRWN3QzR5ZTJ4NGVBMG1PNmpvNUl6NlRIQ1RNYmp6c2tTWlhrbHJndGI1djBiTnBNV1JxNGVsOURFa2h2Y2pqWjBCVzFqQ0ozd2ZENGhTZw?oc=5" target="_blank">『究極タイガー』がゲーセンで遊べる、しかもM2ガジェットやスーパーイージーモード付きで！『M2ShotTriggers ARCADE』発表 - Game*Spark</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-10 21:15 | 🏢 配信元: <b>Game*Spark</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">M2は、クラシックゲームを現代のハードウェアで忠実に再現・復刻させる技術力で知られるメーカーです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">90年代のアーケードゲームの権利を継承し、移植を行う動きはレトロゲーム市場で活発化しており、難易度調整など現代的な機能を追加することでライト層の取り込みを狙っています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">レトロゲームの市場はノスタルジーへの需要が根強い一方、新規IPの開拓と比較してビジネスの拡張性には一定の天井があるという見方も可能です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE1NdkRlZ01GSVdLN1FnMndOajZRSWVTMDJmaUp0MFVPYV9lMU9rNmdvTlpEbERmdGE5YzlQZU91bFJDYy15eXFGY2ppaVE4V0hIa1BCWA?oc=5" target="_blank">秋葉原に最高のゲーミングガジェットが勢揃い。アスキー主催の体験イベント「GPS 9」が大盛況で終了！ - ASCII.jp</a></h3>
+                        <div class="meta">📅 2026-10-10 09:00 | 🏢 配信元: <b>ASCII.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ゲーミングデバイスは周辺機器としてだけでなく、PCスペックの向上とともに生活空間に溶け込むインテリア化が進んでいます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ASCII等のIT専門媒体は、秋葉原を聖地として活用した体験イベントを通じ、ECサイトでは伝わりにくい操作性や質感を確認する場の重要性を再評価しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">イベントの盛況は「ガジェットファンのコミュニティ熱量」を示す一方で、一般層への普及とは温度差がある可能性を考慮すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5hUEtEaGFMaUhSVW05MC1NbkFDODgwczhzQzJQUTRPcXREWTI1VVhuaDhHY2RTVHVqWV9PTjJ0eHRFSFBjYVo3bGJiUjNfTWdyejZGanZVOVlBRVNWdmQwYnJjcGFrRWN2QTNaRnpVQmgzaHM5TkkwUGp3?oc=5" target="_blank">iPhone 18 Proが初登場、26年9月に売れたスマートフォンTOP10 - BCN Retail</a></h3>
+                        <div class="meta">📅 2026-10-10 09:00 | 🏢 配信元: <b>BCN Retail</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンの販売動向は、高価格帯モデルの浸透と買い替えサイクルの長期化が顕著です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">iPhoneシリーズは安定したシェアを誇りますが、OSの進化やAI機能の統合により、ハードウェア自体のスペック以上に「ソフトウェア体験」の差が競争軸になっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">BCNのデータは量販店実績が中心であり、キャリア直販やオンラインストアの動向と乖離が生じる可能性がある点に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYkFVX3lxTFA1MnJQdHdVTHhwLWNFSzByMVdkenFmZGJZM0xJZ1BOV1B6S0V1ZjhoTWFtOW9LMlBBaGtFTGEzUXdmZWF2TE5MbVlweTdDU1NaR0xPZUhLc0ZpYTBscDk5aVpR?oc=5" target="_blank">読むだけじゃない。使い方が広がる、話題の「電子ペーパーガジェット」 - Gizmodo</a></h3>
+                        <div class="meta">📅 2026-10-10 09:00 | 🏢 配信元: <b>Gizmodo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">電子ペーパー（E Ink）は目に優しく低消費電力であることから、読書専用端末から「集中して作業する」ためのポータブルガジェットへと用途が拡大しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつては電子書籍専用機としての立ち位置でしたが、近年はノートアプリとの連携を強化した「デジタル文房具」としての市場が形成されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">多機能化は、電子ペーパーの最大の強みである「シンプルさ」「集中力の維持」を阻害する可能性があるというトレードオフの議論が存在します。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQNUx6eUx0RVZPYnB1ODVtZHpjQ3M2aWhyT2NpLWItV01FN2VSTmhSdGJ4Z2lrd1J1eVcyZm1vVzlHNFpWX3VOMEhZOHBlMkRpTDVXdnpxVUZGaXVHa0pOM2RDNHhqX0FsNkQ0djR6N011aTBIdllXNHNpcTBRakk5VVJ3WlJ5Y1E?oc=5" target="_blank">秋祭りの獅子舞の位置 スマートフォンで見える化 高岡市戸出（2026年10月10日掲載）｜KNB NEWS NNN - 日テレNEWS NNN</a></h3>
+                        <div class="meta">📅 2026-10-10 08:42 | 🏢 配信元: <b>日テレNEWS NNN</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">GIS（地理情報システム）や位置情報活用は、自治体におけるデジタルトランスフォーメーション（DX）の重要なツールです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過疎化や高齢化が進む地域において、伝統行事の可視化は観光客誘致や地域コミュニティ維持のための新しいアプローチとして注目されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">技術の実装だけでなく、継続的なメンテナンスや地域住民の利便性向上にどれだけ寄与したかの定量的検証が今後の鍵となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFBXSzA2WkF0VmRQdVBHQ2hxLWxYRTNuN2w3Uy0xZy1QdktwMmYwYl9xemZvLVowYmpNSVdqZzFJQjh3d1FRSm03c0lFdExGNXhQdGJmUk9B?oc=5" target="_blank">【スプラレイダース】おすすめ最強ガジェット【スプラトゥーン レイダース】 - ゲームウィズ</a></h3>
+                        <div class="meta">📅 2026-10-10 06:24 | 🏢 配信元: <b>ゲームウィズ</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ゲーム攻略サイトは、メタデータ分析に基づく効率化（最強ガジェット選定など）で収益化を図るビジネスモデルです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">対戦ゲームにおける環境変化は激しく、攻略サイトはリアルタイムに情報を更新することでユーザーの検索流入を確保する戦略を採っています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「最強」という言葉は個人のスキルやプレイスタイルによって変化する「主観的な要素」を含んでいるため、情報の受け手側での取捨選択が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTFAtal91TXU5MzF5ZktRMkU1WmhPVGhKcnlaeUJuU3ZHTEJzRW1td1NDRnBnSi1NTGNId3pyLTVTWHh1N1JPTUFtUVpMYUVnSXhNLWxQRQ?oc=5" target="_blank">ガジェットが無料で貰えるかもしれないって、すごくない？ - ASCII.jp</a></h3>
+                        <div class="meta">📅 2026-10-10 06:00 | 🏢 配信元: <b>ASCII.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">無料ガジェット提供は、メーカーによる新製品のプロモーションや、レビュー収集を目的としたマーケティング手法です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">SNSやインフルエンサーを通じたマーケティングが主流となる中、読者や顧客還元イベントとしてのガジェット提供は高いエンゲージメントを誘発する手段として活用されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「無料」の裏には個人情報の収集や広告接触の対価といったビジネス的な意図があることを、消費者は自覚しておくべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTFA0MktoeTdZRXNwSkV3VC05eFdrM0pZWFYwcmhYRVVwcTh0V1NKVmxfOVlCc1pXa2dVc1pFNjA3anFrUUd1RFlCVER2ZHBHS252UTFWb3ZZdmI?oc=5" target="_blank">ソニーが空間オーディオマイクロホン「ECM-AX10」を発売。スマートフォン＋専用アプリで、撮影から編集、動画ファイルのエクスポートまでサポート - Stereo Sound ONLINE</a></h3>
+                        <div class="meta">📅 2026-10-10 05:14 | 🏢 配信元: <b>Stereo Sound ONLINE</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クリエイターエコノミーの拡大に伴い、プロ級の音質をスマホで手軽に収録したいという需要が急増しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">動画撮影の主役がビデオカメラからスマートフォンへ完全に移行したことで、周辺機器メーカーは「スマホで完結する高品質な制作環境」の開発に注力しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">専用アプリによるロックイン（囲い込み）がどれだけ使い勝手と品質に貢献しているか、汎用機材との比較が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE1NM1FPNnllRWpkSktwT25jbFhtLV9Kbi1SRjVCME1Mdm5sUzFiZHdWZk53d0VTNXFXVmdLVzd5dDJGY2FxeGk1dE0yQTlEQng4LXM5Vw?oc=5" target="_blank">アスキーが秋葉原でイベント開催中。秋晴れ、ゲーミングガジェット日和。 - ASCII.jp</a></h3>
+                        <div class="meta">📅 2026-10-10 05:00 | 🏢 配信元: <b>ASCII.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ゲーミング環境のアップグレードは、高性能PCだけでなく、デスク周りの周辺機器まで含めたトータルコーディネートがトレンドです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">コロナ禍での巣ごもり需要を経て、現在は「いかに快適な没入空間を構築するか」という趣味性の高い消費活動へとシフトしています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「ゲーミング〇〇」と付くことで価格が上乗せされる傾向があり、必要以上にオーバースペックな投資をしていないか冷静な判断が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE5naTJCOE85VVpEOHBiV0RDZzNkMXJOZmJHa2xxRWt2TTVQZE1lNnRVWndkVGd5a3Z0OXF3ZVgzRWlUYkpoSVRlWnJ4RWtuRE9qWmtZVFB4NjBYaVlwNEE?oc=5" target="_blank">アキバにゲーミングガジェット大集合！ TOKYO Gaming-PC STREET 9 in LIFORK AKIHABARA II【配信】 - 週刊アスキー</a></h3>
+                        <div class="meta">📅 2026-10-10 03:25 | 🏢 配信元: <b>週刊アスキー</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">秋葉原という立地は、ハードウェアオタクやPCゲーマーが集まる街であり、体験型イベントには熱心なコアファンが集まりやすい特徴があります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">PCゲームの市場規模が家庭用機を上回る中で、ゲーミングPC周辺機器は単なる電子部品から、ライフスタイルの一部へと格上げされています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">イベントの配信等は、物理的に足を運べない層へのアプローチとして重要ですが、体験の質と広告効果のバランスが運営側の課題となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
