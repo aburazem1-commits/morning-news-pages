@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ガジェット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon-small" alt="ガジェット">
+                        ガジェット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-10-13 11:47)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9QLWo4UEtJODdzVTlUVUlwZEUyU2JmMl9sbTVZRF9lQ2wtdXJhZV9OTDItSV9FaEE3amRZYzZnTzhzSm42OXlyT1c2N1ZfX1o2ZjZNeU5sekRrMDF5VTVWZi1ZY0J2a3BidHc?oc=5" target="_blank">伊藤忠グループのBelong、「にこスマ買取」にてスマートウォッチ買取を開始 - PR TIMES</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 02:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">伊藤忠グループのBelongが展開する「にこスマ」は、中古スマートフォンの買取・販売を行うCtoB/CtoCプラットフォームである。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンの中古市場は、新品価格の高騰により拡大傾向にある。Belongはこれまでスマホを中心に扱っていたが、周辺機器へ商材を拡大している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">中古ガジェット市場における「査定の透明性」が競合との差別化要因となるため、今回のスマートウォッチ対応が収益にどう寄与するかが焦点。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE0zZVJad19SNWJhb0tXZ3h0aW1pQXJ6Rnl1VWh1c3ZTSkhYWkNYMEFhY3VkbWFCaWxiOWFqdDY2NlUxdWhFblRwazBKNUp2d3pjZ0tyTFdPVmVzVWZTN0RlSlN2eVEyWlg1dy1hVXoxYlpRbkc1M2lLVlhMLWczMkE?oc=5" target="_blank">「にこスマ買取」でスマートウォッチも取り扱い開始 Apple Watch計67モデルに対応、3段階の基準で査定（ITmedia Mobile） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 02:20 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートウォッチ市場において、Apple Watchは高いリセールバリューを維持しており、中古需要が非常に高い。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Belong等の事業者は、専門的な検品技術を確立することで中古市場の信頼性を高め、ユーザーが安心して買い替えできる環境を整備してきた。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">3段階の査定基準が中古販売価格にどう反映されるか、市場での中古流通価格の安定性がポイント。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMia0FVX3lxTFBUdWxqc3loWHY4YS1QZWhSU1YtYTEzU3N4UmhlSGgxQ2JwZkdlN1FMeHk4RjdFeXljajhmSDJSbDhKT2lEVHBBUDRuLXA2RzlMRVlybDlGaWtJVEVrSjZBSGNTUVpnemJGRXc4?oc=5" target="_blank">ネットプロテクションズの後払い決済「atone」スマートフォンアプリを全面刷新 - 時事ドットコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 02:16 | 🏢 配信元: <b>時事ドットコム</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ネットプロテクションズが提供する「atone」は、クレジットカードを持たない層や現金派をターゲットにした後払い決済サービスである。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">FinTech分野での競争激化に伴い、UI/UXの刷新による継続利用率（リテンション）の向上や、アプリを通じた加盟店送客が重要戦略となっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">UX刷新が単なるデザイン変更に留まらず、実際に決済コンバージョンにどう影響するかを確認する必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMia0FVX3lxTFB3dUNxWEhOUHA4VUJuRG1zY2FJWnlfeTdxWjlBdjRINGVORjlscVZmX1NqaGU5RlB2cG9IVHR3R1pyNjB3b1Znd0hKQXd2MGJHNmNNQnBFZEdwSDV6aWstMmJWaDFZN3dJWWZR?oc=5" target="_blank">吹付け断熱材の凸凹をスマートフォンで可視化断熱材の厚さ確認を支援する「でこぼこスキャン(TM)」を共同開発 - 時事ドットコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 02:16 | 🏢 配信元: <b>時事ドットコム</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">建設現場におけるDX（デジタルトランスフォーメーション）の一環で、スマホのカメラを活用して断熱材の施工精度を効率的にチェックするニーズが高まっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">人手不足が深刻な建設業界において、従来のアナログな目視検査をデジタル化し、品質管理を標準化する取り組みが進められている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">スマホのカメラ精度と環境光の影響が測定値に誤差を生む可能性があるため、実務上の信頼性検証が普及の鍵となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxQZjZ1VjRwNHpVQ190RXR4RXhwOWc5cVIyRmVKRENYUTBlUFZzaDhpSVdSNkhHZDItX240MzhvVmxrY1lzZVFDRHBtN3ptWjJSYjFRenFBSWpMSlR2Mkg0ZFZ4Rk40M1UyeWJpS1VXem1HaVNuRE5FVVBOVXI1NzNYY3BGbUdfYVU0cEVRY1Z1R2l4eDFORzFuTg?oc=5" target="_blank">5つの128GBスマートフォンが350万ベトナムドン以下で大幅値下げ：5G、NFC、6GB RAM搭載。 - Vietnam.vn</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 01:59 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ベトナムを含む新興国市場では、低価格でありながら5GやNFC等の高機能スペックを備えた中国系メーカーのスマホが人気を博している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">グローバル市場でのスマホ普及率上昇に伴い、価格競争が激化。特に350万ベトナムドン（約2万円前後）の価格帯は激戦区となっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">在庫処分や型落ちモデルの販促キャンペーンの可能性があり、継続的な価格設定かどうかは見極めが必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTE5HUkhhWjFsY2pCejdJbDFfSUwyOGxmc25odURud3pncnVuVFc2bTJZT01KMHdCaXN5UmNJdHJoQUNjVzlaYVp2N1c1aGdoY2Y5VnhiLWl0NEZZNkpselhoQ1RQRlRmTThzeTBsa0R1SQ?oc=5" target="_blank">スマートフォン「iPhone」歴代モデルの要素技術（後編） - EE Times Japan</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 01:30 | 🏢 配信元: <b>EE Times Japan</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">iPhoneはスマートフォンの歴史を築いたデバイスであり、その内部構造や採用技術は他メーカーのベンチマークとなっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">カメラの進化、SoC（チップ）の高性能化、ディスプレイ技術の向上など、iPhoneの技術変遷は業界トレンドそのものと言える。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">技術解説記事は過去の振り返りであることが多く、現在の製品開発戦略との連続性をどう捉えるかがビジネス上の要点となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE1lMVVQUHAwZjc5emdJRVlQcUJqcHFLNmNHN2NIUU5PWWU1ajFIZDZ1bkxkV2VIbDR0X3ZKQ0dSb0gwTmRKZkJjSC1tMkY?oc=5" target="_blank">スマートウォッチの消費カロリーは運動の種類が分かると正確になる｜手首と腰のセンサーで誤差が市販品より約3割減【研究レポート】 - Smart Watch Life</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 01:28 | 🏢 配信元: <b>Smart Watch Life</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ウェアラブルデバイスの健康管理データにおいて、消費カロリーの算出はアルゴリズムに依存しており、従来は精度が課題であった。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">センサー技術の進化とともに、より正確な生体データ測定が求められており、学術的研究と製品開発の距離が縮まっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">3割減という数値は実験室内での結果であることが多いため、日常的な装着時でも同様の精度が出るかは環境次第である。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTE45ZXdpSllyQXhTZ3lrVWVXdWo4RVBYc3NfVHJIZjlwRUdNV1JRcXNaUWVMLVdlVDI4VzFrUEJDeWFtUi14RXV5TzFpNA?oc=5" target="_blank">スマートフォンを手から放せない本当の原因は単純に画面を覗き見る「時間」そのものではなく、その時間の間に何をして時間を過ごすかにあるという研究結果が出た。果てしなく続くショートフォームコンテンツとソーシ.. - 매일경제</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-13 00:53 | 🏢 配信元: <b>매일경제</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">現代人のスマートフォンの過度な利用は「デジタル中毒」として社会問題化しており、脳科学的・心理学的アプローチでの研究が進行している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">SNSやショート動画がもたらすドーパミン報酬系への影響について、多くの専門家や規制当局が警鐘を鳴らしてきた。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">単なる時間量ではなく「体験の質」に焦点を当てた研究は説得力が高いが、各個人の属性によるバイアスも考慮すべきである。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMickFVX3lxTFBxMHpUYTF2eGFDRUIzTTZkQk9kMnZxeW9oZ3FWMXc2WWgzTEo5ZG5WbjFGaFFZX3BRY0VZenBzMEl5Q2dLU3JkbGJ2OGtqQUJsckN1b2xvVGhjLVJUUV9YY0t1Uk5DakNWSTJOMG5xcWlvZw?oc=5" target="_blank">2026年最高のスマートウォッチかも。Pebble Round 2いよいよ出荷開始 - Gizmodo</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-12 23:00 | 🏢 配信元: <b>Gizmodo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Pebbleはかつてクラウドファンディングで成功した伝説的なスマートウォッチブランドであり、熱狂的なファンを持つ。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">一度はFitbitに買収されブランドが消滅したが、有志やコミュニティによる復活プロジェクトが継続的に進められてきた。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">レトロガジェットとしての需要と、現代のスマートウォッチ機能としての実用性のバランスに注目すべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE1OdVBjM2NtZDctNy0tejBhMENwcnJ0RElMdUdnYWFiQ3RudnREV3MxbkVUUXdFYmtUakNjc0hZbWNMWG5ZMGdSUXMzNXZHREVXU0E?oc=5" target="_blank">ファーウェイのスマートウォッチはなぜ選ばれる？ 中国の巨大ラボで見えた“技術への本気度” - Gadget Gate</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-12 21:30 | 🏢 配信元: <b>Gadget Gate</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ファーウェイは米国の制裁下でも自社開発チップ（Kirin）や研究開発投資を強めており、高い技術力を見せている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">欧米市場での苦戦を補うため、中国国内やグローバルでのヘルスケア分野でのプレゼンスを強化する戦略をとっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">技術への本気度に対する評価は、地政学的リスク（制裁）の影響やサプライチェーンの安定性という視点とセットで考える必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE8zTF9xaXNrZTFtNW05ZmZkT3VEWU1rTGVrejdGd2w5VjBIc1hSSFVENnV6SUt4alEydnhBYVZDUFpDMno2T01KOU9IQWxYUDR1MUlWb3VBX2gyd1BsbVE?oc=5" target="_blank">【2026/10/13】今日のガジェット注目ニュース3選｜Google Fitbit Edge・OnePlus 16・CMF Buds Neo 国内発売 - https://ggc-japan.com/</a></h3>
+                        <div class="meta">📅 2026-10-12 20:13 | 🏢 配信元: <b>https://ggc-japan.com/</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">国内市場ではGoogle、OnePlus、CMF（Nothingのサブブランド）など、多様なブランドが競争している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートウォッチからイヤホンまで、デジタルエコシステムの構築により顧客を囲い込む「スイート化」戦略が一般的である。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">国内発売ニュースは、販路やキャリアとの連携によって普及スピードが大きく左右される。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMilwFBVV95cUxPSDJWVEtvbk5fM201eDlPMlBYVTdrWWxGYzE5anRZMllfWEhVcTBLQ0xEdXpyRXZSQWtVbkt6dWdmSjF2bzhDNEVBanJjV2tORnh3WVc0RzdZWm5rRmpLOHY2cFBfRjR3ZnVVYzB0NlhVOEVKT0FTR0taWEwzb0ZhRzVSLXJGM08zSUFocWtLSy1CMHRibnYw?oc=5" target="_blank">iPhone DuoとMotorola Razr Ultraの比較：折りたたみ式スマートフォンの世界における巨人の激突 - آي-فون إسلام</a></h3>
+                        <div class="meta">📅 2026-10-12 19:43 | 🏢 配信元: <b>آي-فون إسلام</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">折りたたみスマートフォン（フォルダブル）は、次世代のスマホデザインとしてプレミアム市場を牽引している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Samsung、Motorola、Apple（噂）などの巨人が、耐久性とUIの両立で競争している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">比較記事は主観的なUIの好みが入りやすいため、客観的なスペック比較や故障率などの長期レビューを併せて参照することが推奨される。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBCTXF3cWFXRXZKZWdSaHZzNzR3MzI4SXdkM1hDMUdmWXpCUkdxbDV0aGgzRmxXVVZuZzRQVk1ySjFKUWFVX01rNUJlZFJLSXE0SnV4NUNrd1FPdWdGTWFiZFlPTHV2NU0?oc=5" target="_blank">Opensignal、サテライト・ツー・スマートフォンD2D接続の実態を示す世界初のインタラクティブマップを公開 - Business Wire</a></h3>
+                        <div class="meta">📅 2026-10-12 17:17 | 🏢 配信元: <b>Business Wire</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">衛星通信による通信網の確保（D2D：Direct-to-Device）は、通信インフラがない場所での非常時通信として重要性が高まっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AppleやSpaceXのStarlinkなどが先行しており、グローバルなカバレッジ構築が競われている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">マップ上のカバレッジは理論値である可能性が高く、実際の通信成功率は気象条件などに左右される点に留意。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE5sMm9LUHd4ZWhPMHVBaDJmSHhLSnNOMU5IVG1iNUFZV1BqWHNlY2JwV3Iwek5GNFNXbER3OENOajlETEFrdVhNVVVRSEFUa3p5eWVOeWNicmM4c1FZZE54czNlUmE1Zw?oc=5" target="_blank">【Amazonセール】サムスンのスマートウォッチ「Galaxy Watch Ultra 2025」がお買い得【プライム感謝祭2026】 - GAME Watch</a></h3>
+                        <div class="meta">📅 2026-10-12 15:05 | 🏢 配信元: <b>GAME Watch</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Amazonの「プライム感謝祭」等のセールは、ガジェット需要を刺激し、エコシステムへ新規顧客を流入させる重要な機会となっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">サムスンはGalaxy Watchをフラッグシップとして位置づけ、定期的な割引で市場シェアを維持している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">セール価格が常に最安値とは限らないため、過去の価格推移や並行輸入品との価格差を比較する慎重さが求められる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMitgFBVV95cUxPaFBJVU1qYVZEazJRNlJRR3pKcWlSMXBPel9ZRTdrZkYzajlBbkU0blRDazhOMDBJZW1YclJ3YloxSlJlbml4SXFkd2haUl9WYTQ1V1RZTDZtWHJGTVVOR1M1Sll0N1IxajJyU3htZGVlS2pUSXRVYWlqaFF4RGtvcVA3MktIYUFuYlZMZXhsM2lGM1VfSWNkQzBvczlqaGdTTVNfQnNiTXBKUS1nZV9OMnlRWVVEZw?oc=5" target="_blank">3つのオペレーティングシステムを搭載したスマートフォン「NexPhone」は、アンテナの不具合のため、出荷日が2027年3月に延期された。 - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-10-12 13:40 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォン市場は現在、AndroidとiOSの寡占状態にあります。マルチOS搭載端末は、特定のOSに依存しない環境やセキュリティ、生産性を求めるニッチ層に向けた技術的挑戦です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">複数のOS（例: Android、Linux系、独自OS等）を切り替えて利用できるハードウェアの開発は、過去にも「Librem 5」や「PinePhone」といったプロジェクトで試みられてきましたが、ドライバやハードウェア最適化の難易度が高く、量産化の壁に阻まれるケースが多発しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「アンテナの不具合」による大幅な延期は、技術的な最適化の難しさを象徴しています。量産化の発表からリリースまで数年を要するハードウェアプロジェクトは投資リスクが高いため、実機が完成するまでの進捗や資金繰りに注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
