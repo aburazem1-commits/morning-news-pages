@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Claude - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/claude.png" class="thumbnail-icon-small" alt="Claude">
+                        Claude
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-10-19 08:49)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9TQ0F0UlZSSEt5NEpjSmE2OFpSSDBuOWwxaW9vb3NOVWZRd3NjaFRyVTVhMFBFME5YMlQ0WngzekhfVTJydjBraTI2X0tReEhmZzlEdEFYTTJQMmZ4cWJSa1FDM2daZU1xOWc?oc=5" target="_blank">Anthropic、社内でAIエージェントの稼働時間が人間の6倍に 技術系初級職の採用比率は27％→9％に激減 - ITmedia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 23:02 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIエージェントによる自動化が、従来の労働生産性の定義を根本から変えつつある。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicが社内開発プロセスにAIを深く統合し、ジュニアレベルの作業を代替させた結果、採用戦略に変化が生じた。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">採用減は効率化の成果だが、次世代の育成機会の消失という長期的リスク（スキル継承の断絶）も考慮すべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9TMXROYXRnZmtXbDlmMHVzSGZIZDh4ZjFIWUFCR1lLdUM2Uk95T3RMcVFlNHFncWRMYjZyX3piX24yX3F5bHNhMFpYNFExZ09MbHpFRWN1T3JWT1JSaTZZeG9wWW9rUjRISE5vSw?oc=5" target="_blank">2位は「Claude Codeを使い3時間で開発、熊本地震で累計60万人が利用の掲示板サイト」20代以下の注目トップ10 - 日経クロステック</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-10-18 20:00 | 🏢 配信元: <b>日経クロステック</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「Claude Code」などのAIツールを活用することで、個人開発者が短時間で社会的な影響力のあるアプリを構築可能になっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">大規模言語モデルのAPI活用から、自律的にコードを書くAIエージェントへとトレンドが移行している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">特定の開発効率が強調されがちだが、運用保守やセキュリティという視点が抜け落ちていないか注意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTFBZaWJyLVNFNXNDZmd2a25KTGxqVGdFOHZycl90TU5mNGRXZEJ1VWRLUjk0WVRpSkpGQ0lidEowRFRUdllpRGVLS21lazVDMzJfMkE?oc=5" target="_blank">Claude、暗号技術の「25年来の謎」を30分足らずで解明 - CNET Japan</a></h3>
+                        <div class="meta">📅 2026-10-18 01:20 | 🏢 配信元: <b>CNET Japan</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">LLMの論理推論能力は、数学的課題や科学的発見の加速器として評価されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">数十年解けなかった学術的な難問に対し、AIがパターン認識と論理的検証を組み合わせて突破口を開く事例が増加している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「解明」の定義が重要。AIの提示が数学的証明として完成しているか、人間の専門家による検証が依然として不可欠である。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE5NUjFxNUdraHJIYndQdHJ5RmFhNWhDZUdnSDJtcEU5aG9ZSUEzVk9BUXlhbEIwaGVsc2QxbnQ4Ry1lekxCaUw4c2cyMzJHLWQ5cFhwS2FUb0tuWnBldUhSaGtEZGZpSk9UZmc?oc=5" target="_blank">Claude・ChatGPTのサブスクでデータ分析をAIに任せる。デスクトップAIエージェント「Kari」が、CSV・Excelの分析自動化機能を追加 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-10-18 00:39 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">業務効率化ツールとしてのAIは、ブラウザだけでなくデスクトップ操作を伴うワークフローの自動化へ移行している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ChatGPTなどのWebサービス型から、ローカルデータと連携するRPA（ロボティック・プロセス・オートメーション）との融合が進んでいる。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">セキュリティとプライバシーの観点から、ローカルデータへのアクセス権限管理が導入判断の鍵となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFB2OTJHUjhsSDMzU1pnZl91MlkwUHJfcGlXXzIwT2xlSUdqR0FfRzlkVlpaM3dyZ1ZVN0RnWEtvLVo5SWVvd0pVejhNemRVM3hXQWtxOWc1QklvamE5WEZaQU95STU3NExtOHI4Z1Z1cG5uVnVNemJEUzM3QUFOY0k?oc=5" target="_blank">AnthropicのClaude、量子回路の最良設計を更新──暗号解読に関わる計算も改善（NADA NEWS） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 23:06 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">量子コンピューティングとAIの相乗効果。特に量子回路最適化は将来的な暗号技術の安全性に直結する。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">古典的な計算手法の限界を、AIによる探索的アルゴリズムが補完し、性能改善を実現するフェーズに入った。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">暗号解読への言及は極めて機微な情報であり、将来のセキュリティリスクに関する専門的な議論を伴うべき内容である。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiQkFVX3lxTFBQZ3NSZDNQN091ZmdxOTZqWTc4WWhWdTkzaEFWb05XclNtUlZfNzZ2Y1ptZXRzLTA0bXlIbHhxUENhUQ?oc=5" target="_blank">「全部パクって大丈夫です」――Claude Codeの自動化リストが1500いいね集めた中身 - shiritomo</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 22:34 | 🏢 配信元: <b>shiritomo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Claude Codeの自動化ノウハウがGitHubやSNSで共有され、開発者の生産性が再定義されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「AIをどう使いこなすか」というプロンプトエンジニアリングの時代から、エージェントをどう制御するかという「構成管理」へ関心が移っている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「全部パクって大丈夫」という表現は文脈依存であり、著作権や商用利用の規約を鵜呑みにするのは危険。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTFBXVW1xc2JSb0JSVUQwSmZoQXA1a0RpVGFfUnQyNXdscGx4X2tkWnNubHBWNlQ3WEE4UFRRNTFRZXd2U2VXTHlVQURmelF3eFpjZGJkb2szalpFNTc5UzFIZtIBZkFVX3lxTE42WnlvZjhINy1qZHZkTkQwdzRpTzhibTQycmxOOUlfbURVWnlfVnBMOGlrQjZmNlVUd2hXekhtSjhqZTVyVWpYZVRaMlZYOEhXY0hYbGI5dmdvYzFXbWZ5RjJiaUpMUQ?oc=5" target="_blank">Anthropic、技術職の新規採用に占める若手が27％から9％に　AI導入後の社内変化を報告 - リアルサウンド</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 22:00 | 🏢 配信元: <b>リアルサウンド</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI導入は単なる効率化だけでなく、企業の組織構造（ヒエラルキー）の再構築を迫る。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来はジュニア職が担っていたルーチンワークがAIへ移行したことで、組織のピラミッド構造が変化している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">採用比率の低下は、既存シニア層のAI習熟度が企業価値を左右する転換点を示唆している。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTE4xUjlsZ1dBRldxemU0SVJFVkh0eklFRnpJQURCWFFZWXZKWTFnZnd1TVFKSk93UGptUXRsblpOWnZNYWltUndFb1FScFhoMDF4YnRsX1ZwS0UzRllXXzA4YkgzSURqN3Y2RGNUR09EVmhBeHAtLXMtZA?oc=5" target="_blank">Claudeの脆弱性を暴いたセキュリティ企業創業者が語る「AIの怖さ」。コピペ禁止でも1文字ずつ打って突破 - Business Insider Japan</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 21:00 | 🏢 配信元: <b>Business Insider Japan</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIモデルの安全対策（ガードレール）に対する攻撃手法（ジェイルブレイク）は進化を続けている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">テキストベースの回避策が封じられても、入力の形式や環境を変えることで防御を突破する高度なセキュリティ研究が進行中。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">脆弱性の発見はリスクの証明だが、それが悪用可能なレベルか、防衛可能なレベルかの峻別が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMid0FVX3lxTE9XdUdEWjgzMlcxdER0WjBMaWE0Uzl1dFZpcDZiV3RHMVVmNXJXb2EwOU1Jbk5Ta3lRcHpEVnd4bERaVm5nWXpTd0hxWGpYV3Y5RDFIY1JCWlpjNjNXM2JTR2FlQnBQY01WTnhxUlEtYlF4S2lXM0hN?oc=5" target="_blank">OpenCodeでセキュリティ侵害、利用者の1.4%に影響し、OpenAIやClaudeのAPIキーが流出した可能性 - XenoSpectrum</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 20:36 | 🏢 配信元: <b>XenoSpectrum</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI開発環境ツール（OpenCode等）の普及に伴い、ツール側の脆弱性が上位サービスのセキュリティを脅かしている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">サプライチェーン攻撃の対象が、OSやアプリケーションからAI特有の環境設定ファイル（APIキー等）へ拡大している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">個人の利便性と引き換えに認証情報を預けることのリスク（シャドーIT）を組織は再認識すべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibkFVX3lxTE5faUhHcTdQUWJPMnJkUzRpUHVZSktnUjByNGNvbVMzUFBZSVNhcGx6bm92aVVzUFBwMHZkejdKVGM1bnlZVG9MYWdPSFBmMUhEeTdhR2N2ai1jSTZPcmxfbzA1SlJxN0lsRXA3OVNn?oc=5" target="_blank">技術職採用の若手比率が27%から9%に、Anthropicの「AI稼働6倍」を読む - XenoSpectrum</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 20:11 | 🏢 配信元: <b>XenoSpectrum</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIが「雇用を奪うのか、補完するのか」という議論から「企業の採用戦略そのものをどう変えるか」という経営課題への昇華。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicの事例が、AIネイティブ企業の先行指標として業界で注目されている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">他社が同様のモデルを再現できるかは不明であり、Anthropic特有の自社開発文化が影響している可能性もある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijwFBVV95cUxQZWxpU3g2aUIzZFQ5QUN6YTJtZlRhdnFhRlJZTGJYQmplWFBQcy1Xc1lRazFYaUYxcDJsYjFMbktFaWphSkR6cUR4TUl2WGxtbm05TmNhcjdxdXBLN3JzNmtxTjNZS1lJYTlXaG5kNnNjR2ljUXFoblp4bDNJdTEzemRZTWpwOGRHenM2SVNKSQ?oc=5" target="_blank">Anthropic社は、AIトレーニング関連書籍の著作権料として15億ドルを支払った。 - Vietnam.vn</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 19:51 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">LLMの学習データと著作権の関係は、AI業界の持続可能性を占う最大の法務リスク。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">無断利用に対するクリエイターの反発を受け、企業は「ライセンス契約の締結」というモデルへの転換を模索している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">15億ドルという金額は巨額だが、モデルの資産価値と照らして適正な対価かは議論の余地がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMicEFVX3lxTE1vb3FSWXU1OVlrTUJ5M29NbERxUk1nZXJJR0RNUXlLaWdwM2c5RXF3VHhYeW40VWdqX1FuSlJ3eno0M09vcWdTQ2VVU0JXOVd5Ri1KNUprb29WZFZEeGw0N20tZDdpOE4tM3ZnUm04UHM?oc=5" target="_blank">Anthropicが株式の5%を新たな公益ファンドに拠出 執筆 - Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-18 18:28 | 🏢 配信元: <b>Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicが掲げる「Constitutional AI（憲法AI）」や長期的安全性を支えるための組織構造。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">利益追求と安全性の両立を掲げるBenefit Corporation（ベネフィット・コーポレーション）の形態を取っている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">株式拠出による公益性担保は、投資家のリターンと組織の目的の間でガバナンス上の緊張関係を生む可能性がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE42MUNvNmJHQlhvRENnWmU4U3hDZUVIRm9NQ3piRUxRLVFhMnNwOWRKc2lzSDdLdmZjT1JyaTY5Q28xcGVkZ29ZRUVnam5WRjVzTngxUWZCZXZvRXB3dXc?oc=5" target="_blank">【十字路】新たな起業機会がClaude CodeとCodexの周辺で生まれつつある｜Tregとの対談【動画ポッドキャスト】｜Koji杨远骋 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-18 16:08 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Claude Code等の新ツール群は、単なる効率化ツールを超えて新たなサービス開発のプラットフォームになりつつある。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">コーディング支援AIから、プロジェクト全体の構築・運用を一貫して行うAI駆動型開発へトレンドが移行。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">新たな機会の創出には、AIによる生成物の品質を管理する新しい職能が求められる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE5adlRRZjdua0ZSZWdMZ21DRWtLUWtnMnZ6M3ZJTjRTU0dFMmt0c0Y4N0xid3JheTkxd0RXdWhHUFFRUEg1d3IwcGZ3SFhfX1lLU083bEg1ZXlxeEJq?oc=5" target="_blank">Claude Codeのプロンプト完全入門 ― 良い指示の8要素・AIインタビュー・コンテキスト管理・公式ベストプラクティスをやさしく解説 - YouTube</a></h3>
+                        <div class="meta">📅 2026-10-18 08:45 | 🏢 配信元: <b>YouTube</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">LLMへの命令（プロンプト）の質が、AIの成果物（コード）の精度を直接左右する時代。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">トライアンドエラーから、構造化された「ベストプラクティス」を適用するエンジニアリングへと成熟している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ベストプラクティスはモデル更新に伴いすぐに陳腐化するため、継続的なアップデートが必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE1OYVdab2tkUE40R1dfUm9ETTlGemF1amdTNV9TZ2MtdFhBaGNacjRwNm1LQzlIbjZtemxrd2RoUVhBMC1CZXNhVGd0VWhCU0QxQWhxZVhXYmNnUHh2QnpCWkdvRdIBaEFVX3lxTFBLUVlzWklaaWltRWhtdVFlc0xqbDY0S3F5NkxpZDdJWmk5NHU2d2FLSkd0anZMWFZ5SXA1U2pFb1V0d1F6QTBGdUFWaEVzODBMRjN4RDhJYzdPUkQyQzZpdlZiXzJITE02?oc=5" target="_blank">Anthropic、METRの研究者6人に従業員相当のアクセス　承認不要で評価結果を公表 - 財経新聞</a></h3>
+                        <div class="meta">📅 2026-10-18 06:32 | 🏢 配信元: <b>財経新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIの安全性評価（RED Teaming）には、独立した第三者機関の関与が不可欠という認識が広がっている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">METR（Model Evaluation and Threat Research）のような外部評価機関と連携し、内部ガバナンスの透明性を高めようとしている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">評価の独立性がどこまで保たれているかが、企業の社会的信用のカギとなる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
