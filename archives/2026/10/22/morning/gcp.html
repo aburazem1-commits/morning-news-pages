@@ -1,0 +1,442 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Google Cloud Platform (GCP) - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/gcp.png" class="thumbnail-icon-small" alt="Google Cloud Platform (GCP)">
+                        Google Cloud Platform (GCP)
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-10-22 09:20)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9jYk9NdzhaZWYwR3N4dXJTcXVfTjRKek93YTByVHM1Q1VsXzB2VlZ2X1NlZHhBeGcta19JTUFZU3k4Skg0a3VZQWlWUE8xbGJabGFpU2RoWVZvWXFNQVpMSEZlWUJsLWlXVkE?oc=5" target="_blank">Google Cloud障害で英国が混乱「ATMで引き出せない」「裁判延期」……ロンドン拠点の電源不具合、約8時間にわたり - ITmedia</a></h3>
+                        <div class="meta">📅 2026-10-21 00:32 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Google Cloudのリージョン（データセンター群）における電力供給やインフラの安定性は、現代の金融・社会インフラの根幹を支えています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">大規模クラウド事業者は過去に幾度も局所的な電源トラブルを経験しており、その都度、冗長化構成やフェイルオーバーの仕組みが見直されてきました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">単なるハードウェア故障か、クラウド全体の論理構成の問題かによって、企業のDR（災害復旧）計画に与える影響の重みが異なります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxNempMTWhvcHNaTnhBanA4dm9FaWY5dU14dk43cWh0dHQwemk3VTIyNHVFQ0tUOXJHbjNXRGhOaE9YWHhMSUdoVHZXTkxvbGZTaWlyY2NBenlJRkM5ekIwZ1hNaEZUaFpNMzV1RmZSS0k2VVZuaVNyTDdQMTlYR1hRTXpRZWpLTFFmMEZWakVTVVY2LVFhTU9SSC0tbzd2Vks0emxVZktDaWtJNTY2?oc=5" target="_blank">Google Cloud がモデルの選択肢と柔軟性を拡充、OpenAI モデルを提供開始 - Google Cloud</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-22 00:10 | 🏢 配信元: <b>Google Cloud</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウドベンダーは自社のAIモデルだけでなく、他社の有力モデルをAPI経由で提供する「モデル・アズ・ア・サービス（MaaS）」を拡大しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつては自社モデル（Gemini等）の囲い込みが主眼でしたが、顧客のマルチモデル需要に応える方針へ転換しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">モデルの提供だけでなく、そのモデルを最適に運用するためのインフラ（TPU等）との親和性が差別化要因となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFA5WUtrRU5uSHJHQVBIaEhzcC13eU9yVm52Q0R6bE1WaTYwVHZsa1dvQUxyMGNPM1V5RVJmcUJ2MGtKRUppRV80dWFhdVdNem15LXp3Ymd5UDUyanRUeVdiT2cxVU8zWEd3aUJGZl9XdXI4WE83cEhoNUdKTVNKTGc?oc=5" target="_blank">Google Cloudに「Astra」含むOpenAIのモデルが追加 「主要3社のクローズドモデル使える唯一のハイパースケーラー」に - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-21 23:54 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Google Cloudが自社のGeminiに加え、OpenAIのモデルも統合的に提供することで、プラットフォームとしての利便性を向上させています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">各社は自社モデルに固執する戦略から、顧客企業が環境を変えずにAIモデルを選べるマルチモデル戦略へ移行しつつあります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「唯一のハイパースケーラー」という宣伝文句は技術的優位性を強調するものですが、モデルのバージョン更新頻度やコスト面での比較が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMitAFBVV95cUxOV2JQdDV5YXpETlB5bEJUdnBqLVJDdlk1NEpHMjFzSlVMOUM3WW9kMDAzY1dRNlo2cmtCaFB1UDJrY1ZCaGpGVGxuYnA5R0laeXlQYUJhbHVGMzk3Ml9FS0w4bWZRVXRyVTI5azVDci1XUk5BeFh6NUVUSkJmSWxYZGNtT3JlaEZTZllyR2hzNjJSbjdQVlY5RWtQbjFlRDJjS191U0VON0ZLZUdkLVFSTDRLZDk?oc=5" target="_blank">Google：Google Cloud、サポート対象の全PHPバージョン向けに更新版のサー - Moomoo</a></h3>
+                        <div class="meta">📅 2026-10-21 14:30 | 🏢 配信元: <b>Moomoo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">PHPは多くのWebアプリケーションで使用されており、セキュリティ上の脆弱性対応（パッチ提供）はクラウド環境における基本的な運用責務です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">以前から、Google CloudはApp Engineなどで広範な言語サポートを提供し、開発者の移行コストを下げる戦略をとっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「全サポート対象」という表現が、EOL（製品寿命終了）間近のバージョンを含んでいるのか、現役バージョンのみか確認が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxQdUl3NUJ2a2psNGdJSHRhMUFOdlBxWm9kU1BKVVVTR3p1UUZCSEFPbF9fQ1lNbm13MlctcWNNOU1IbjhpRlVtbEtGU3RCOUZPTFo3Z0NHSHFXd0h5ZjN4MGxJbU80eUlKUFdXcGFZNElGNUg4NkZqb2M0dlpwRnM3dkNXOUNFbkR6T0h5eGs0Z2JCUHdYTlFHZk83TkFfclYtOTc2S01aOA?oc=5" target="_blank">Google Cloud: Urges Customers to Immediately - Moomoo</a></h3>
+                        <div class="meta">📅 2026-10-21 14:26 | 🏢 配信元: <b>Moomoo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウド環境においてセキュリティ警告が発せられる際は、即時のアップデートや構成変更が必須となる緊急性の高い脆弱性が疑われます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ゼロデイ攻撃や設定不備を突くインシデントが急増しており、ベンダー側も顧客へ即時対応を強く推奨するケースが増えています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「Immediate」という言葉が何を指すのか（認証設定か、システムアップデートか）により、企業が受けるインパクトが大きく異なります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTFBGaVVWZkR3ZVBSZ2lIWld0a2FNajBCckdQZkQzUF9MRXN6dXJiVV9OcU1VZG5rcXRuYU95ZVh6Y3dpWHppa1ctSVNSWVhHSHhONElqT0lPMGtCTjlLWjlTS2pGR1AxTVJlSUtkdmQzRFlrSENs?oc=5" target="_blank">OpenAI、GPT-6 AstraをGoogle Cloudで提供へ 米大手クラウド3社すべてを制覇 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-21 12:35 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">OpenAIと各クラウドベンダー間の提携は、AI業界の競争環境を大きく左右する動向です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつてはMicrosoft一強の状態でしたが、現在はマルチクラウド化が進み、OpenAIモデルを多様なインフラで利用可能にする戦略が加速しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「制覇」という表現は市場の広がりを示しますが、モデルごとにガバナンスやデータプライバシーの適用範囲が異なる点に留意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQMkV1aEF2RGhWWDdWSzR6a3d4aE9SVG1tdll5NjFuU2RxOXdfZWhjUXlBZFhrVXpiVGVVUG5LVW5NY0xkbTUxN0NSVmJsSC1QXy1sVGZVOEpfbkUyZ1hRR0NUYUViYWs3bTNpaG16a3ZNeDIxd1R5Q3E4TUdZYU00WVZfTVhsMG8?oc=5" target="_blank">グーグルクラウドと英国のデジタル銀行でサービス障害が発生した。 - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-10-21 08:48 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウドへの過度な集約（ロックイン）が、障害発生時の社会的インパクトを増大させているという議論が欧州を中心に高まっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">金融機関のDXが進む中、レガシーシステムからクラウドへの移行過程で生じる障害が経営リスクとして顕在化しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">銀行業務というミッションクリティカルな領域での障害は、規制当局からのクラウド利用ガイドライン見直し議論に発展する可能性があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiqAFBVV95cUxOdGowdU5Vd1dKcnAzTC1Ga2lPc3VaMjJyNGxzdDYtTWN2b3p1dm1qS3JjMjN0N3hlaTdPNDJNRXRUNnAtM3laU1hVT1hOTFQ5Y1Vuc0dBY29hVEpmdFJoS1ZLWVBUc24yb0d3OWxPWi1kRGFNX0o3OTNxRTRidEQ0WWVxNVMzZXpUbWY3NF9EOVp5VUZWWDdjZ0lNOXdPN2E3aG9wNDZxOVY?oc=5" target="_blank">Agent Development Kit は 5 つの言語に対応 - Google Cloud</a></h3>
+                        <div class="meta">📅 2026-10-21 08:39 | 🏢 配信元: <b>Google Cloud</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Agent Development Kitは、自律的にタスクを実行するAIエージェントを開発するためのフレームワークです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI活用のフェーズが「生成」から、システム連携して動く「実行（エージェント化）」へ移行しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">対応言語の増加は開発の裾野を広げますが、本番環境での信頼性やエラーハンドリングの仕組みが依然として重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTFB3NnhQZUVSVFZScnhtbnpsUmNlTWJnbWVKYWF2ZmVQajBuaUZKVzl0QVNCdzBDMnhLajJnWjV3WlE2TVFFUFZEcnNSY1NoTTlrU01fVXZLajdKRkQ3ZEk2SVhHY21wMklo?oc=5" target="_blank">AIが変えたサイバー攻撃の実態とは - Google Cloudが示す攻撃の大規模化・高速化・高度化 - マイナビニュース</a></h3>
+                        <div class="meta">📅 2026-10-21 08:00 | 🏢 配信元: <b>マイナビニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">サイバー攻撃側もAIを利用することで、攻撃の自動化、標的の精査、フィッシングメールの高度化が飛躍的に進んでいます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">防御側は長年、ルールベースの検知に依存してきましたが、AIを用いた防御（AI対AIの戦い）へシフトが不可欠となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIによる攻撃の高度化は脅威ですが、ベンダー側が「AIセキュリティ製品」を販売するためのマーケティング要素が含まれていることも考慮すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE5HR0NOWlVCUTdDSlduOUtFQjdzQXVlUWFBa1BxUDlxbjI4SHBEZGxXZ2NUVlNaVWUtRjVDaHU1NlNfVlJQaGJ4LUJKWXBRZmc3UDdiX0pyNGJhUTVDMDJoeA?oc=5" target="_blank">Googleが「TorchTPU」を発表、PyTorchをTPUとGoogle Cloud上で実行するためのツールでコード書き換えなしで実行可能 - GIGAZINE</a></h3>
+                        <div class="meta">📅 2026-10-21 04:41 | 🏢 配信元: <b>GIGAZINE</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">TPU（Tensor Processing Unit）はGoogleがAIモデルの訓練用に設計した専用プロセッサで、PyTorchとの統合は高い重要性を持ちます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">PyTorchはAI研究のデファクトスタンダードであり、NVIDIA製GPUとの親和性が高い環境でした。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">コード書き換えなしでの移行は開発効率を劇的に高めますが、性能引き出しにはチューニングが必要になるのが一般的です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE9xSy1jaXk2a1IzNUw0UENlWjl5eUcxeW1YQy1pc2JjRkMwdFRTRHFxQkNPd3Q2ZnFrOW56MW9KenA5ekVtTXJoM1BIU1ZqUQ?oc=5" target="_blank">アクセンチュアとGoogle Cloud、「Gemini Enterprise」専門の新組織を設立 - CodeZine</a></h3>
+                        <div class="meta">📅 2026-10-21 04:40 | 🏢 配信元: <b>CodeZine</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">大手SIer（アクセンチュア等）とクラウドベンダーは、企業のGemini Enterprise導入を支援する共同チームを組織することで、大規模プロジェクトを受注しやすくしています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウド移行のフェーズを終え、現在はAI導入を通じた業務変革（DXからAXへ）にコンサルティングの重点が移っています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">特定のモデルに注力する組織体制は専門性を高めますが、顧客にとっては特定ベンダーへの依存度が高まるリスクを孕みます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE1lZmNQREdDTTVpa1BHaVBteW1SbzhCUEt0WFRDc3hwQTZDVGw0b2hraHk0SUtlS08zN3ZVZWU0RE1iQVV6RFlCU2VNRElXd0tUcG82U2Jid2pkMkU?oc=5" target="_blank">CognizantとGoogle Cloud、提携を拡大しエージェント型AIによる企業変革を加速 - 共同通信PRワイヤー</a></h3>
+                        <div class="meta">📅 2026-10-21 01:03 | 🏢 配信元: <b>共同通信PRワイヤー</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">CognizantのようなグローバルITサービス企業が、AIエージェントを通じた企業変革を掲げ、Google Cloudとの連携を強めています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI導入は概念実証（PoC）から実業務への実装段階に入り、大規模なリソースを持つSIerとの提携が不可欠な段階です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">提携のプレスリリースは双方のブランド価値向上を目的とするため、実際のプロジェクトでどれだけの成果が出るかは導入企業の事例を待つ必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTFBlWTdxU0oydFFZeHJQREV6TmNrXzY4UWhOaXpId210aVYweGVlUnk2aTY3NVJ1OXZCN3VJQjNkMUxFZkdSYlBvdzlB0gFCQVVfeXFMT2tkbldMRTNuN3RCdjVWY0V5NXRoTlR1M0x4UTlKUmpPWHQ5bWpKUEVwcnUtNi1sUmx1a292SjR1WHBn?oc=5" target="_blank">Google Cloudは、英国のデジタル銀行サービスを無効にした混乱の後、回復しました - VOI.ID</a></h3>
+                        <div class="meta">📅 2026-10-21 00:54 | 🏢 配信元: <b>VOI.ID</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウドサービスの回復（リカバリー）は、単にサーバーが起動するだけでなく、データの整合性確保や業務アプリの正常稼働までを含む広義のプロセスです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">障害が起きた際、ベンダーからの事後報告書（RCA）が信頼を左右する指標となります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「回復」したという事実は安心材料ですが、再発防止策が抜本的なものか、単なる対症療法かは冷静に判断する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
