@@ -1,0 +1,285 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>キャラクター - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/character.png" class="thumbnail-icon-small" alt="キャラクター">
+                        キャラクター
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-10-28 09:50)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9IX0VrTDNoMTlJTnBxVEg1QzZpZllJSGppWk50ekNyN1ltZlJTbGM0STlsX0pKY3BQUEVjaWNwWlZmWVd3Q21UeWhKSzZyVldrR001aVVQbll2aFVEVU9ucUNmUmlXTVlFZFE?oc=5" target="_blank">たまごっち30周年を盛り上げる「超たまごっち祭」11月7日より開催！『たまごっち ふぁくとり～！』超たま祭でショップやカフェを展開！ | 株式会社BookLiveのプレスリリース - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-10-23 08:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE5CRmdSa1RYUmdCSFlENlF1RUdVb0xTRFJHTGs3Rlh1S084dnI2dFVYTUZfMDBEc2g4Wng4d01UR19QdFZpbkxOS3U5eWZBZ3lWbmcxN1FwdmQ3MXZzX3lGSG1sMWZBbDh1QkE?oc=5" target="_blank">『祝3000しゅ～ねん⁉超たまごっち祭 in シブハラ～MAGNET by SHIBUYA109～』 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-10-22 05:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1vdVNyQWpPYk9LUHVsUGVUQnpfdFdYakwzVHhhS0F6RERrOHBkMDBKdHZBWDM3YWFLSFhJNHdvT2Q5cDVKVG5nNktHT1FVdWVIUUpIVUtfbzNFeTdMNml1SzRkNUMxZ3NDYm5BNnJLTE1tNHoyb1J3N1ZjLVgwLWc?oc=5" target="_blank">パペットスンスン、デビュー楽曲「とてと」CD＆アナログレコード発売決定！新曲「カラー」含む全5曲収録（THE FIRST TIMES） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-28 00:36 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE1DajE0YW1Ya3N2Z3ZzYmx5aF9pWnlob3hfaGUwS0NtU3lqZkU4QmFhenFYZGtlTm1ZWVFwRGlmcFBjV3k3ZUFic1ZvX0FxQm9ORXlSY0loYlMyWlNfYWFuVDNRZw?oc=5" target="_blank">パペットスンスン『とてと』CDが2026年12月2日、アナログレコードが12月23日発売 - タワーレコード オンライン</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-28 00:00 | 🏢 配信元: <b>タワーレコード オンライン</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTE1LYmRyY0Q0YVVEUTBkV0NoYndTQkZPTXF3clpJZ19UdGRtX2hmTmZMcFlFMlFqY2RsRkoweXhqOE1UTk5Zbi1jeWZacw?oc=5" target="_blank">第66話 きのこ／ハロウィン - TVer</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 23:21 | 🏢 配信元: <b>TVer</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMic0FVX3lxTE54STRFRWMwNXVTRmlvbkZ1OTdDTnl0X21DU0V1bDVXclJVOFp5dDI3LUtzRnhZNUFBMG1UbmpLMHFsZmxtclk1cURUYk9uaGtsN0xmV0hQZWlxUUJNZ0NvaUw0MHdaaF9UZUZoMHVnVFo3U0k?oc=5" target="_blank">ハイランドリゾート - ニコニコニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 22:27 | 🏢 配信元: <b>ニコニコニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiRkFVX3lxTE52OFAza2Nna3EtU2hRaTBzTjNjVHZxQktaVmdHclB4Tnc3OFFwblRkTzZLMnNUc1hDNmJ3T2JUUTZOV0FwVnc?oc=5" target="_blank">『すみっコぐらし』絵本が発売3日で重版決定！ - Koubo</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 12:06 | 🏢 配信元: <b>Koubo</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTFB3MGp6dlF0S3FURUhrTnhaYXlZZzRXNHlldEFpMmFRWTVyT1Zja3V1TTRRakNuVjNnd0swZjdwOUpybWRCSHg2N1JEZlBzWFhFSURNTWJydkc?oc=5" target="_blank">富士急ハイランド隣接のハイランドリゾート ホテル＆スパに常設型「すみっコぐらしルーム」が2室登場。2026年11月28日（土）オープン - オリコンニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 09:46 | 🏢 配信元: <b>オリコンニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxOaUltbXpLQTM1SkVvMFdwOTNRQmVlYTdnQy10OEdQdXpWc2RRMGJ4ODZjRWE1WmFldUZhbWdoRHBxaXZQSnJsdVVOT0RjamxWYm04M1U1dkdUR2RoWjJSUG9QR05aaGhrNl91d3pEMHFPbWxKUGhITkxVOHdSQ0JXbQ?oc=5" target="_blank">たまごっち フェイス型ラグマット プライズ 11月10日より順次登場! - コラボカフェ</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 09:33 | 🏢 配信元: <b>コラボカフェ</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE0wZlN5cm1YVG9VMGRUczA5bjRKbnp1eHB5RFFHcXNsQWxQNnpjWFI3Ul92TnNwdE5OMXBfVEk2ZVFtQjdXTUVqaUtxV2k1dWtFdURFT3pTM2NsaWt1cWlWSlZDQzNaZEVBT04xdjdEcC14UzEzUEdZa0F3?oc=5" target="_blank">【発売３日で１万部重版決定！】『すみっコぐらし おもいでアルバム』すみっコたちのなにげない日常をまとめた絵本 - イザ！</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 09:00 | 🏢 配信元: <b>イザ！</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1EVjlYY0RIRWxCb3VHTndscnBvbWxJTU5VYUNhVkJkQWpONEZrTHk3SHgzbVBLWEp3dGpyNzR2Q0NCZ2pUYmFFVUw5ZnBla3VtM0pXb1FsaUUxTjRIdG1oTVc2c2JCbXpZMmNNYkZSaEwzZDVUVlNEWHlnR1F3Vmc?oc=5" target="_blank">珈琲館「ハッピーバッグ2027」発売決定！ 『すみっコぐらし』と2年ぶりコラボ（クランクイン！） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 08:15 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE82SGNQM2U2T1k5MklqcDgzWjRUTWR4RmlTWlVDSUlEUmdJaXpuck5mSm9SZVlROGhlVS1FMzEtUkxmR1dBR1BTUHoybWdrRHRSUjJVaURkNDYyZ3ZPX0xKcGxhSQ?oc=5" target="_blank">すみっコぐらしの「とかげの夢ルームウェアセット」が発売♪ - San-xネット</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 07:45 | 🏢 配信元: <b>San-xネット</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9CNl82SGhaVkpfNUhqSmVlS2EwdHhJQlhaaXhQbE5TU2Rldkdka0JvZ09kMWF4Y1dDOHpnYUE1alVKMXJSLTlZNi1sX1Y3MWhTaEM5Sw?oc=5" target="_blank">「30周年記念 大たまごっち展」が12月29日より福岡三越にて開催！チケット情報も公開中 - Gamer</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 07:30 | 🏢 配信元: <b>Gamer</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9jc2ZUeG9sc2p6UFNFbUtlSHpqdlpqZm5fYlBwX2RoZUU0bnU2b29MbnZBMWU4anptbkpqSzlreWxocmZmVllGWkhkYUtvcVRXUzFQUQ?oc=5" target="_blank">珈琲館「すみっコぐらし ハッピーバッグ2027」発売 伸びるトートやホットケーキクッション入り、4980円 - 食品産業新聞社ニュースWEB</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 07:00 | 🏢 配信元: <b>食品産業新聞社ニュースWEB</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMinAFBVV95cUxPVllWcnNLcnVRYnJwSUJFUDhuZEdna0liLTZLVy10dTFrNE5ZVTBybU4wV3VZWUgxWVRzMlNfaFo2TV9kSnhlUFdFRlE3RmxQUnpHc3h2RHpQYjNtUWEzSFVHaUVNZjJwQXhyakNRNUsyWmFCdmE0a09kZzdDQWFOTmdhbUY3MVpyRFJ4ZjM2QmJpRHdVSGJqYUZURF8?oc=5" target="_blank">たまごっち 30周年 めじるしアクセサリー カプセルトイ 11月登場! - コラボカフェ</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 06:52 | 🏢 配信元: <b>コラボカフェ</b></div>
+                        
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        

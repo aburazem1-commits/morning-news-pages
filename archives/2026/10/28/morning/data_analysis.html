@@ -1,0 +1,404 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>データ分析 - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/data_analysis.png" class="thumbnail-icon-small" alt="データ分析">
+                        データ分析
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-10-28 09:50)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMickFVX3lxTFBrNTRUV0FmUUNfMmRzV3lVODRHa256UFdEUHFnTFlhTnlyRXMwOGpoczlWaDlkdVJLMWZ5bnJxODFiVGlpZFdWN1ZVR2lUMnV3QVh1LVQ0U2tDQldVRkFPNkVybmx5YUdXSEFXQjJhdUZCdw?oc=5" target="_blank">【Pythonで学ぶデータ分析】ベイズ統計で重回帰分析 ～ 株価のファンダメンタルズ分析を行う - ITmedia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 20:00 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ベイズ統計は、得られたデータに基づいて事前の確率を更新する手法で、不確実な予測に適しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来は計算負荷が高く敬遠されてきましたが、近年のPCスペック向上により実務レベルで活用可能になりました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">株価分析はランダムウォークの側面が強く、統計手法を適用しても「未来の絶対的な予測」は困難であるという理解が必須です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE5lOWdPSFJ3dzlSX3JwZEdYVUk4OHZWcXFRUjFBTHpHNllVZ3NfSGdFNmludF9nakwzZXpRemdQY2pWVU5HN3V4dHZZZGtRY1RweHNpV3dsYXgxNUR2SkJocmZQdUJfUExPdG5pWg?oc=5" target="_blank">電通、独自データ分析ツール「コンテンツプランナー」を活用したコンテンツデータソリューションメニューを提供開始 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-10-27 03:31 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">電通は広告・マーケティングデータを統合し、コンテンツ制作や最適化に活かすソリューションの提供を強化しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">デジタル広告へのシフトが進む中、クライアント企業は「データに基づいたコンテンツの精度向上」を強く求めています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">大規模な広告代理店が提供するソリューションは、データの網羅性は高い反面、汎用的なインサイトに留まるリスクもあります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE5Na2d0MERMSmRKNUpJQnJrYVU0UFVrM24teFkxczFHUkF0LXYzS01zTXN2LTA4WmlLVmNPcFVIeG9GYlhvYWJhN2xvU0ZEM3pkX3dNYklfUUdUN0tDSlRGZG5LM01ZSzdQTEE?oc=5" target="_blank">HCS 分散する業務データを集約・可視化するデータ分析サービス「xHaiCS insight」を提供開始 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-10-27 02:03 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">DX推進の現場では、サイロ化された社内データの統合が最大のボトルネックとなっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウド利用の一般化により、小規模から導入できる「データ集約・可視化サービス」のニーズが急増しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ツール導入よりも「データのクレンジング（整備）」に多くの工数がかかります。ツール単体で課題が解決するわけではない点に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE5FWjRzVFAzU2lXSjhtVjFXdmFBenhLQWotUTN6MGVaTTZCT3BYczd4dlFvQkpRYVp0QUt4cHYtNmV4UmlXR2VUOTZ1d24zeWl0dEtsbldDQ0NfUQ?oc=5" target="_blank">データ分析優等生企業キーエンスが重視する「データの科学」／“任せられるAI”を作るデータガバナンス術 - EnterpriseZine</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-27 22:00 | 🏢 配信元: <b>EnterpriseZine</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">キーエンスは徹底したデータドリブン経営で高収益を誇り、製造業におけるDXの成功モデルとして参考にされています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「任せられるAI」とは、現場の勘をデータで裏付け、組織として判断ミスを減らすためのガバナンス構築を指します。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">キーエンス流の分析手法が自社文化にそのまま適応できるとは限りません。組織風土とセットで設計されている点が重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE4xQlVoVkYydDlSY204MGllX1ROd0xyOFBMV2RBdXh3V0dodUdaeDNkZ09fRzVUalB3Wnk1Q19HYzQ4eURUV3dmaEQwR09lWHpjamQ5NnYwdFRUODFpYjVR?oc=5" target="_blank">岐阜県が実施したスタンプラリーから情報漏洩 応募者のメールアドレスや性別・年齢層など1135人分 氏名と詳細な住所・電話番号は含まれず 再委託先が使用のデータ分析ツールに不正アクセス - TBS NEWS DIG</a></h3>
+                        <div class="meta">📅 2026-10-27 15:52 | 🏢 配信元: <b>TBS NEWS DIG</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">再委託先を含めたサプライチェーン全体でのセキュリティ管理は、現代の企業リスク管理の核心です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">委託先を介した個人情報の漏洩事件は後を絶たず、特に公的な自治体データの取り扱いには厳しい目が向けられています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">委託先管理（ベンダーリスク管理）の甘さが企業の信用を大きく毀損する例として、他業種も教訓にすべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE1fYjJuU2lpQjZqczlZbFUyN0FBUFpiWGZwTUw3eWJJeVJVeHZJR2pVRnRSaGxmaEh2dThCRTRHV2JSS29xVnMzUWhIWC1tdGpCdUZaWFVmZWJNMjNJWmZIT1VSU1ZXN2xhaVlpLUtSYWNOYXh6cE9tODJTTQ?oc=5" target="_blank">【天皇賞（秋）】“勝率100%”データを持ち盤石の一頭 データ分析は前走GⅡ組に厳しいデータあり【動画あり】（SPAIA） - ｄメニューニュース</a></h3>
+                        <div class="meta">📅 2026-10-27 11:11 | 🏢 配信元: <b>ｄメニューニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スポーツデータ分析は、過去の膨大な記録から相関関係を導き出し、勝率を算出する手法として定着しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">競馬やスポーツ賭博の領域では、AIによる予測モデルの構築が進化しており、一般層にも浸透しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">データ分析は「傾向」を示しますが、「ギャンブルの不確実性」を排除するものではありません。過信は禁物です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTE5rcXFjQUJ1TG1iUUhvU25NRWpMVzg5U0NzNjZzbVhOTEtXVS1zY2IxOFhpZHM0Y3F2WGNPTm5TSWtDVmpiV2xVQ3BiNWJ6X1VXanBURml3UjZkZG4xVldheEU3ZENZX1Bv?oc=5" target="_blank">【門別・エーデルワイス賞2026】重賞データ分析 データをクリアした連勝中の2頭のうち初ダートのワールドエンジェルに注目 - 競馬予想のウマニティ</a></h3>
+                        <div class="meta">📅 2026-10-27 09:00 | 🏢 配信元: <b>競馬予想のウマニティ</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">競馬のデータ分析において、初ダートといった特殊な条件変更は、従来のデータとの乖離を生む重要な変数です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">競走馬の能力だけでなく、血統、騎手、コース適性を掛け合わせた多角的なデータ活用が予想の主流となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">過去データには反映されない「当日の馬のコンディション」等の非構造化データが、レース結果を左右する可能性を忘れてはなりません。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE02QW15NDV5N2RDeklULXdTTlNTek9OdjRPRjRFZ2JrMEtCTGNZSEM4MTZzbDh3YlBCeEQ0S1FJZ1pPNTl0bFVMM1VlRTZ6YzFXWGhjUEZiOA?oc=5" target="_blank">Sprocketのデータ分析エージェントがMCP対応、生成AIとの連携基盤を構築 - コマースピック</a></h3>
+                        <div class="meta">📅 2026-10-27 08:41 | 🏢 配信元: <b>コマースピック</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">MCP（Model Context Protocol）は、AIモデルと外部データソースやツールを標準化された形式で接続するためのオープンプロトコルです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">SprocketはこれまでWeb接客プラットフォームを提供しており、今回の対応により生成AIが同社の持つ顧客データとリアルタイムで直接対話・分析できるようになる基盤を整えたと推測されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">MCPの普及はAIエージェントの柔軟性を高めますが、連携先ツールのセキュリティ設定やAPIの利用コストが、実務上のボトルネックになる可能性に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE5ZbG5qRUpZdk1rNURxUEtoa3JVVE5USlhDMFMxNHUtRWF5MEZyajNGZkIyLUlGMjd3b2RZNXBoNDUyTGFlOGY1aXhldi1WRmFYcXRMc1Zxaw?oc=5" target="_blank">小売本部の売上データ分析に関する実態調査、生成AIの活用状況や集計・分析の課題が明らかに - コマースピック</a></h3>
+                        <div class="meta">📅 2026-10-27 08:29 | 🏢 配信元: <b>コマースピック</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">小売業では膨大な店舗売上データが蓄積されていますが、現場担当者のデータ分析スキル不足や、異なるシステム間のデータ連携（分断）が恒常的な課題となっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年の生成AIブームにより、データ分析の民主化（非専門家による分析）が期待されていますが、実際の現場では「回答の正確性」や「既存業務への統合」において多くの壁に直面しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">生成AIの活用は強力ですが、小売業の分析には在庫やトレンドといった専門的なコンテキストが不可欠です。AIが「正解」を出しているか検証するドメイン知識が、依然として人間側には求められます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE1fXzFwb28tMndqYmVpd1pzUzhPX3V2cE5UZHJkWjdPVG5Ma1VhTDhlZUUwVDJDV1ZELUZnLWNkMnVLNy1qY0h0NlgxZkp1UEY3cGptdDRTT0g2SkU3RGRJN1U0Nm5xWkM0U2ZVSjZPN1RXNmdBRGo4QWxHOA?oc=5" target="_blank">声を「広く×深く」捉えるAI実証プロジェクト～横浜らしいブロードリスニングを考える～STEP3「声×データ分析」実証実 - ニコニコニュース</a></h3>
+                        <div class="meta">📅 2026-10-27 07:45 | 🏢 配信元: <b>ニコニコニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ブロードリスニングとは、アンケート等の特定意見だけでなく、SNS等から得られる広範で非構造的な「市民の声」を解析し、行政施策に反映させる手法です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">自治体が市民の声を収集する取り組みは従来アンケートが主流でしたが、デジタル化の推進に伴い、より広域で即時的なデータ解析を活用した合意形成手法の模索が続いています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「声」は集計可能な定量データとは異なり、文脈や感情が含まれます。AIによる感情分析にはバイアスが入り込みやすいため、最終的な意思決定における妥当性の確保が重要な論点となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiQkFVX3lxTFBCZHV5SDlRVnBTVVptOENraUlnd25POUNXbHlOSmpkWDZHUzlYN0N4RkJ4d0NBLXhPS1VVMndwT00tdw?oc=5" target="_blank">データ分析好きほど馬券で迷子になる理由｜ドラクエで例えたら刺さりすぎた【ゆっちゃんとnaoの特別コラム】 - YouTube</a></h3>
+                        <div class="meta">📅 2026-10-27 03:47 | 🏢 配信元: <b>YouTube</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">データ分析において、変数や情報量が増えすぎるとかえって予測精度が落ちたり、判断が鈍ったりする「分析のパラドックス」が起こり得ます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">競馬予測などの不確実性が高い領域では、直感と統計的推論が混在しており、データに固執するあまり「大数の法則」を無視した短期的な最適化に陥る失敗例が数多く議論されてきました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">このテーマは「過学習（オーバーフィッティング）」の比喩といえます。複雑なモデルやデータ量で自己満足せず、意思決定を単純化する能力こそが、ビジネスデータ分析でも重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
