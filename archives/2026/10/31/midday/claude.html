@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Claude - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/claude.png" class="thumbnail-icon-small" alt="Claude">
+                        Claude
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-10-31 10:16)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9xM3RjS1dwMHd5LVp2SVJacGFxNmVBRllOVEN4ckpVVnl3Zll5c0RIWUNVa21Kel9HbkR1VGw1VzFfLTVleWg5ZmtobTNUUDJNMnlqaEx1Nk1RM042RFNocWVrY00ydm1Tdl9qSlhpcGd2UmZNMVloUDlIRmJaUVk?oc=5" target="_blank">Claude利用8割のGMO、AI人材の評価軸が「トークン管理」に変わった（TechTargetジャパン） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 23:25 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">トークン課金モデルでは、AI利用の効率化がコスト削減に直結する。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">GMOグループは社内での生成AI活用を積極的に進めており、利用コストの最適化をKPI管理に組み込むほど定着している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「トークン管理」を人材評価軸にするのはユニークだが、利用量のみを重視すると品質が二の次になるリスクも孕む。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTFB1Xy1mQUd6bzYyVTZldk5TdDloMnQwTERTNWpteEd3OF83cnAxS3p5eXBqZzZHcmpmZDFHVWtSUUQ1TzNXVUxfdEhnNzBmelAwdDhXYmwwbjdEdw?oc=5" target="_blank">Theo Browne氏：AIコーディングハーネスは「3〜5%の議論」、誰もすべきでない論争 - BigGo ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 23:08 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIコーディングにおける「ハーネス（テスト環境）」の構築は、コード品質を保証するための重要なエンジニアリング工程。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIがコードを書くことが当たり前になる中、AIが生成したコードの検証をどう自動化するかの議論が活発化している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「3〜5%」という数字は、AI導入による工数削減等のインパクトと、信頼性確保の労力のバランスを示唆している可能性がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMickFVX3lxTFB6T2RVVkl1eEdQclhjNDh4bXVJc2R5RVhCZ29HbW5TLVgzcmpSY0doZVZpd2RGQW02bXc5MVpQcGZhWEFxdmpmdXp1TkdNa2FsU0dKNVc5RU5GNWY3dGZKcWR4dkRZemVsZWE5SjlNbXdYZw?oc=5" target="_blank">Anthropicの一部チームがコーディング面接を廃止、Claudeの進化で従来の採用試験が限界に - XenoSpectrum</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 23:02 | 🏢 配信元: <b>XenoSpectrum</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI時代において、従来の「その場でコードを書かせる」面接手法が実務能力を測る指標として機能しなくなっている現状。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicのような最先端AI企業が、自社AIツールを用いて採用プロセス自体を再定義しようとする動き。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">コーディングテストの廃止は、思考プロセスやシステム設計能力など、より上位概念の能力を評価しようとする戦略的転換の表れ。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTFA5VV9ETjVyZHpFVGtUZUdtTW1vb0FTTkFlLXZFT2Jvc2J2NldEZ1lKZm81WmZ3YXZPLVlGYy1taE9EZTRpby1IaXoyMzVXVU5pRGpITTF6SmdhLXNjYlprVThybHQ4Rlpwd1Q5RHg1TzNjYVZW?oc=5" target="_blank">OpenAI、Google、Microsoft、AnthropicがAIクローラー向け共通オプトアウトトークンを支持 - BigGo ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 22:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">WebサイトのデータがAIの学習に使われることを防ぐ「オプトアウト（拒否設定）」の必要性。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来は各社バラバラだったクローラー制御を共通化することで、Web管理者側の管理負担を減らす動き。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">主要各社が合意したのは「制御技術の標準化」であり、学習利用そのものの是非に関する解決策ではない点に注意。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiQkFVX3lxTE16X2JtXzVfa0NXcHBwVzBmcmZIVTkzOGJCZWg3VWk1VC02TVVPQ3J2MDdxdVpoNjNCX2s2X0JzbVhoUQ?oc=5" target="_blank">「Max 20x」がUltraに改名、”20x”の正体は5時間枠だった――週の利用量は10倍のまま - shiritomo</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 22:22 | 🏢 配信元: <b>shiritomo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Claudeの料金プランにおける利用制限や名称の変更。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ユーザーから要望の高かった利用制限の緩和や、名称による混乱を解消するための修正。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">プラン名の変更はマーケティング的側面が強く、実質的な利用権限がどう変わったかを計算する必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE5QTkY0bk04MzVfcW9YdHJCVl83eEMyVHM4LS1RemVDY3N0ejdPSVRKMWdVLXV4S2NqRENzS0d2ZUlITkt6UXMwLUVnUmdYV25JRDRN?oc=5" target="_blank">アンソロピック、Claude「Ultra」で5時間制限を撤廃…月200ドル最上位プランに何が？ - ビジネス+IT</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 20:16 | 🏢 配信元: <b>ビジネス+IT</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI企業にとって、高額プランを利用するパワーユーザーの維持は収益性において重要。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">制限を厳しくしていた初期の戦略から、競争激化に伴いユーザーの利便性を優先する方向に舵を切った。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">5時間制限の撤廃はコスト構造に影響するため、今後の収益モデルの変化に注目すべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE5HcWNFZ0hacjZBMHhzWF9taktENTdtUlQ1M1dOU2VfSlpxWGkydGtSbXZzd09jTF9RYjZoUm1FWHpjb0syOGxEZTNaTENSeThYLVZYQmNTSDY5d2Y2aFBzVVowTlRoUnl6UGR2b0dzS1JZLTFi?oc=5" target="_blank">Blackstone、AnthropicのIPO後も「投資不適格」の見通し…84兆ウォン調達に支障の懸念 - BigGo ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-30 19:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スタートアップのIPO（新規上場）前の財務評価や格付けに関する話題。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicは巨額の資金を調達しているが、急速なインフラ投資と将来収益の不確実性が指摘されている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「投資不適格」は格付け会社による債券評価であり、株としての成長期待とは別の視点が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxPdUpiQTZpeE1YQmY5dldlZ09ySkQ0NmZMaVZKU2duRGg0UXBQSjRBd1hCa0p6LTZGWlU1UnpCc1l6aDFaazY1cDR2OGpoTWhRODlFa2ZwS1E0SVVfb3J2Q2ZhU2hpN1lHMXZld0NRWVJBeG5uaklXUFBZRTRlczlBUlRTYWhxbURpX3BSWnhtWmJ3WXhYN25RVQ?oc=5" target="_blank">Claude UltraがMax 20xに代わり登場、5時間制限は撤廃 - Pasquale Pillitteri</a></h3>
+                        <div class="meta">📅 2026-10-30 19:04 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Claudeにおける上位プランのブランド変遷と制限緩和の経緯。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ユーザーからのフィードバックを基に、より使いやすいプラン体系へと移行した。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">プラン体系の頻繁な変更は、企業ユーザーが予算を立てる上での不確実性になる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE9YT2JmMjQ4S252QllpYkRaeUxvbkxWbjQwaVR6WWtPYVA2bmxST2VxNHVzRGRwQ0ttZ1hQc0hVWkt6Q2hReVpWQzZWVXpHZFBxZVV5bmxUdmxpX2Q5UmFVZUhzTkJQR1JoZGo4WllqNENQbi0z?oc=5" target="_blank">ブラックストーンが警告：Anthropicは上場後も「ジャンク級」にとどまる可能性、債券市場での調達コストが上昇へ - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-30 18:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">債券市場での格付けと資金調達コストの関係。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI分野の爆発的な成長期待に対し、資本集約的なビジネスモデルが債券市場からどう見られているかという視点。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「ジャンク級」という言葉は投資家の警戒感を表すが、高い成長率があればその後のアップグレードもあり得る。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxQN0REWFdyLXN1Zll5Q3ZOeEhwekpSYzMwSUZsV01xWWRPLVNBdUZHMlZNRHBnMmFLSEVYQkgtSmtVTDF6UzRBaEZCVjZVN3o5ZVlmalVTTXNGY0NOMkE0bFlZdTRLNWcxS2IwUm00bjlUdzdTbTFlUnV1bzdISDJTanE2ZnF2Tzg2Yk81ZnEza1RVVG5XY3pMN3BaeXlDdw?oc=5" target="_blank">報道によると、AnthropicはIPO後に「ジャンク」格付けの上位評価を受ける見通し - Mezha.net</a></h3>
+                        <div class="meta">📅 2026-10-30 15:06 | 🏢 配信元: <b>Mezha.net</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI企業のIPOに向けた市場のコンセンサス。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">現在の評価額と、将来のキャッシュフローに基づいた客観的な財務分析。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">市場の評価が厳しい場合でも、先行投資フェーズであるAI企業においては日常的な光景である可能性が高い。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxOaGdMcFBNQnJCZng0VTktRkhfRXFnZ2lKX3hlU0V3X0Z6MkFwdGNrUXJYZTlyVkhvbTFkdllFSFdZMjFXYkhLRGxRcGd2YUlQMTZFMkNUUUd2VU5MWXRvb1MwQ29oRy1JR0g4NkNoZ0gwVjE5cWpHa09XaFUyN2FlS05FTXV0NGIwODVVU0dpbVFvTkFFNTlpNThqRkRMOVE?oc=5" target="_blank">防衛請負業者がペンタゴンの安全なシステムにClaudeを接続 – WIREDのポッドキャストが報じる - Mezha.net</a></h3>
+                        <div class="meta">📅 2026-10-30 14:27 | 🏢 配信元: <b>Mezha.net</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米国防総省（ペンタゴン）など安全保障関連での商用AI採用の動き。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">LLMの機密保持能力が向上し、これまでクローズドな環境だった防衛産業でもClaude等の利用検討が進んでいる。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「安全なシステム」という定義がどこまで厳格か（ローカル環境かクラウド環境か）によって、重要度は大きく異なる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE5DaldQX1NqRGlFdnNwS0NWTk5qRnVyaDZ1R2pzNFZ1emxicHNwdHlKV0hYWC1STy1ZVWk0aG5wT1ZjNUZaUWx0VW1xT29UV2JlVG9jWmpVczNIeGxvT2JuS3FtVmFzQ2lRT2JaenV6dzlZcFIy?oc=5" target="_blank">AnthropicがSpaceX最大の資金提供者に浮上、毎月31億ドルを算力賃借に投じ、売上の3分の1超を貢献 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-30 14:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI開発には膨大なGPU計算リソースが必要であり、AnthropicはクラウドプロバイダーとしてAWSやGoogleと提携しつつ、独自の計算基盤を構築・活用しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AnthropicはOpenAIの元メンバーが設立した企業。急成長するAIモデルの推論・学習のため、計算リソースへの莫大な投資が不可欠な状況が続いています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">SpaceXが直接的な計算リソース提供者として巨額の貢献をしているという点は、単なる企業間取引を超えた資本・インフラの深いつながりを示唆しており、AI業界の勢力図において注目すべき点です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiigFBVV95cUxQSzlMU1pTVFF4UkFEeHM2N0g3dFdJemM0TFNVS0dBX25sSEJTVG1nQ1VadEoxMjJGb3N0TVFaWmw1bXhqbEZFYmtMUktuRzZmVVhIaUo0eTY4dHowRkJsWi1aLUFNVDY0THpuZVhDLUlEQ01LcmNqWjMzRHhENWU3WnRrQWgtUkZDWUE?oc=5" target="_blank">Claude Codeでは専門家が86%の選択でエージェントに従った - Pasquale Pillitteri</a></h3>
+                        <div class="meta">📅 2026-10-30 13:03 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「Claude Code」は、AIエージェントが開発者の端末上でコードの読み書きやテスト実行を自律的に行うツールです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIによるコード生成はこれまで「提案」に留まっていましたが、実行環境に介入する「エージェント型」へとフェーズが移行しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「86%の選択で従った」という数字は、AIの提案精度だけでなく、ユーザーがどの程度AIの作業を信頼し、管理の手間を軽減できたかというUXの観点から評価する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxPVEVocHNGOGdEUXFpaXFaQ09EWUJycDVWZnFxZGZodElQQ3l6LWF5bTJGNmpYQkY0N0ZZbkFkY0dpMDRHd2ZMUjMtRjdSMjBJNzRlX3FneUF1WXZhSWJDU3pBUVhQUjk1aGVDMWt1dUM0dXFmU0FkVUkxZFNWVHdNS3F4OUVNV2s?oc=5" target="_blank">Android TVが遅い、Claude Codeでrootなしで高速化する方法 - Pasquale Pillitteri</a></h3>
+                        <div class="meta">📅 2026-10-30 12:37 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Android TVなどのOSは、メーカーによる独自カスタマイズや不要なバックグラウンドプロセスにより、年月の経過とともに動作が重くなる傾向があります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来、低速化したデバイスの高速化にはroot化（管理者権限奪取）が必要でしたが、リスクが高いため一般向けではありませんでした。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">rootなしでの高速化は通常、ADBコマンド等を使用したプリインストールアプリの削除（Debloat）を指します。システム安定性を損なうリスクがあるため、自己責任の範囲であることを理解すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1OdURrMmFQd3BRcmMtMG1uTjhkWEl6Tm42WFNWSHkwVVZoYmk0NE9kZHdBNkU2UkVKbVEtTUVyQkJ2cGNETXFsWm9hbS1fXzg0Q0tEc2YxclBGRVg3RGxlZjFDankyUHFVaDNjVUxXOFdtQ2EyWDhjQS14bE9HalU?oc=5" target="_blank">ChatGPT有料プランの利用枠“2倍”！Claudeモバイルアプリも更新とユーザーに嬉しいアプデが続く【AIニュース3選】 - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-30 12:02 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIチャットサービスの利用枠拡大やアプリ更新は、OpenAIとAnthropic間でのシェア争いを反映した典型的な競争施策です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ChatGPTとClaudeは、モバイルアプリの利便性や月額課金の特典（メッセージ制限など）を競うことで、ヘビーユーザーの囲い込みを行っています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">利用枠拡大は「より高度なモデルの利用」や「長文コンテキスト」に依存するコスト増を伴うため、持続的な収益モデルが確保されているかの確認が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
