@@ -1,0 +1,366 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ガジェット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon-small" alt="ガジェット">
+                        ガジェット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-11-01 09:34)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTE80UTBTa2g3bkxjMnRnNTdoSThYbGFMZzYzYkI2ZTB0V2lPbzdQY1V6VTVuRHBIWnFlMkF1SzJpUHBmUDVIRXpqRmJtVmxNYVB2U2hWZlQ3VW9IVl81M0dSTVYwbHIwT3J0X215bTkyY9IBaEFVX3lxTE9ieXFmeW81dWtjZXFPcVV5YmRadl8tejNnNWFoaHdqV3dSSE1NMVU0RVBjOFZFR0tSZWxpVElwRXBvTDFmU2NTQktsZ3lDRHpXMTRFWHlIc3VjVV9lRTk4SG9jTXRoT2Rm?oc=5" target="_blank">ダイソーで1100円の「PD対応20Wモバイルバッテリー」を試す　手頃な価格でそこそこ高速にスマホを充電可能：格安雑貨店のガジェットを試す - ITmedia Mobile - ITmedia</a></h3>
+                        <div class="meta">📅 2026-10-31 02:00 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">USB PD（Power Delivery）規格の普及により、低価格なアクセサリでも高速充電が可能になってきている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつては「安かろう悪かろう」だった格安ガジェットだが、現在はOEM供給の標準化により品質が向上している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">価格だけでなく、安全保護回路の有無など、長期的なデバイスへの影響についても注意を払うべきである。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE5OTDFLVUVhSUpQT3d6Unl5a1JYN1NEOEloODN2ZndGQ0t4TWRwUFVVSERPalNWVklKallJVlE2R0JGQkFZOTBra3N1bmw?oc=5" target="_blank">【2026年10月】注目の新作スマートウォッチ＆スマートリング18選｜ガーミン Enduro 4・HUAWEI WATCH GT 7・Fitbit Edge - Smart Watch Life</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 23:54 | 🏢 配信元: <b>Smart Watch Life</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ウェアラブルデバイス市場は成熟期に入り、多機能なスマートウォッチから特化型のスマートリングへと関心がシフトしている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ヘルスケア需要の拡大とともに、各メーカーはセンサー精度とバッテリー寿命の向上を競っている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">本記事は未来の日付（2026年10月）を想定している可能性があり、情報の正確性や予測モデルの根拠に注意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxOelIxY25hWmJKVDZEdFhqTmN2WEp5ZE50SS1jczJZZWZjQkk5ZTFzSS01NzdickVudTNtajNtTDI1NkNSMEVfMzA3TEY5YkxWU19Ba3dDeXI0SFpoajNCSWZ4WmpXeUx5cE9uWVFkS1JmRVUyN3Vubzh1Y3RoalhvNmtXRXJiREhCWnpJdGNfVFVRZjkyRUFGOWpCRmktc1ZIb0d3em55ckl2M1hiLUh3R3lqUQ?oc=5" target="_blank">10%pt還元！Amazon、大人気スマートフォンリング&スタンド「Aulumu G09 Ghost」 - Jetstream</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 19:55 | 🏢 配信元: <b>Jetstream</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォン用アクセサリー市場は、利便性を高めるリングやスタンドを中心に細分化されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマホの大画面化に伴い、落下防止や安定したグリップのためのガジェットは必須アイテムとなっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ポイント還元は購入のインセンティブになるが、元の実勢価格との比較が重要である。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNWFgwREJxbU5xWXUyZjVYSUF6OWZBZmgtUnlxUjVtbHJUS1dyNkg4NGpuOFdPNHpvYjJKaEFyTldoZVB5VHctSDE3R3V3blFfSTJMcDNyNm5kTGhtWm1TNjNBUkJ1bEdHVWk0bDdxY2F6S3hKR2dFY0FKN2NKbllWVDlvUl8yQVdIMWpGeHE1WGxoeXJYZ1lqMTlWTkgwUdIBowFBVV95cUxPSGFxV1B0NXpjVVpNN0xOd25VMV93czRkeTBwR1p4UXBKNnVhTG5VVnJ2aG02c2Y1UjhFZ1NpOFlZMXNVVTI4M3E2UWt6OThSbzk2ZmVxbEZWU1hvZzczMUZDbHlBRlpQTFIydjhuazMtTWNIY3NzcjZSNlFCZkNJVnBiRGpNajZ4bDJ3azl1cXNQd08xSG5NNmZrLVd4Q3EtVGcw?oc=5" target="_blank">「また誤作動か」スマートウォッチの通知を無視した20代ランナー→大会2週間前の練習中にふらつき気付いた【体の異変】 - ｄメニューニュース</a></h3>
+                        <div class="meta">📅 2026-10-31 12:02 | 🏢 配信元: <b>ｄメニューニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートウォッチの通知機能が集中を削ぐ「通知疲れ」や、逆に重要な身体アラートを無視してしまう弊害が議論されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">健康管理機能が向上する一方で、デバイスへの過信が身体異変の察知を遅らせるケースが散見されるようになった。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">デバイスのデータはあくまで「補助」であり、身体の違和感を優先するヘルスリテラシーが求められる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5tb1l1bHI1V3lTVjBSdzQ2NVVIZmhzU3FCdXd5RG5Md3lTZHFVRS0yTHQ2YXBWQjRYMlJ2b1J0ZC1na0wySFBCLWcxaWRKcUpNbHNfUk5wNVlHMVVtSU1teU9ZSnpCWmVuZHVXaWgyWjZaNGQyZVHSAXtBVV95cUxPQTY3R0FHZXhXVmkxV19VRjlyMHVWSGRDREk4WG84di1rNmh5NFhMSElqS1g4ZUdjeDQ4dWRqSFA5MGpQUUdJak5KVURHSU9LOTNnZ19pV0Q0LU1QYi1jN19kZVZHU0lfcVZfOURrSU5zcWxGZkFENjNMM3c?oc=5" target="_blank">【2026年10月発表】大容量スマホまとめ Redmi「K100」10,000mAh・iQOO「Neo12」9,000mAh・Huawei「Enjoy 100 Pro Max」8,800mAhほか - インターネットコム</a></h3>
+                        <div class="meta">📅 2026-10-31 10:00 | 🏢 配信元: <b>インターネットコム</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンの大容量バッテリー化は、動画視聴や高負荷なゲーム利用が増える現代のユーザーニーズに応えるもの。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">軽量化を競った過去から、現在は長時間駆動を重視するトレンドへと変化している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">容量が増えれば重量も増すため、バッテリーサイズと本体の使い勝手のトレードオフについて検討が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE5KUjhsaGdrLTk0eWYyWGRmckJ4X0p1VV9EYUNHVFdLdU5hNTdoZXczMUU4SHBDNHBsU1VNSDZJSEp0UFFVYnZaT2JZM2VDNi1tbUllNFdFclozdF9ONjY3OWRqaw?oc=5" target="_blank">便利さよりも「好き」を優先。元エンジニアが作る、偏愛だらけのガジェット - TABI LABO</a></h3>
+                        <div class="meta">📅 2026-10-31 06:00 | 🏢 配信元: <b>TABI LABO</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">機能的価値（効率）を追求するテック業界において、個人の嗜好（偏愛）を反映させたプロダクト作りが注目されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">メーカー主導の大量生産品から、個人のニッチなニーズを満たすD2Cガジェットへ市場の目が向き始めている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「偏愛」はニッチ市場を開拓する重要なマーケティング戦略となり得る。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiW0FVX3lxTFAxQmxoWi1ZWjVmNFUyeVlncHNUUWM5SC1PUmpGYWRyandYVVoySEEtY1FFQ0dqTXRTSWp1ZVdiakZzUW5PYlB2TkwwdG9keG9pX2l2b2czQ3VPcDQ?oc=5" target="_blank">水にも衝撃にも強い8万円のハードケース。ガジェットも機材も守り抜く大人の宝箱に - Gizmodo</a></h3>
+                        <div class="meta">📅 2026-10-31 05:00 | 🏢 配信元: <b>Gizmodo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">高価な電子機器を日常的に持ち運ぶプロフェッショナル層にとって、保護用ケースは保険としての価値が高い。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">機材の小型・高機能化により、保護ケースの市場でも耐久性と機能性が重視されている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">価格に見合った保護性能が、保険料（機材の修理費）と比較して妥当かどうかが判断基準となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMikgFBVV95cUxORE5CSVdXNVFoNi13RjhDLXRtUzJpeTlsS29KSENob05rb01nNlVaNkJpQ29yZllLWExtWnB0RU94S2dHQzdlWXRoWTJqMjVhbHpUVXg3UGEwclY3YWlIM21YazFxZnlVSlR6LWtKbVBYd3BDdkFKYVoyVTRmQmhFQng1ejBiT3oxZEtkLWtwQ2YyZw?oc=5" target="_blank">Galaxyスマートフォンの販売不振にもかかわらず、サムスンは800億ドルを超える記録的な利益を計上した。 - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-10-31 04:30 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">サムスン電子はスマホ事業以外にも、半導体やディスプレイといったコンポーネントビジネスを幅広く展開している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマホの買い替えサイクル長期化により販売数が伸び悩む中でも、垂直統合型のビジネスモデルにより利益を維持している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「販売不振」と「利益計上」の背景にある、スマホ以外の稼ぎ頭（半導体部門など）の寄与度を分析する必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiR0FVX3lxTE16bVZFZGtSdGs4eW5NZl9BcnlIS0Y5Rzc5TUtDNFA0aXpuSXdDMzNwSTBsX1JxVWNxcFRwVjRWdWZkWHNJc3pN?oc=5" target="_blank">スマートウォッチ「wena X」(ウェナ クロス)クラウドファンディング支援金額が6億5千万円を突破！支援人数は1万2千人超え。 - ソニーが基本的に好き。</a></h3>
+                        <div class="meta">📅 2026-10-31 01:06 | 🏢 配信元: <b>ソニーが基本的に好き。</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ソニーのwenaシリーズは、既存の腕時計をスマートウォッチ化する独自路線でファンを獲得している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クラウドファンディングによる先行予約販売は、熱心なコミュニティの存在とリスク回避的な製造プロセスに適している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">支援額の大きさは注目度の指標だが、量産体制への移行や品質担保が成功の鍵となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        

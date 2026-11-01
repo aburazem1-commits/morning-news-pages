@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>マーケット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/market.png" class="thumbnail-icon-small" alt="マーケット">
+                        マーケット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Morning Briefing (2026-11-01 09:34)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5sMk9fTzlJbU9pREVpOUdwLXBEelBUQnlpSUVLeXQ3aUJ0VGtYTWliYTdVSUpZY0RQU2hSRFJlS2U3UkJrLXBnYV81UXlYNGpTcnpKUlF5Q0RLUjZhZkJveHlsX0I4Z2hvS0E5OU9FRGQ4bzBtVXc?oc=5" target="_blank">本日の米ドル為替レート（11月1日）：米ドルは小幅上昇。 - Vietnam.vn</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 00:22 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米ドル為替は、米連邦準備制度理事会（FRB）の金利政策や経済指標、米国の地政学的リスクなどに連動する基軸通貨です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近時は米国のインフレ鈍化と雇用統計を背景に、利下げペースや次期政権の経済政策に対する市場の警戒感が強まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">為替は多国間の要因で動くため、単一日の小幅な動きだけでトレンドを判断せず、週次や月次のスパンでのモメンタムを確認することが重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTFA4djUtRTdiU1VVUy1QVENsaFJrYUw0aHZXYk85LWVjS3B1MS1GUVpBYU1rMFcwTk9JMVd0eXd0Q3ZLOUJlZVBOUm9LeFQ0VllIM2F4RGstaVRoWkg3ZGxqcGRnTVkwQ1ZnTHc?oc=5" target="_blank">WOWOW、為替差益4億94百万円で中間期業績を上方修正 Lemino承継で通期売上は増収も利益は下振れ - media-innovation.jp</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 00:00 | 🏢 配信元: <b>media-innovation.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">為替差益は営業外収益に分類され、本業の収益とは別に純利益を押し上げる要因となります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">WOWOWは動画配信市場の競争激化に対応するため、コンテンツ戦略の転換や事業ポートフォリオの再編を進めています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">為替差益による一時的な上方修正は「本業の稼ぐ力」を隠す可能性があるため、営業利益ベースでの業績推移を確認するバイアスが必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMifkFVX3lxTE9XSVdFWDJJeTduTkt5QXc3N3BndnhTNUczZ2JyVXNLa245M1JNYmRrTVAtcE1CM3NhS1BXMUZiTkpSVVFLVjlqYWdFNGt4SzQwUWpEY0UyUnNGMGVHZkpMZXBTQ2Rxb2ZXNVRKVnRZZ25ybTdKWG53dW52ZnFJdw?oc=5" target="_blank">ドイツでＺ世代主導のデモ、生活費引き下げ要求 一部暴徒化 - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 23:22 | 🏢 配信元: <b>Reuters</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">欧州のＺ世代は、長引くインフレ、住宅価格の高騰、将来への不透明感から、既存の政治・経済システムに対する不満を強めています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ドイツ経済は製造業の停滞により成長が鈍化しており、若年層の不満が社会的な抗議活動へと繋がるケースが増えています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">デモの暴徒化は短期的には市場心理の悪化を招きますが、根本的な経済政策の改善がなされない限り、同様の社会不安が続く可能性を考慮すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE5tdDd2a0gtakNrbFVMUTQ5YXQtd3NPR2RSM1Q2bE1XcHYwYjJwRXZENm44Q1hLN1dWaWFOXzVJMnlqV2ZGMUJYOGFTWFQyUQ?oc=5" target="_blank">遠州織物の魅力知って 浜松市中央区で「染め織りマーケット」 販売ブースや体験教室 - 静岡新聞DIGITAL</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 22:43 | 🏢 配信元: <b>静岡新聞DIGITAL</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">地方自治体が伝統工芸品の地域ブランド化を図ることは、インバウンド需要の取り込みや地方創生の観点で重要視されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">浜松市など地方都市では、伝統産業の担い手不足を補うために観光と連動した体験型イベントの開催が近年増加しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">小規模イベントは地域経済の活性化には寄与しますが、マクロ経済へのインパクトは限定的です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE1ZckxYTzhrRU0yTVk3TWh0Qk55OWdSakhQemEyY0pCNmdxMTVJY0F1NGJQYk5MQ1A3eGVMOGZaN0l2MzRxWDFkZlZab3JKSHVrTHc?oc=5" target="_blank">【関東】2026年11月3日「文化の日」開催の無料イベント16選 大規模秋祭り＆フリマも！ - いこーよニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 22:03 | 🏢 配信元: <b>いこーよニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">休日やイベント情報は、人流の発生や消費行動を予測するための先行指標の一つとして利用されます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">コロナ禍後のリベンジ消費が一段落し、現在は体験型消費へとトレンドがシフトしています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">特定イベントの集客状況は、小売業界の短期的売上や、周辺の交通需要の変化を推測するヒントとなります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE5vcDZBZWxoMmhkUm1kUXl3dERHQmhMaVB5clAxOVd0NGlMNmZCUU1uVVJfVGQ5elNhMlViLVpRdzJVUmJuUkc4SUNEOTJhc1NLMHhfeGVIYWJwSTdEZGRqc0QxOA?oc=5" target="_blank">身構える株式市場 米中間選挙後、期待と懸念交錯：時事ドットコム - 時事ドットコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 22:01 | 🏢 配信元: <b>時事ドットコム</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米中間選挙は現職政権に対する中間評価の側面があり、その結果が財政出動や規制政策に大きな影響を与えます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過去の経験則では、中間選挙後は不確実性が払拭され、市場が上昇しやすいという「アノマリー」がしばしば指摘されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">今回は前例のない政策転換が示唆される可能性があるため、過去の統計のみを信じず、政策内容に注意を払う必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiY0FVX3lxTE50Z3pWVTFRVEZlZzFhZUxVRF8tVmdJS2RscW94aTNkeWs1QlBJMU4xTDVkZzhQMzRzOHNYbmN3bGJCSGNiNTVJZUFWSXpMSUVmdlB3VlEwbHZwaGZUeUFLUTRGUQ?oc=5" target="_blank">【最新FX・為替ニュース生解説】2026年11月2日～11月6日 YouTubeライブ配信スケジュール｜リアルマーケット分析 - 外為どっとコム</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 21:00 | 🏢 配信元: <b>外為どっとコム</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">FXのリアルタイム分析は、雇用統計や中央銀行の声明発表など、ボラティリティが激しくなるタイミングで重要度が増します。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年はSNSやYouTubeを介した個人投資家向けの情報提供が活発化しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">配信者のポジショントークが含まれる可能性があるため、複数の情報源をクロスチェックする姿勢が求められます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQbUc3cmszMkd4SWpyZ0xyakZtVzhuMDhJOXFldWhNM3Y4eUM0cE1PM3l5cFlQdXBmaW5tclduNXdvQUJiSnVzUjUwbkstdTdXVHhpMkFjTWlpb0Nuc2ZNU0JGbVNwNzg0UldVeEk0YjdIQ0lHWHd3SG9tWnkyWUU5a0dZWGtxUkU?oc=5" target="_blank">モスクワでテロ計画、米がロシアに警告 ＦＳＢ「適切な措置」 | ロイター - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-10-31 20:37 | 🏢 配信元: <b>Reuters</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米露間の対テロ情報共有は、外交関係が極めて冷え込んでいる現状において特異な事例です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ウクライナ侵攻以降、両国間の公的な協力関係はほぼ断絶していましたが、安全保障上の警告は例外的に行われることがあります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">この情報の真偽は国際政治の不安定さを象徴しており、地政学的リスクがエネルギー価格や市場の不安心理に与える影響を注視する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibkFVX3lxTE1HdnJvMmpGSUNUTmF2NjY0YmZYY2tRc0Q2MEVMbkVzNklvTDU5dkxRaXJQY2k0TUYtNU5JVUgzOXkxM3RkWVg1d29TNWl6aWx4VmJUR1A1bTdwQzBhelZyNVZIVktyM2dNSG15RFRR?oc=5" target="_blank">海の公園フリーマーケット 11/1･22 - 横浜金沢観光協会</a></h3>
+                        <div class="meta">📅 2026-10-31 16:07 | 🏢 配信元: <b>横浜金沢観光協会</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">フリーマーケットは地域社会の交流の場であると同時に、循環型経済（サーキュラーエコノミー）の実践の場でもあります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年はリサイクルやエシカル消費への意識向上により、再利用マーケットへの関心が高まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">経済指標としての重要度は低いため、地域の消費トレンドの一側面として捉えるのが妥当です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMitgFBVV95cUxPanFtVkxOaGhaV0o4MVBpQ1pQYmVYUnR0c3Y3WHNGMW1zNGpUUEFuV0FqNFFoekpWRm8wd1IwQ2ViaEhOek1QLTdkR3BmTWRhSGtmNlZwRFlWT2xuRHA5R1FNem1HQjJxYmhnMnI3Z29NTUhsWVBPY1RQWXFfUzZoRTlEY281QVZUT0dlNmJKanZYYWdweUs0ZE9jaGY5REN4Y1B4Q1hjcFkyMHYzbEZjcW1rOHQ3QQ?oc=5" target="_blank">昨夜、米国株式市場は大幅安となりました。保有していたNVDAのプットオプションは、一晩で22%の利益から含み損66.67%へと急落しました。ただし、心配はしていません。ボラティリティ（変動性）はオプション取引の一部ですから！ - Moomoo</a></h3>
+                        <div class="meta">📅 2026-10-31 09:46 | 🏢 配信元: <b>Moomoo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">オプション取引は権利行使価格と期間の組み合わせにより、極めて高いレバレッジと高い損失リスクを伴います。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">NVDA（エヌビディア）のようなハイテク銘柄はボラティリティが大きく、短期的な期待感で急変動することが多い銘柄です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「心配していない」というメンタル管理は重要ですが、資産管理の観点からはプットオプションが損失を出している際の損切りルールの徹底が求められます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiR0FVX3lxTE5JcWVuTFNnaWhHaUVwYzBUUkdhN0kzSTZBT1lJb2FoblpNcURWZXF0bUxjdWZtWW5ma3pZcVRmb0xqdTZia0p3?oc=5" target="_blank">冷却塔用水フィルターの世界市場（2026年～2032年）、市場規模（機械式ろ過、多層ろ過、その他）・分析レポートを発表 - Newscast.jp</a></h3>
+                        <div class="meta">📅 2026-10-31 09:30 | 🏢 配信元: <b>Newscast.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">冷却塔用水フィルターは、工業用インフラのメンテナンスや水効率向上に不可欠な産業機器です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">環境負荷低減（ESG投資）の流れから、水資源の再利用やエネルギー効率の向上を目指す設備投資需要が世界的に増大しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">市場規模レポートは、メーカーの楽観的な成長見通しが含まれることが多いため、 CAGR（年平均成長率）の根拠を精査する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQN3d2d1djRzZyVzVqYkNtQmtqNVZfZlpNRW1POHJHTVRjNTUxWWZacFMxaFFIb3NISVBteTQ3RWdnU0RxcnNpUXNXZ0NRdldIbmN6UThfTFRkWlJYcDl1bjBsbWt2cklzT0l3VmlRRk9LTl83QjljTlphOUtyLVZ6T2N1MFVtQ1E?oc=5" target="_blank">今週の【自社株買い】銘柄 (10月26日～30日 発表分)(株探ニュース) - Yahoo!ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-31 09:00 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">自社株買いは、企業が株主還元を強化し、ROE（自己資本利益率）を向上させるために行う一般的な資本政策です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">東京証券取引所によるPBR改善要請以降、日本企業の間で自社株買いを発表する動きが加速しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">自社株買い＝株価上昇という単純な図式ではなく、成長投資の余力があるのかどうかを財務諸表で確認することが重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1kcDRjaUsxMDFtc3NUcGR2cTVEbnVuLXdnZlJQM3FsTVVTaXNXZGw3SjF5UmtyVmxLLW5lX0xTSkhkcWVIbUt1bE85emtHR2FOS0pUMzkzY2ljY2RmZklNeHd4VUxGbWFyX2hrcHV6cEY1X2Q2cWM3OVp2OVc3WWs?oc=5" target="_blank">下北沢でフルーツがテーマのイベント 26店参加のマーケットも（みんなの経済新聞ネットワーク） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-31 07:18 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">下北沢のような特定の街のイベントは、その地域独特のサブカルチャーやコミュニティ文化を反映しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">都心部における小規模なマーケットイベントは、ライフスタイル志向の層をターゲットにした体験型消費として定着しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">地域活性化の文脈では成功例として注目されますが、投資判断に影響を与える類の情報ではありません。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZEFVX3lxTE9pZWttTzgxWUJLeGhjcVNfcFF4dEk4emkxUWZTUmNzUW5KRWNXNDRjaWpTdVFWSHNaT0FoSVJjZjFrWVZNZ1N3NzdNOUhpQjlJZGZNZEhsT0NFZmoyeVZqU00tMnU?oc=5" target="_blank">ピックヨウル 〜 海の街のクリスマスマーケット 〜 - アットエス</a></h3>
+                        <div class="meta">📅 2026-10-31 06:00 | 🏢 配信元: <b>アットエス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クリスマスマーケットは欧州発祥の文化で、近年日本でも冬季の集客コンテンツとして各地で定着しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">消費の季節性を利用したイベント開催は、飲食・小売り関連業界の第4四半期の収益を下支えする要素となります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">インフレによる可処分所得の圧迫が、イベント支出にどう影響するかが注目されます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxOa041Vk15NjBCUmF0VXhfR2FsNGZGWVE0V0ZFWlF6ZWhJUERzbUlOSmh0Um02SnlQSlFHbnE0TXUzQnFhT1VxTFdzblc3YUliaGw5bTVMdk1lVE5kVDZ0Ymp2S1NXLUtOWG10QzJqbUtWSTFrMlRJWjlrTDVZVVhFb3RqQmw0SlE?oc=5" target="_blank">米国株式市場見通し：中間選挙後も当面は中東情勢の変化などリスク要因残る(フィスコ) - Yahoo!ファイナンス</a></h3>
+                        <div class="meta">📅 2026-10-31 05:21 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">市場見通しレポートは、現在の経済環境においてどのようなリスクが価格を支配しているかを分析するものです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米国の金融政策の不透明感に加え、中東情勢の緊迫化が原油価格や安全資産への逃避を招きやすい環境が続いています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">専門家の見通しはあくまで「現在の情報の集積」であり、未知のブラックスワン事象については予測不能であることを前提とする必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
