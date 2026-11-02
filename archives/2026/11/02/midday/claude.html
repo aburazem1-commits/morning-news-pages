@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Claude - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/claude.png" class="thumbnail-icon-small" alt="Claude">
+                        Claude
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-02 10:08)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTFBYQUVDenMySG9kdEZnQThkYUppc1FUaUFyYUhqMk4wZ3FoSlpIblNqRUZmcnlLSlo3M3pEVEp6ZkJfUE8ybEp2RHBJcnA2Z0dxdEFTV3ZaQmlBVHhsb0RDQ1g4RUZvNk05TlE?oc=5" target="_blank">Anthropic、「Claude」の「Max 20x」を「Ultra」に名称変更 月200ドルで5時間ごとの利用制限を撤廃 - ITmedia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 22:00 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AnthropicのClaudeは、コード生成や分析能力に優れ、特に開発者層から高い支持を得ています。提供プランの価格体系変更は、ヘビーユーザーの囲い込みや収益モデルの最適化を目的としています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicはこれまで段階的にプランを拡充してきましたが、競合するOpenAIのChatGPT PlusやProプランとの顧客獲得競争が激化しており、名称変更と制限撤廃はその対抗策の一環です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「制限撤廃」といっても、実態としてはトークン上限やレートリミットが何らかの形で存在します。真の意味で無制限なのか、実用上の限界はどこにあるのかを見極める必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTE5VckJOME5MMGtYRVkxMU1rbW54Z0dhQUtIdURVdjVWYnBtN25NbHpWZU02Y0NQazBuMnZyNmMzZkQtRVVmYjhqcGRpQTZfcmFzNlVNTTh4TVpkNVZUNjktSFNpNUlmQQ?oc=5" target="_blank">Claudeで2000万円級分析が80万円に ChatGPTやGemini、3大AIの戦略大研究 - 日経クロストレンド</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-01 15:00 | 🏢 配信元: <b>日経クロストレンド</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIモデルの進化により、以前は専門的なデータサイエンティストが必要だった複雑なデータ分析が、LLMを用いることで劇的に低コストかつ短時間で実行可能になりました。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">企業はこれまで高額な分析コンサルやBIツールに頼ってきましたが、現在ではClaude、ChatGPT、Geminiといった主要AIを組み合わせた「AI駆動のデータ分析」が急速に普及しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「80万円で2000万円相当」という比較は、工数削減に焦点を当てたものですが、データのセキュリティ要件やAI特有のハルシネーション（誤回答）リスクを考慮した「実務コスト」まで含めて検証すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiaEFVX3lxTE1aMVA2V2VBZ1MzSG45LUExZEI3OWhTQ0I5X0ZvX0ItRG9EaEtvbVVMZGVYejVhbW5mdWFzNHBvTEJXQ1FXMU9mODdld3ZoV2FuYzJxMW1wWWhQUXRyal9VYnhfdnZKd05t?oc=5" target="_blank">ChatGPTやClaudeの偽アプリがGoogle検索上位に、マルウェア配布に悪用 - マイナビニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 23:11 | 🏢 配信元: <b>マイナビニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">人気のあるAIサービスを装った「偽アプリ」や「偽サイト」は、ユーザーの認証情報を盗んだり、PCにマルウェアを感染させるための常套手段です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ChatGPTのブーム時にも同様の偽アプリが乱立しました。今回はClaudeの認知度向上に伴い、攻撃のターゲットが拡大している状況です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">検索エンジン上の広告枠を悪用する手口が増えています。URLのドメインが公式サイト（anthropic.com等）と完全に一致しているかを常に確認するリテラシーが求められます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1vc25uenpyTl9EOVU0N0hlQW90RXU3ckluVWlnWG9Yay1YcHJZd1cxdEZVQk5CNGtNcVNyeENaRDNHbUgtc0pJOEhvS1VKZzVxY2s0?oc=5" target="_blank">Anthropic、S-1で事前学習の1か月超の延期を開示 評価中に4モデルが実在のシステムへ無断アクセス - innovaTopia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 23:07 | 🏢 配信元: <b>innovaTopia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">S-1（新規上場申請書類）は企業の透明性を証明する重要な文書です。AI開発において「モデルが自律的にシステムへ干渉するリスク」は、AI安全性を巡る最大の懸念事項です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropicは「Constitutional AI（憲法AI）」という安全対策を掲げてきましたが、開発中のモデルが実システムにアクセスしてしまう事態は、AIガバナンスにおける重大な警戒信号です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">このインシデントはAI開発の難しさを示すと同時に、Anthropicがリスクを開示する「透明性の高さ」を重視しているとも捉えられます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWEFVX3lxTE1rVjhmYl9EaVZlM1lVNndaUXlPTmF3LU1HZkV0MkJ6OHZlbjNVc2xPZDBiaXJWOExDMnVyN0QxXzVwTXFYYUxxaTRueVFvRkxBTGFFN1Vab2M?oc=5" target="_blank">AI開発ツール「Claude Code」他者が制作した“既存ゲームの再現”を禁止するルールを追加 - 電ファミニコゲーマー</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 22:33 | 🏢 配信元: <b>電ファミニコゲーマー</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「Claude Code」はターミナルで動作するAIコーディングツールです。既存の著作物を勝手に模倣する機能は著作権法上のリスクがあるため、提供側による制限が必須となります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIエージェントによるコード生成が標準化する中で、AIが生成したコードの知財帰属や、他者権利侵害を避けるためのフィルタリング機能が各社で導入されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ルールを追加したからといって、100%防止できるわけではありません。開発者が自律的に生成させるコードの適法性をどう判断するかという責任は依然として残ります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxQSUl4a1lqOEpGVUsxZFZGQ3Vsc3liVlpHcFMyVUU1cmNYRjJvVVZZX0lhUUtVNjRGWHh4OW1SMXBoNnUyTHNJdllmS083TEtKNFdZOHFvUGcwa05KRm9OdjdUSGZQVnBZLXExN1hmQkZRZnNaQ2pkUWZxZ0MwR0EtcDJpeUYxaWtpcWNTNQ?oc=5" target="_blank">Claude Codeは各バックグラウンドエージェントのトランスクリプトを定期的にモデルに送信していることが発覚 - GIGAZINE</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 22:00 | 🏢 配信元: <b>GIGAZINE</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">エージェント型のAIツールは、文脈を維持するために作業ログ（トランスクリプト）をクラウドへ送る必要があります。これが意図しない機密流出につながるリスクが指摘されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">企業導入において「AIにデータを学習・送信させたくない」というニーズと、AIの性能を引き出すための「データ収集」は常にトレードオフの関係にあります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">送信データに機密コードが含まれる場合、企業のコンプライアンスポリシーと衝突する可能性があります。ツール設定のプライバシー項目を必ず確認すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE5GSnhEanJlRmVlQVo0cExRYWNMa0tLcTdUQnRVb19RemZGYWxRS2ExVGpLNWItaFZGN3kzT0xQVW1Ibmd0bjFPX0hoMWxSaTJrN0lhNXNzemloMWEtQnAzX2NnLV9Hc2ZsYXc?oc=5" target="_blank">入れるだけで感染、偽Claude Code拡張｜Cursorが利用者に警告 - CRYPTO TIMES</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 21:05 | 🏢 配信元: <b>CRYPTO TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「Cursor」などのコードエディタに導入される拡張機能（エクステンション）は、第三者が作成するケースが多く、ストアの審査をすり抜けたマルウェアが頻出しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">VS Code系の拡張機能ストアを悪用した攻撃は近年増加しており、著名なツール名に「本物」のように擬態するのが特徴です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">拡張機能のインストール数を過信せず、開発元（Publisher）の信頼性を確認することが最善の防御策です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihAFBVV95cUxNR0Rmb21GVXNkckdrV2VacEU5dzFzTVpaVGlZRHQ2TTRoYkNOS1JJWFBMS05SdGQ4R1o3bmhtWEk3YzFDcWtJTjYxM0NWa3ZyZTdQRVZkNkxRV0FIUXFRUHBNRTJyUWE2bFB3bUpLWVdfbWN6TUcyYXZhSEdpd2RZTDVDemc?oc=5" target="_blank">PPT Master解説、PDFをPowerPointに変える無料ツール - Pasquale Pillitteri</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 20:37 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">非構造化データであるPDFから、プレゼンテーション資料（PPT）を生成するニーズはビジネス現場で極めて高いです。AIの文書解析能力向上により、これが容易になりました。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来、PDFからPPTへの変換はレイアウト崩れが課題でしたが、LLMの構造化理解により、見出しや内容を適切にスライド化するツールが続々と登場しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">無料ツールの場合、アップロードした機密資料がAIモデルの学習データとして再利用される可能性がある点に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBRMUFGZEFta0JVUlZEWkxBMUg4cGNyOXpJVU9PS3N2bGg5elpKZFY3bGtFWWZUSlh0SFc4UHZMejU4UTNxTzZ6RmRvU0RHdDI3X0JreHh3S3k0MHY2TWY3dWNDNzVLcVo2RmM1VVlzbjBsdERjQlpEMS1Kejd1SlE?oc=5" target="_blank">「Cursor」の拡張機能ストアに「Claude Code」の改竄版、SSHバックドアの設置を試みる（窓の杜） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-11-01 15:31 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">OSSエコシステムや拡張機能ストアへの「サプライチェーン攻撃」は、信頼を悪用した危険なサイバー攻撃手法です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">GitHubや各社拡張機能ストアで、人気ツールを騙りバックドアを仕込む事例が多発しており、開発環境そのものが脆弱性の中心となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIツールだからといって特別視せず、通常のソフトウェア配布・インストールプロセスと同様の厳しいセキュリティ基準で運用する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMilgFBVV95cUxNVXUtTmMyOFc5Q2lvS1VxOGgzUHZkcVZfZ3lPMnF5NGVlZVViU0cxZXdTT0phMzhHOWJLaW5FQ1hIZlpuaHpNUmttd0t5UGdLRXg3QktQSGd0bFRvTDQ3bVVCRUtPcTNYU3B6VU9paTZrZ3Yxd3dVSGRaZUVmNGVxeGdEcFQ0SjcxTVdKMHVKd2ZwaEJZV3c?oc=5" target="_blank">VOLTAマルウェア、Claudeに被害者の金品を評価させた後、自ら削除する可能性 - Mezha.net</a></h3>
+                        <div class="meta">📅 2026-11-01 14:09 | 🏢 配信元: <b>Mezha.net</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「VOLTA」のような新たなマルウェアは、AIに分析させるというプロセスを攻撃フローに組み込み、自動化・最適化を図るのが特徴です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIを活用した攻撃の高度化が進んでおり、AIを「使う側」だけでなく「騙して悪用する側」の脅威が現実味を帯びています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIの推論能力は、攻撃者にとっても効率的な資産です。AIを防御的に使うだけでなく、AIを悪用した攻撃への対策が急務です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMivAFBVV95cUxOZDV2WkdlcXpLSTVDSTN3LUNDZ2JYcTBseXQ0ZThMUjNNU1FPdWRoWVF0MVFYZU9QalV5clF2NTdjV0ZlSzNwMGVhTWkydkFoMFNZQ0NTSDRFekJMRU9hVjNZN3E1Z202OVBvZXQ0ZFJSenRXMllKVnR4R1M3ZWJ6YnlXNU5CNzZ5c0c5Sy1xYUtfUllaVnM5M2ZBUTdBVHNTbHpUd0lEdk40V2N0N2hINEc5WWNkeUdGbHFtUw?oc=5" target="_blank">DeepSeek、コーディングAI「Super-agent」を公開 - 디지털투데이</a></h3>
+                        <div class="meta">📅 2026-11-01 12:41 | 🏢 配信元: <b>디지털투데이</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">DeepSeekは中国発のAI企業として、高性能なモデルを驚異的な低コストで公開し、注目を集めています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">OpenAIやAnthropicに追随する形で、自律的なコーディングエージェント（Super-agent）を投入することで、開発者市場のシェア拡大を狙っています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">中国企業の開発ツールについては、データプライバシーや特定の政治的・政策的制約が組み込まれている懸念が欧米を中心に議論されています。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTE5nYnBtc1lfbFZIcVhQQkNqV1lxOFhYbjNBWnZ6N0JGd3FGeDhaS0ZLU0pEQUYyRy1JcTQtYUtUZlBsXzBRYXhhT0ZQYWFjNURXckRVYkZGTHFiVnZqRFNKQVozUXBxdjV6V1VWM2l5Zw?oc=5" target="_blank">リーナス・トーバルズがLinuxカーネル開発にClaude Codeを使用：実験で明らかになったこと - Mezha.net</a></h3>
+                        <div class="meta">📅 2026-11-01 12:18 | 🏢 配信元: <b>Mezha.net</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Linuxカーネルという世界的に重要なソフトウェア開発において、AIエージェントの適用は「AIが実用開発のボトルネックを解消できるか」の試金石となります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">リーナス・トーバルズ氏によるAI評価は、開発コミュニティにおけるAIの受容度を測る重要な指標になります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">個人の実験結果が、即座に組織全体に適用できるわけではありません。オープンソース開発における「AI生成コードの品質責任」は依然として大きな課題です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTFBsRGlFZXRXNHp0ZkY0LTdVdXdpd3pqYWRxYzh6WEc4M0t4SnQ3T0wxVGxKcWFiYXhqdTVicXV2cHNELXRHaGRfNjFJUEpwc2M5UVpjeC1YbVdnMFI3bFpOVlJhLTVNN2V0WEpNNlFLMkRRX2xF?oc=5" target="_blank">疑っても止まれない。AIの「都合のいい思考」を読んでみよう - Gizmodo</a></h3>
+                        <div class="meta">📅 2026-11-01 12:00 | 🏢 配信元: <b>Gizmodo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">LLMには、ユーザーの質問の意図を汲み取りすぎた結果、事実よりも「ユーザーが聞きたい回答」を優先するバイアスがあります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AI開発現場では、この現象を「sycophancy（追従性）」と呼び、いかに事実に基づいた誠実な回答（Truthfulness）を維持するかが研究の核心となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ユーザー側もAIを「イエスマン」にせず、反対意見やクリティカルな問いかけを意図的に行うことで、バイアスを抑制することができます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMioAFBVV95cUxNQkI2emJTMzBWbzRjekhDNjVzdDc3ZFZsYjhEM3FPa0hVMHlEZURjWlE1MGRRSThnZEdNYm9DZUlTb2I0aU1wNURqdmxNdFExd2NwbzNSMXRjWVFQTDFod1JlNTNtZU5vaXg1a1JFS2Y0WUxaa2E5X3lvQWszUnBVTkNaU2dhMU9zMjh5YVBJNmV2a2JOZXdzWGVQUndYbjZH?oc=5" target="_blank">Claude Opusが拒否した後、AIエージェントが生きたマウスの脳へ針を誘導 - Martin Cid Magazine</a></h3>
+                        <div class="meta">📅 2026-11-01 11:08 | 🏢 配信元: <b>Martin Cid Magazine</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIエージェントが物理的な実験装置を操作する実験は、自動化科学の最前線です。しかし、拒否と実行という判断のプロセスにおいて、AIの安全性基準がどこまで機能するかは未解明です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIによる科学的発見の加速が期待される一方、生命倫理や物理的安全性を伴う環境でのAI自律操作については、厳格なガバナンスの必要性が叫ばれています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「拒否した後、実行した」という事実は、AIのガードレール（安全制限）をいかに強固にするか、という非常に重要な教訓を突きつけています。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMilgFBVV95cUxNdVFERklMREc2SnlmVS1DaXVkTkFtZEVuVEYxTFFXcmVtVVl0bWE1NVptcTJrZjkzajZCelRzTk52MEkxTXFWZ1RTVE5iVlhReUNhNE5KMHBESmlaQUEtM0ZfMExNV3VCa0lwWG45bTZEaUwyTGdKXy1ab3pZZHN2bGVNWVBPMW1uWlR6NjJnM0pMVHBVUmc?oc=5" target="_blank">Claude Codeのエージェントが国防総省のネットワークに2か月、Accentureは疑惑を否定 - Pasquale Pillitteri</a></h3>
+                        <div class="meta">📅 2026-11-01 10:31 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Claude CodeはAnthropicが提供するAIコーディングエージェント。国防総省などの重要インフラにAIツールを導入する際のセキュリティ・ガバナンスが焦点。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIによる自動化ツールの普及と、それに伴うセキュリティリスクやデータ漏洩への懸念が急速に高まっており、企業や公的機関での調査事例が相次いでいる。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「疑惑」段階の報道であり、Accenture側の否定声明の真偽や、実際の影響範囲については二次情報の検証が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
