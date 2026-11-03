@@ -1,0 +1,285 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>エンタメ - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/entertainment.png" class="thumbnail-icon-small" alt="エンタメ">
+                        エンタメ
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-03 12:11)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTFBBSG1UdnAxbkY2cXN4TmJudzhMWXV4NTNQNDdMNkpodWNDSlpwczUwWkVsaEVZVnRBUEVoOFFmZFNzUEMyNmhRSmM0YTJqSERKa0xvbGZvaU50N2NiMUc2X1lSNEp3cWx2T2c?oc=5" target="_blank">『From INI』番組初の大型イベント開催決定！『Thank YOU From INI～5th Anniversary Fan Meeting～』 - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-10-31 08:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiRkFVX3lxTE9ldTFPaW1BMm5lbHRZMWtYaW50ODdqd0J6bVlHQWpfX1JSX01LaXZoZV84TGNTQ3RsamdJY0RZWVdUZDBOYUE?oc=5" target="_blank">INI 佐野雄大(사노유다이) 絶対アイドル辞めないで(절대 아이돌 그만두지 말아줘) 👼🏻🩷 - YouTube</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-02 15:00 | 🏢 配信元: <b>YouTube</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE9fSG90Z2pISTNuS2J1Z2xaQm9qZDRFak5PWXNEODQwY2dIaWJUbTNlTEVBb01pQlc2NTNtOWNLQzBpYzBQNU5qb3Jn?oc=5" target="_blank">INI京セラドーム公演はU-NEXT独占生配信｜11月15日ツアーファイナルを観る方法【11月2日更新】 - BANGER!!!（バンガー!!!）映画評論・情報サイト</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-02 09:33 | 🏢 配信元: <b>BANGER!!!（バンガー!!!）映画評論・情報サイト</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE5vS0hfbVpkYkNFaG4wMkU3bUkzd2xydFJfT0FNRG5WQ3Z0TDhrMDdqU2c4bnRhRmVrZHVSbjV2Wkdta2ZRa2RlWjB0NmpPZw?oc=5" target="_blank">INI、音楽アワード『MTV VMAJ 2026』で「Best Asia Group」受賞 総勢30人のラインダンスで東京ドームを圧倒 - WEBザテレビジョン</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-02 08:02 | 🏢 配信元: <b>WEBザテレビジョン</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTFAydWc2RTBheGtTRXN1b1RkVVp6VmZRb3VEektMWG1fMzFmV05BSWVRTGpRZ0czRGlBMVB3Z25MUXFwZC1HM2xmTWxCQnAyeEZ6clkyRERfTQ?oc=5" target="_blank">INIフェンファン、船舶免許取得Vlogが今夜7時公開 - X</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-02 07:32 | 🏢 配信元: <b>X</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMic0FVX3lxTE5faklad0dZTm1PVVFfOENteHhqRENhNlVRdUs4WnR3RmNNTjFZOFNyS3RiQmJKTWs0ZXVTNHNFdExUb2QzamNWLTAxNU1pckU4aThSYVlxaWJvcmF0VmtOMWE4T0ltQWZFbS10YWpVRXF0VjA?oc=5" target="_blank">INI メンバープロデュース企画「INI STUDIO」 西洸人オリジナル楽曲「My Way」楽曲配信開始・MV公開！ - USENの音楽情報サイト</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-02 01:20 | 🏢 配信元: <b>USENの音楽情報サイト</b></div>
+                        
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMicEFVX3lxTE1nOEF0bVpZY1R4cDhhUlNDQ1RNNFNyOGVBbkZWZXlsQm0ydlpaQ0xCbG4yN2Rfd0dmS3BpeF9jdHlTSWh4ZmprRmZhR3R1WlVnRWIyODlZQ2ZYajR3LThXbS05WkZ6OWxObVdsaFlhRzk?oc=5" target="_blank">松岡茉優「オタ友」 直木賞受賞の若手人気作家とハロプロつながりで特別な仲に - 読売新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-01 10:58 | 🏢 配信元: <b>読売新聞</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9ROWtTSzF5eW5XQ3M2ZWpEZTRuTEJTa3dob1dDTkFMRENkdFFfcEU1UWtoMWFlUzRlbnpXNGwxS0hTRmpNMHZ6SVUySnEyeWpwMjV6a0VpMkx0cHZfU21aM29TR0hoSlAxaHd0aFFtTVE2dFR4QTFZRVVJeUF1LUE?oc=5" target="_blank">INIがパーソナリティを務める『From INI』初の大型イベントが有明アリーナで開催決定（THE FIRST TIMES） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-31 11:48 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTFBmNGdMY29NTkMtbXp3bDk2Mk9aWlBoYWlNNGVjaDZIdmRTWEZDbWxhSm9oNlNzSE5GM0JPeWpLUmFBRlB1NzhKV01WXzF4bnRJQ1ppdkMwQm1kemFO?oc=5" target="_blank">[INI FOLDER] EP.143 秋メン🍁決定戦！秋が似合うのは誰だ！〜中編〜 - YouTube</a></h3>
+                        <div class="meta">📅 2026-10-31 09:00 | 🏢 配信元: <b>YouTube</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE84V3V4REhyUFZpT01ZZjNESHhndW01aFJfWEJpYkRZZGJ2c0FSU0hOSU1RbEI0OHptUkxmWld5a2U0X2VTOWVvc2lzVVJPRmhjejVCS2sxOHNCSHg2Xy1WeFZhTkVpSVlRTkpSSzVIbVZkZXdMazhZcXBnSzM3OXM?oc=5" target="_blank">INIのラジオ番組「From INI」5周年記念ファンミ開催決定！スペシャルライブや特別企画を展開（音楽ナタリー） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-31 08:50 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTFBySVVkZFFiMmVNZUxRTUQyLXo2b1hTZUJ1ckFuN3AxeWFNVFBLYUdYNGVBd1hnMDVKS296MThJS2x3eUx4M2JjbGRkYw?oc=5" target="_blank">STAR 10月31日(土)放送分 INI・NCTDREAM・イコラブふぉ～ゆ～｜バラエティ｜見逃し無料配信はTVer！人気の動画見放題 - TVer</a></h3>
+                        <div class="meta">📅 2026-10-31 06:17 | 🏢 配信元: <b>TVer</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE5IMzdidGg3bnNoYWxhbDZWWlN0VjBka1J5SEQxcmJIS0VtYWJmMmdjYkVlaERIWEY3aGJDMWJzalBiZnBWWC1UUUtFaVdDdHhYb09rTzRTTXZxLWk20gFiQVVfeXFMT2xYd0VYQy1BYmxuX1Q0dnRHbWpfeWwyQ3h3RG5rby1DZFhObUpiSDF2Vm9VVF9nb3J0bmRNSUdkNWJscHktTmFLa19oRHlhcXRhRW1YelQ4ZHk0bWZYNnlwQ0E?oc=5" target="_blank">&TEAM、JO1、INI、乃木坂46…写真で振り返る『MTV VMAJ 2026』 - リアルサウンド</a></h3>
+                        <div class="meta">📅 2026-10-31 03:40 | 🏢 配信元: <b>リアルサウンド</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5ONEFsNnVhMDVGd2w1dDRZY0tkWUhyVlZtSDFaN1pCZllFU0xvZWZXWUhrMExSOW92eVdnTHl6SGQ3bjlUT1pQLXdoOXpoTGs5eXZ3X3Z0TnZNVFZmNW9yZ1hIMGNuV2ZGY2VLV3ptbmV6U1NTR2tfUTJKbXpYMUE?oc=5" target="_blank">「バズりたくて、事務所とは結構闘っています！」ハロプロの革命児・OCHA NORMAが明かす野望（SPA!） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-30 23:54 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1zZTAxbU53aWNUbFNPYUEtWjVkTW9wb0lxLXFpUDFSRFMtdk5zWXotZi1EMldSZE5YbV9OSXRYbHFyWkVHZHN4dXJUbDR1NTA5LUpzRV9fZUhiaXRlRXZwVVdDUFZON1BSVWhacHZNNGVzeW9lSWF3bFFNWXQ1bFE?oc=5" target="_blank">モナキ、INIのライブや「MMA2026」などを配信【U-NEXT11月の音楽ラインアップ】（TVガイドWeb） - Yahoo!ニュース</a></h3>
+                        <div class="meta">📅 2026-10-30 22:00 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE5CRTFwV29tNWxLWnFRUThYNk5nSzRBZjMxaWlhTkktNEZrQjlUNHpVVHRscWprd1dUTFpMR2lPaG5maGRMcDZOWWZrd0U?oc=5" target="_blank">「STARフェス」の模様を地上波放送 ＝LOVE、NCT DREAM、INI、ME:I、CUTIE STREETら出演 - ナタリー</a></h3>
+                        <div class="meta">📅 2026-10-30 13:13 | 🏢 配信元: <b>ナタリー</b></div>
+                        
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
