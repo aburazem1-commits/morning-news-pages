@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>経済 - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/economy.png" class="thumbnail-icon-small" alt="経済">
+                        経済
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-04 10:46)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE43NzRyV2FpTjVLVElqalNMQnhGVWdzWS1fc29KU014bnFQb1pPRmJCVXFhMlB5R2laRzJ4bFpIZVNJNXA0NXM3SjVLZXlfb3dCa0EtalFuajFaemdfNjhTazlWQVZtZllYbHowWA?oc=5" target="_blank">日経平均株価、もみ合い 米中間選挙の結果見極め - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-04 00:08 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米中間選挙は連邦議会や州知事選の構成を変えるため、今後の米国の経済政策、財政出動、通商政策に大きな影響を与えるイベントです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年の米議会はねじれ状態が続き、法案成立が困難になるケースが増えています。市場は選挙結果から、インフレ対策や金利見通しへの影響を常に注視しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">株価の動きを「選挙結果のみ」に帰結させるバイアスに注意が必要です。金融政策や企業業績など、複数の複合要因が絡み合っている点を考慮すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE1STXJxeWJHTm5CX0FnMXg5MW5fc2xZUnZMc3JhazI5cmpjbVMzNDBFU09zRWo4YWlhRFpTV1NqVThIRmd5bmUwbUw2N29qQWxYMGg5WnlHSEg5Zw?oc=5" target="_blank">Ａｌｌｇａｎｉｚｅ Ｈｏｌｄｉｎｇｓ[656A]の株価・株主優待など。 - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 23:45 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Allganize HoldingsはAIチャットボットやLLM（大規模言語モデル）のビジネス活用プラットフォームを展開する企業です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年、日本国内ではAI関連銘柄として成長期待が高まっており、新規上場（IPO）やスタートアップへの投資熱が同社のような企業への注目度を高めています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIスタートアップの株価は期待先行になりがちです。売上成長だけでなく、実際の収益化状況や競合との差別化ポイントを精査する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE84dlUzWG9ZWHlYZ2NfS3Ezc0ltbTNSWlF6OE1tcUFkU0RrWEJXSERoWXk4bUtxd1lkY2p4Umh0WUNKN1ZiNjFvTVlaRXViaVRhQm9rYlhEanJHenhHbW05OEU5VTZNdEZVVWNrdQ?oc=5" target="_blank">Yahoo!ショッピング、ブラックフライデー開催 AI企画も実施 - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 23:43 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「ブラックフライデー」は11月第4金曜の感謝祭翌日に始まる米国の年末商戦開始イベントで、日本でも小売・EC各社が大規模セールとして定着させています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年、日本のECサイトはAIを活用したレコメンドや需要予測を強化しており、販促効率の向上を図るのがトレンドとなっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIによる企画が売上にどう寄与したかという「結果」だけでなく、顧客データの活用による長期的LTV向上への貢献度を評価する視点が重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE0yOFFEaFNYd3VCYU92MTc3NUhpclk4bm41eWJ3NXVpeUJOMWNxeFdWbDNaZGZoYU12MUxTWTVWenRrY3loeTRzYjN5OEVTRkxINWlRNkVnVEt3NGF6bUpMRWg0ejQ5MUVHU1dxQw?oc=5" target="_blank">APECがオンライン閣僚会議 中国外相「開放的なアジア太平洋経済を」 - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 22:31 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">APEC（アジア太平洋経済協力）は環太平洋地域の経済協力枠組みです。中国は域内の自由貿易を主導する姿勢を示すことで、米国の対中包囲網に対抗する狙いがあります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米中対立の激化により、サプライチェーンの分断が懸念される中、アジア太平洋地域は経済的自律性の維持と輸出促進の両立が課題となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">政治的メッセージと実体経済の乖離に注意が必要です。外交的な発言が実際の規制緩和や関税障壁の解消に直結するとは限りません。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9ueEYteU00bm9sQng5TFltWVJTclhtUDl4XzhoczNPTWQ0bUh1WjI5Vjk5Yk5LTDFsaUhTdWdGRURuQkZZVXBMYTYyRWhYaUQ4WEJjY0tIcGliNTFoRUw3cTE1UklZRmRXN0dTcw?oc=5" target="_blank">ライドシェア解禁できない日本の憲法論 経済規制の裁量どう生かす - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 20:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日本におけるライドシェアは、安全確保や既存タクシー業界との調整が難航しており、限定的な解禁にとどまっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">移動の自由と経済活動の規制の間で議論が続いています。憲法上の営業の自由と、公益目的の規制の均衡点が長年の法的な論点です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">憲法論だけでなく、地方の公共交通機関の維持という「社会的なニーズ」と「安全リスク」のトレードオフという視点で捉えるべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTE14bEN3NXFYRjNWWXlrV3VLdUFMSVFvQnlWMWNZdHRDbHIybTVOTFlTenNyVUhvUHlTRWRZZ1BiMlYxTFZqN2VudWNxaFJMWG9Vc083cEhlS2FWLXNwWVFkRDExTnFYTE0?oc=5" target="_blank">「カネ」は血液、「金利」は血圧 国を守る「資金の流れ」を読む - 日経ビジネス電子版</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 20:00 | 🏢 配信元: <b>日経ビジネス電子版</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">経済における資金供給（マネーサプライ）を血液、金利を血圧に例えるのは経済分析の基本概念です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">低金利環境が長年続いた日本ですが、日銀の政策転換により「金利のある世界」への適応が個人の生活や企業の資金調達に影響を与えています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">比喩は理解を助けますが、経済のメカニズムは非常に複雑です。単一の指標だけで景気を判断せず、雇用や物価など多角的な指標を見るべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxPU294YlRGNnY5SVJmRG9NZXZaeHk2QlZTU2VrRUF5NTNMdnI3RklqNWR2V2Z5Z1FhOG1qbEVaX3VUR0VtVk1YODJtQlhHMTZuTFhReFhDODR6dGRHek5iNk9oNTl5T2cxWmw2a2JlTGpqTTNjd25aaF9HR0VLU21COC1GRWg3eHc?oc=5" target="_blank">インド半導体の業界地図 タタ経済圏に450社超、日本勢は - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 20:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">インドは「インド製造」政策を掲げ、半導体産業の国内集積を進めています。タタ・グループが主要な推進役を担っています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">中国依存からの脱却（チャイナ・プラス・ワン）を目指すグローバル企業の受け皿として、インドの地政学的・経済的価値が高まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">インフラ整備や熟練工の確保など、インド特有のボトルネックが存在します。業界地図が示す「拡大の勢い」が「確実な収益性」に直結するかは未知数です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9uZnZxOFdiQzM0bkJZMzNQUFVqVEh5TW1wZkpfcHpiWk1CZGtNU25POEJ5c1dzQmtCTVYzNGpyN3M1R2RIY193dWVGaXRybjl5RlZDYXhobmNkRkhtZ05xWkYxLTNhWnJPSHVuOA?oc=5" target="_blank">デジタルバンクとは スマホ前提、システムを再構築 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 17:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">デジタルバンクは物理店舗を持たず、スマホアプリを基軸に金融サービスを完結させる銀行形態です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">既存のレガシーシステムを持つ大手銀行に対し、後発のデジタルバンクは柔軟なクラウド基盤を利用して顧客体験（UX）を向上させています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">利便性の向上だけでなく、セキュリティ対策や金融犯罪防止のためのシステム投資が、持続可能なビジネスモデルの成否を握ります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9pODVBRkN6bkRTM0JxaGxsLWE0VklyTDNIWGJoUjVuQ1ItV2h1b1dmd1pwaGJobEtQS3RTUkI3MS1BVk1ybXlDQ3NtaGxONGlmT0g0ZFlRdjRjdWMyOWxrYURTdTByQkQ1SmhfWg?oc=5" target="_blank">三菱UFJ、新銀行でキャッシュカード全廃 サイバー防御へスマホ入出金 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 17:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">大手銀行によるキャッシュカード廃止は、物理的資産の管理コスト削減と、デジタル化によるセキュリティの高度化を目的としています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">サイバー犯罪の巧妙化に伴い、従来の磁気カードや暗証番号のみの管理では不十分という認識が金融機関全体に広がっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「カード廃止＝利便性低下」と受け取られるリスクもあります。高齢者層への対応など、デジタルデバイド対策が不可欠です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9JQnNNYjBLbHFvQkE0eWVyaS1zZ014bGQwU1NqcEljOElpeUg5Sm42SVEtNUIwYkYyOXBqUS1ZbmEtZzdfNmw1dU5iYUJ4clpMc1RWd0pKMFZ2aVpnbEplU1lYUjYtQzBRQXpCcw?oc=5" target="_blank">春秋（11月4日）読書の秋 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 15:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">春秋は日本経済新聞のコラムです。読書の秋という季節感を通じ、経済や社会の変化を考察する定型的な随筆です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">情報過多の現代において、デジタルコンテンツだけでなく、書籍による深い思考の重要性が改めて再評価されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">随筆は個人の視点に基づくことが多いです。ビジネスの現場では、客観的なデータとコラムの視点を混同しないよう注意してください。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE1zUTlIZ2F0S3I0eHB5dGExZEtQZXF6dDVYNEJtMGxleFZIQVYzNFdFdDdyVXB5R1R2cS1haUpzYkxjWUo4eXdTRGRtRkU3TmU2MllNeTVLQlFvNVRQNl9ZMzU2b0lVUDgyNFgwUQ?oc=5" target="_blank">ウィリアム・ノードハウスさん死去 ノーベル経済学賞受賞者 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 09:57 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ウィリアム・ノードハウスは環境経済学の第一人者で、経済活動と気候変動を統合した「気候経済学」の基礎を築きました。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">気候変動が経済に与えるリスク（カーボン・プライシング等）は、現在のESG経営や脱炭素政策の根幹をなす理論的支柱となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">彼の理論は、気候対策を「コスト」ではなく「経済成長」の文脈で再定義しました。現在の環境規制の根底にある考え方を理解する重要な視点です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9BTjdzX3FtRWN6ak13bjlkOThINkh1SXlUNEo4eE1FSDJRY2xucldyRmY3bUhhbGtlU1ZVRFFrcnY0WktOaWo5b0VONzlfNGtQbmNiczFveGlDOFdkNlpZUXVtOFlIOGlka2VmTw?oc=5" target="_blank">SK崔会長が日韓経済協力の強化訴え 「国会、超党派で支えて」 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-03 09:46 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">韓国のSKグループは半導体、エネルギー等で日本企業と協力関係にあります。崔泰源（チェ・テウォン）会長は日韓経済交流を推進する主要な財界人です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過去の政治的確執により冷え込んだ日韓関係ですが、近年は経済安全保障の観点から両国の産業協力が再び重視されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">財界の交流が先行しても、歴史的・政治的な背景がリスクとして常に残ります。経済協力のスピード感と政治の安定性の乖離に注目が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiS0FVX3lxTE5SdS1TQWN5eTFtWVBsSTBJcldKNkR1QnNOeTBJLU1tSy1Kd3Z3a3VSVFh6eHNhcVlRVV9RbjhDZXBNclRCclZaTUhYbw?oc=5" target="_blank">世界の経済成長「土佐和紙」が支える！ 紙類輸出額、１０年で倍 ＡＩ普及で高度紙の需要急増 - 47NEWS</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-04 01:33 | 🏢 配信元: <b>47NEWS</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">土佐和紙などの高度な特殊紙は、その高い耐久性と品質から、AIサーバー等の精密機器の部材や産業用フィルターとして再評価されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ペーパーレス化で衰退が懸念された製紙業界ですが、ニッチ分野での高機能化により、新たな輸出産業としての可能性が見出されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">輸出増を「伝統文化の勝利」と短絡せず、特殊用途への転換という「技術の適応能力」にフォーカスして分析することが重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE4ycV9vZHNhZ0tIdWRCaDZ1RnlfRGNqWkxlWVFHdTAzamxHRnVzNFg0ZHQxYk1wOHJvRjFYdmYzMDNWcUc0MVQ4MlRyMUtFRzc4X2Z3?oc=5" target="_blank">狭山市役所で生理用品を無料提供 女性用トイレに機器設置 「生理の貧困」対策にも - 東京新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-04 01:24 | 🏢 配信元: <b>東京新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">「生理の貧困」とは、経済的理由で生理用品の購入が困難な状況を指し、ジェンダー平等や経済的不平等の文脈で注目されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">コロナ禍で困窮世帯の経済的困難が可視化され、全国の自治体で公共施設での無料配布が広がりました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">福祉的な意義だけでなく、これを機会にジェンダー課題を解決する企業の福利厚生やESG施策としての広がりがあるかどうかも検討すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE54bjNkMUNiMkw2UzN0NmFYQ21IdTUtRk0yd3gxdlpVU296V3NHdlZpWnBxeWRoc19lR3dFejgzYk5vcDliQzVhelJMcFdiT3Bab0Y2cUNrR0RXZw?oc=5" target="_blank">グリーンランド議会、アメリカとの安保協定批准…野党からは経済的価値に疑問の声も - ニューズウィーク日本版</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-04 01:20 | 🏢 配信元: <b>ニューズウィーク日本版</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">グリーンランドは資源開発や北極海航路の重要拠点であり、米国は安全保障上の重要度を高めています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">自治権を拡大するグリーンランドにとって、米国への依存を強めることは、将来的な完全独立や経済自立への足掛かりとなる一方、中国の影響力排除も含まれます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">経済的価値の評価については、開発コストと収益性の予測が困難な場合が多いです。地政学的な戦略性と商業的な現実のバランスを見極める必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
