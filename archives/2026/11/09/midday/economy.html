@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>経済 - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/economy.png" class="thumbnail-icon-small" alt="経済">
+                        経済
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-09 10:19)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTFB0UVZqVXFzdVlDaHB4OU1aSko1YlRTM1NqZWJIN1UwcXZ6UVhBbURLTW9mTzRDQU84VlVRTHBsUWFnemdCcmRnNWxZSHlYQ3VOVmZNdl9jU0w0NTI5WW14aEZDbmJDU09ua1lzOQ?oc=5" target="_blank">日経平均、反発で始まる 米ハイテク株高で - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-09 00:09 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日経平均株価は日本経済の動向を示す主要な指標であり、米国ハイテク株（NASDAQなど）の動向と強い連動性を持つ。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米国におけるAI関連銘柄の好調や金融政策の展望を背景に、日本株市場はボラティリティの高い推移を続けている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">株価の短期的な変動はセンチメントに左右されやすく、ファンダメンタルズの変化と混同しないよう注意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE5RYUczOGNQWFptcUZoLVFWUW5KUF9ZejFfNm40QllOZ2kyelVuUnZrb3oyTVd6eHQwT0l1bGpYZzhNVTNldE4zZWhqMXRSUXZMYk5EanJ0Sm5MNFZBWVBjd3JELThCSHRnUkNrRQ?oc=5" target="_blank">リフォームテクノロジーの佐藤社長「知名度生かしロイヤルティー事業」 - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-08 20:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">リフォーム市場はストック住宅の活用が進む中で需要が堅調。ロイヤルティー事業は、ブランド力やノウハウをフランチャイズや加盟店に提供して収益を得るモデル。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">リフォームテクノロジーなどの新興企業が、デジタル化や効率化を武器に市場シェアを拡大している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ロイヤルティーモデルは高い利益率を確保しやすい一方、ブランド価値の毀損が最大の経営リスクとなる点に留意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE80NnVXYXluZjRRQm9pWTQweDBscERZeGlVTVdxejlFSjhRdm5UQ2JoQmRIS0hsWWFkMF9keDBHZDJrZ2pXV0tST3lkdEJqZnNNMnI0cnRycDBWOFdaTk9WNFQ0WFFfYUhwZTU0bQ?oc=5" target="_blank">ジャズピアニスト・守屋純子さん（1）チック・コリアのメッセージ - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-08 20:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">チック・コリアはジャズ界のレジェンド。著名人や専門家へのインタビューを通じて、彼らの哲学や音楽的背景を紐解く連載企画。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日本経済新聞の「私の履歴書」などの文化欄では、トップランナーの人生を通じてビジネスの教訓を抽出する形式が定着している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">芸術家の哲学をビジネスに応用する際は、文脈の飛躍を避け、自己啓発的なバイアスに陥らないよう注意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE13QzVVVmZGNy1BX0hyRmk3R1VOX3VJQ1h1ZTk3T1RvcWVfeVZmbHBYS3NEUW9ra1pTLWxZaVVCejl4cXpnZXhWMm5qd1c2SnFpaTZMczJPeTFsbk0xMkJLRHJ1UXkwWkxBU0M4ZQ?oc=5" target="_blank">JTのロシア事業、FSB元職員の企業が管理 メディア報道 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-08 18:57 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ロシアのウクライナ侵攻後、多くの日本企業がロシアからの事業撤退や資産凍結を余儀なくされている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">JT（日本たばこ産業）はロシア市場において高いシェアを持つが、経済制裁下での事業維持には政治的な複雑性が伴っている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">メディアの報道には、地政学的リスクを強調しすぎるバイアスが含まれる可能性がある。法務的な正当性と国際的な世論との乖離を整理して捉える必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTFBDT25BdGpsa2M5ZkhfMmdCTnk5UzNRQ1c2ZHcwTE1tenNNQjJsYnJwOTJHM3AtTG4yTkFPczNrMlZaU2F4UDZxUW9PZGc4MzZUMDljZA?oc=5" target="_blank">エジプトで列車追突、７人死亡 - 伊豆下田経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:15 | 🏢 配信元: <b>伊豆下田経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">エジプトはインフラの老朽化や過密な交通事情により、鉄道事故が頻発するリスクを抱えている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">中東アフリカ地域の鉄道安全管理については、長年当局のインフラ投資の遅れが指摘されてきた。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">偶発的な事故の報道は、現地の社会インフラの脆弱性を象徴しているが、特定の政治的意図や政情不安との結びつけには慎重であるべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE43NGROZzRsZ3pnbElMOTdsdTVkbjgxNldDMExMdG1tOWVXZEMxYWk4NTNKVnNpRm1udjhNOUZtU2V4dlBoWUxkaFp1WV9YTmNPV1dqZg?oc=5" target="_blank">イスラエル大統領、野党党首に組閣指示 - 伊豆下田経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:15 | 🏢 配信元: <b>伊豆下田経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">イスラエルの政局は連立交渉が難航しやすく、大統領が主導して組閣を指示するプロセスが日常化している。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">中東の緊張感の中で、イスラエルの指導部交代は安全保障政策や外交に多大な影響を及ぼす。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">政局の混乱は市場の不確実性を高めるが、大統領による調整は憲法上のプロセスであり、必ずしも即時の政策転換を意味しない。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5fLVRLVC1aV25QQmEwa1I1YkdtM3VmVS1oY2xadlVLY0ZPS0VXZE5yZHNhUXprYU5yLW1QdG1KaVBvSG9yNlpjT1FaWDdkRFZHNFE?oc=5" target="_blank">発電所建屋から野底川へ戻される水 - 飯田経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:08 | 🏢 配信元: <b>飯田経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">発電所における水利用は、周辺環境への配慮や農業用水との調整が厳格にルール化されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">水利権や環境負荷をめぐって、事業者と地域住民の間で対話が続けられるケースが多い。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">局地的な環境報道は、住民感情を反映している場合が多く、企業のESG対応という文脈で捉える必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUEFVX3lxTE1NaHNPTWtUWHNKVG1KTWxZcmktZFN5WTMxamVqbmI2eHVHY3FibTVWem4wZC1JNURYbTZLVk12dXRvSUwzRHJtYzJFRUYxakQ2?oc=5" target="_blank">中国女性スパイ報道巡り調査 - 佐賀経済新聞</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:07 | 🏢 配信元: <b>佐賀経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スパイ容疑などの外交的・安全保障上の問題は、中国と諸外国の間で緊張の火種となりやすい。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">経済活動においても、スパイ防止法や輸出管理の強化など、政治的リスクがビジネスに直結する事例が増加している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">スパイ報道は国家間の緊張を煽る可能性があるため、信頼できる機関の続報を待つ姿勢が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiUEFVX3lxTE5fTWxmTDFYTXlCUGktZG9jTi1mdUNpWVVjb1ZOVmNtd1BnRkVISDFaR1R1Tndjb2JBbEhwVUZhcWh4cDFhM2RrT2NTVTBaYXl1?oc=5" target="_blank">「瀬戸内産業芸術祭2026」が経済産業省「ART & BUSINESS AWARD 2026」で特別賞を受賞 岡山 - KSBニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:04 | 🏢 配信元: <b>KSBニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">地域活性化において、アートと経済の融合（地域芸術祭など）は「関係人口」を増やす戦略として注目されている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">経済産業省は地域創生やクールジャパン戦略の一環として、芸術を通じたビジネスモデルの評価を進めている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">受賞実績は地域ブランドの向上に寄与するが、経済的持続可能性（自走できる仕組みか）を別途評価する必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE5HOERfZVJLMVZfUTVwMWI1a1BZajhld1B3TnA3WG9NY2hYSXBFaWFVT3gtbXV6eG9odEJpUmV4SUlKQWt4RWY0V1Q1OS1JN2VFa0VhOHA0aw?oc=5" target="_blank">水素保安戦略ってなに？ - 経済産業省 METI Journal ONLINE</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:02 | 🏢 配信元: <b>経済産業省 METI Journal ONLINE</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">水素は脱炭素社会の切り札として期待されており、保安戦略は実用化に向けた安全基準の策定を指す。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">水素の貯蔵・輸送に関する技術開発が進む一方で、火災防止など安全面でのレギュレーション整備が急務となっている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">技術政策の解説には「水素社会への期待」という推進側のバイアスが含まれがちであり、コスト競争力とのバランスを俯瞰する必要がある。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE1mQURGal9FeDZaNmpPUzN1ZVVTWFU5ZVdWSnljbllqRTVuUXB4VVdndGJJb3pkZnhFOXFuc3E1cTBDVEdzMjJkTHVpYVRocXlPMG9qM2FITQ?oc=5" target="_blank">県内経済「緩やかに持ち直している」 3期連続で判断を上方修正 岩手 - TBS NEWS DIG</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:01 | 🏢 配信元: <b>TBS NEWS DIG</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">景気動向指数や判断の「上方修正」は、企業活動の回復を意味し、雇用や消費への波及効果が期待される。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">地方経済はインバウンド需要や製造業の受注状況により判断が揺れ動くことが常である。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「緩やかな持ち直しの方向」といった表現は、先行指標が弱い場合でも用いられるため、実体経済の体感値とのギャップを確認すべき。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE1QbXRIYmllUkJPY0Jmc1c3amliQ0otaTY4NFM4TlVmcGF0bEh4d016N2lNa2d3WHdDOWJrZ0dxNVJYa3VtQ3pjX2NjTFFFbmc?oc=5" target="_blank">EVトラックはディーゼル車より経済的!? 軽油高騰で欧州の運送事業者の40％が「コストが逆転した」と答える - ベストカーWeb</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 01:00 | 🏢 配信元: <b>ベストカーWeb</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">軽油価格の高騰により、運送事業者はエネルギーコストの転嫁に苦しんでいる。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">欧州では環境規制（グリーンディール）が厳しく、ディーゼルからEVへの移行がコスト的にも合理化されつつある。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">調査データの「40％」という数字がどの程度のサンプル数で算出されたか、国や車両規模の偏りがないか確認が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxQSF9IUk5MRFVHeFRlTUtTeFA4UV9GQ3pqMFdrTzRodjc1cWVidVZOVy1yOV9QRUROX0RjQklfcks3LWJBTmRCMk9vOUxHR2tjV3l0SF9Rc2UtbDlrTTg0b3RKY09hUXJxYXFleU1mLVFUdzU3OS1sMFhOVnVsckNRUzJYZm1Rbmc?oc=5" target="_blank">【経済統計】自動車産業の設備投資は6年連続増、電動化戦略は複線化(週刊 金融財政事情) - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 00:30 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">自動車産業はCASE（コネクテッド、自動運転、シェアリング、電動化）への対応で莫大な投資を必要としている。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">当初の「EV一本足打法」から、ハイブリッド車や水素を含めた「複線化」への戦略修正が世界的に進んでいる。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">統計データは過去の投資の結果であり、直近のEV市場減速懸念といったトレンドが反映されるにはタイムラグがある点に注意。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE1MSDRPUjBJM2s4SGowbjJ6UFlNYWVuSTR0UVEwakRrbEo4Y2txZ0NlNGQyR2JKYUs5QVdJaW9ZRVZaWG41ODI3aHRKd0ZCQ1htYjNBUVRIOVZuMFNQ?oc=5" target="_blank">◆日経平均、上げ幅が1000 円を超す - - 神戸経済ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 00:13 | 🏢 配信元: <b>- 神戸経済ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日経平均が急騰する際は、空売りの買い戻しや海外勢の先物買いが主導することが多い。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">市場の乱高下は、米国の金融政策決定や地政学的なイベントに強く反応する傾向がある。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「上げ幅1000円」といった数字はインパクトが大きいが、その日のボラティリティが市場の健全性を示すものではない。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5SbWNRSUFaUXlPNGYyZGoycHlHVWgybkxVbGVpcGk1VG5heUJuQkpHc3dhUGtDS3E1UTZQb00yNXRxSzFiZTBlVmZUUWJ6N2dHM3hTajlSN09xX1VuY2szbHR3dERTQ3ZXejZTS3N6MEVOdEYyZE5xUFlmT1dhUU0?oc=5" target="_blank">「仲間外れにされた人」は過激な集団に加わる傾向がある？ 社会的排斥やストレス、欠乏の深刻な影響（東洋経済オンライン） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-09 00:00 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">社会的排除や孤独感は、心理的ストレスを通じて個人の行動変容を促す社会心理学的なテーマである。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年の社会的分断や過激化の背景を解明する試みとして、心理・行動経済学的な分析がビジネス分野でも活用され始めている。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">心理学的アプローチをビジネスに転用する際は、個人のバイアスを過度に一般化（ラベリング）しないよう留意が必要。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
