@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Claude - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/claude.png" class="thumbnail-icon-small" alt="Claude">
+                        Claude
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-15 10:27)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTE1uR1gwS01aWWt6d3Z4UHlTdW1Nc1RYOUhxYnl1QXFWTTJ1MHZzaWZiX3FsTVhxc1haOEdJYUZjZE9QZ2dRVE1KcWVMTHdmMHQ3c3gxSC1taWZJNmhYMklhVXJLMjJkdHBjM3BZaDBVUdIBaEFVX3lxTFBsSGtwdFJjNkJOaGU5amxacVRjRm5zRXNyQXBNLVFOMmFDNU9TeFdoUFVSY2cxajAxVlRYX1dKMVVHdW9RcWJJU25MS2l4NUlGTUtOQW0xSVB3WmlMN2VlU3VpejJwbEVW?oc=5" target="_blank">Googleが「Gemini 4 Carbon」一般提供開始／Anthropicが「Claude Fable 5.2」「Claude Mythos 5.2」を発表：週末の「気になるニュース」一気読み！（1/3 ページ） - ITmedia PC USER - ITmedia</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-14 21:00 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIモデルの進化スピードが加速しており、特にGoogle（Gemini）とAnthropic（Claude）はLLMのトップシェアを争う主要プレイヤーです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">生成AIは当初チャットボット用途が中心でしたが、現在は推論能力、マルチモーダル化、コーディング支援へと適用範囲が急速に広がっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">モデル名の数値はベンダー独自の基準で振られることが多く、実務上の性能差は特定のタスク（言語や精度）で大きく異なる点に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE0zVkNHRjBILUFVc0VMcndkVWo1bk5pRTV3QWpBbnZlOE9JUVpBMmhmYUhlQV9IblBrN2pwb3dwSTBfT0Z5QWhXaUlmcnJySDhoWm1zX2JRd0RwOU1Fc3BaWHhGblNublpKZlhoZQ?oc=5" target="_blank">【追記あり】M365障害、ChatGPT／Claudeのコネクタにも影響 「ほとんどのリクエストで動作しない」（1/2 ページ） - ITmedia</a></h3>
+                        <div class="meta">📅 2026-11-14 11:35 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Microsoft 365（M365）は多くの企業で基幹プラットフォームとなっており、ここでの障害は他のSaaSサービスへの認証や連携（コネクタ）に連鎖的な悪影響を及ぼします。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIサービスの多くはMicrosoftのクラウド基盤を利用しており、APIを通じた統合が深まるほど、単一障害点（SPOF）のリスクが高まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">コネクタ経由の障害は、サービスのコードそのものよりも、API認証系やネットワーク経路に起因するケースが多い点に留意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE5TbWFNWDdqSXdSY01oRE44RTZrOEctV0lFanRNS3l1ZmI5NUVHX19sOE15RnBkdnkzNkwzWVNYSFhoTTU3YUZQTlRzTEFOVTQ2STRSbWJrdFU0VUlCcVQ4YWdRclg2VjB3YXBFTWFnZFBuUmxY?oc=5" target="_blank">エヌビディア決算とAnthropic上場が同週に登場、AI産業チェーンは二重の試練へ - BigGo ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-14 23:55 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">エヌビディアはAIハードウェアの独占的供給者であり、AnthropicなどのLLM開発企業は、そのモデル公開や上場が市場のセンチメントを左右する重要イベントとなっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">これまでAI産業は爆発的な成長を遂げてきましたが、株価の高騰に対するバリュエーション（割高感）の議論が再燃しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AI需要は「期待」から「実績」を問われるフェーズに移行しており、収益化のスピードが市場の信任を維持する鍵となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5vOWYxZ25CaFVGOXJITkJvbmQ2dmQxb2d6VG1hVWUyM0wzek5MRkFrNlpnVl9nMVE0N01nQTBzeEt4MmNXYmk0SFlKVy1jaGVvQnBJMzdPa2RyNXJPQ2I4aTJpcElaTnVHYWdEdFRNbVhQd2dCeW84RFdmaWNWaUU?oc=5" target="_blank">Cursor侵害の発端は取引先の鍵1本 偽のClaude Code拡張が最大5,000人に届いたか（ビジネス＋IT） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-14 19:58 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">CursorはAI統合型エディタとして急速に普及していますが、サードパーティ製プラグインの管理がセキュリティ上の弱点として指摘されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">解析失敗</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">サプライチェーン攻撃は「信頼されたツール」を悪用するため検知が極めて困難です。開発者は拡張機能の権限管理を厳格化すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTFA5SW8xVG1WM0x6QXpvZzdBdUxDSWw4Mm8zYnJnZjM1TW1UdnZoSkpGdGQtX043NkpUZXduWFhZUHdoSTJyWkJSUkNCM1g1VWN4V016Q2lYWWdWN1RERlpz?oc=5" target="_blank">【NS Solutions FY2026 Q2 決算説明会】上期営業利益27%増の232億円で過去最高、通期予想を490億円に上方修正 Anthropic提携でAI駆動開発を加速 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 16:44 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">NS Solutions（新日鉄住金ソリューションズ）などのSIerは、AI導入コンサルティングやシステム構築で高成長を記録しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">従来のシステム開発だけでなく、AI駆動開発（AI-Driven Development）を取り入れた生産性向上が、SIerの新しい競争力となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AI提携による利益の上方修正が一時的なブームによるものか、中長期的な収益モデルへの転換点かを定量的に判断することが重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE0tdlAzbzlmQVVZMVZZOEVVZ2lHLWZqRFlROUpDRzRIQ3VhTkZpdV84VldHLTBmclNYWWY3djVfU1FqVmN4YWNacHdzTEZsSGpmNWE0cUo2ZDVwdXk4WVFzSHlVb0xnNmJIYV8yUTYzekRQZnpi?oc=5" target="_blank">Bitcoinが6.8万ドルへ急落、Anthropic上場の「資金吸い上げ」効果で20%超下落 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 14:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">特定の企業が巨大なIPOを行う際、市場から流動性が吸い上げられる現象（需給の偏り）が暗号資産などのリスク資産で発生することがあります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">暗号資産市場は伝統的な金融イベントに対して敏感であり、機関投資家のポートフォリオ調整が顕著に現れる傾向があります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">Anthropic上場という個別要因だけでなく、全般的なリスクオフムードとの相関を注意深く観察する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxQMjQ1bHZ5TEQxRm9zZmY4VUY0Rl9sc2MzM2ItX3lfdDJwbG5xd3ZfaHdxNHZLRG12X21yZEZpZlJlc2V6bzNFelY3UHlYRk94NXZhT1dJek1fbEZvaXlzOFRNcS1tcnNQdTF3RkRtM2FWS0NIQ3Jid1o4SFV2VFBzVFBhaVotNHhfeUk4MUNtczMxZG5VSUZaQTF4eUNFUTNWSGdHTUZHUUdhTktxcDZyRFJzSHhkdElReVE?oc=5" target="_blank">アントロピック社は、抗体、CAR-T細胞療法、そして今後10年間の癌の予測といった医薬品に関する研究にクロード氏を迎え入れた。 - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-11-14 13:14 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIは創薬プロセスにおけるシミュレーション、タンパク質構造解析、臨床データ分析の効率を劇的に改善しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">製薬業界は長年のR&Dコストを課題としており、LLMを活用した創薬支援が業界標準となりつつあります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIによる予測はあくまで研究の加速であり、実際の臨床試験での有効性が証明されるまでには、依然として厳格な検証プロセスが必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE8zWGFlNDViRXVDLTVjUWU1X19ZVjBjazFDd0RDWF9sdUdxbENFU0R0WlUtZWR0ZmJfSVZmdmtBSWRDMW9paTNBOUxNRXVQX2ZvLWtYQlZpemM5dw?oc=5" target="_blank">マイケル・バーリ氏がIPO警告：SpaceX、Anthropic、OpenAIは「熱狂のピーク」で売り出し中 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 13:08 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">マイケル・バーリ氏は映画『マネー・ショート』のモデルで知られる投資家で、市場のバブル崩壊を警告するスタイルで有名です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">現在、AI関連企業の株価は将来の利益成長を極端に前借りしており、調整局面に対する警戒感が高まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">著名投資家の警告は一つの警鐘として有益ですが、市場全体が過熱しているのか、それとも特定のセクターのみかという層別化が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxNOVNEUVJBM1Nad2JpWTZ0ZEIybkp5cEd1TnpVQmVoaW9mQng0MGtEWmJyS01mb211TVdCdVYyZ3huUmVmRk5ZbFJqT19mMkdUVzNXemVVaDNGdkg0SzBmTXk5V2RoN0p1aG0yNndoYmMzWENieHpORkdINmVKeGxRdTczSm9VTmJKeXBNUFdRLVo0d1pBVml1ZHloc3UzdG8xSEgzTUxneW13Ui0zS0ZySHE3emtRM2hkVDl2bDR3?oc=5" target="_blank">Anthropic社は、がん治療薬の研究にAI「Claude」を活用している：前臨床試験結果と10年間の予測。 - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-11-14 10:38 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ID:23と同様、AIの医療応用は現在のテック業界の主要な投資テーマの一つです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">前臨床段階での成功率は極めて低く、このプロセスをAIでショートカットできるかどうかは、企業の将来価値に直結します。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">医療系AIのニュースは、投資家向けに過大に宣伝される（ハイプ）ケースが多いため、具体的な臨床成果データがどの程度実証的かを見極める視点が重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiqAFBVV95cUxPVzhBU0tsUkg3SkVDWXpPY0pNS0FBZzg5ZHFVczJIanJMR1lBVjgyOEYyMWFfczYxc05GeFBKT0JYTnoyRUpYNldxNHZDSHlxanU3SnNKLW1Fb0N5WHh5MWpjRVlyTm5kdzRoVjJQUlZoX3N2QTJoLTV4U3AwbDdhLVI2RkxWMnFsU0NmTkF1U2plTEk3cDQwaUxOWHlrTXZydzdkNnNZejk?oc=5" target="_blank">Cursor、マーケットプレイスで悪意あるClaude Code拡張機能の配布につながった侵害を確認 - Mezha.net</a></h3>
+                        <div class="meta">📅 2026-11-14 10:29 | 🏢 配信元: <b>Mezha.net</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ID:20と同様、ソフトウェアのサプライチェーン攻撃は現代の開発環境における最大の脅威の一つです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">オープンソースエコシステムの侵害は、開発者の信頼関係を悪用してコードを汚染し、一気に広まるという特徴があります。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">侵害確認は重要ですが、その後のユーザーへの補償や再発防止策が、当該サービスの信頼性を回復する唯一の道となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMitAFBVV95cUxNOWp4UUhJMTdnMVVycmVLMXU2VVVObUFyZ1JhUEI0SmlnOC1xMzhuZWhZbkJnbUttd0VPN09rUmFLbkYwMkM2Tng3TkRHS09IWWFMajNpeG1UajE5NE4tOUpiNm1SMnFlRUxiRkNIMk5DeXNOZW5UUkJBaFNwX2RJcmlqQTNzQVdwVlphRkxzc3hlQmY5VGNKSmxrelkwZVZ4MlJYRXR1UGdHaG5mbFdCNlM1Ulk?oc=5" target="_blank">$エヌビディア (NVDA.US)$ - Moomoo</a></h3>
+                        <div class="meta">📅 2026-11-14 10:11 | 🏢 配信元: <b>Moomoo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">NVIDIA（NVDA）はAIブームの心臓部であり、同社の株価はAIセクター全体の「温度計」として機能しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">GPU供給能力がAI開発の制約条件となっている現状、同社の決算は全産業のAI戦略に影響を与えます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">個別株のニュースはボラティリティが高いため、短期売買ではなく長期的な需給動向を考慮することがビジネスパーソンとしては適切です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE01SWVrNE5mUDd0WXg3ekNqSWloR21IWHZBZGIydFJGaEkzU2ZNdUNQMS1xTEh3U2dreC05QmZPaEJldElvc2lpcy1sNWVBV0MzLUtEalBRY1lXalY0NkVOTzJzQndpWGppODZQTFR3cWZFR1Vm?oc=5" target="_blank">マイクロソフト、12月9日より英国のCopilotテナントでAnthropicのClaudeをデフォルトで有効化へ - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 08:25 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">MicrosoftとAnthropicの提携は、自社製品群（Copilot）に多角的なAIモデルを組み込む戦略の一環です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">OpenAIへの依存リスクを分散させ、最適化されたAIモデルを選択できる環境を構築しようとするマイクロソフトの多層的な戦略が見えます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">デフォルト設定の変更は、ユーザーのAI利用習慣を強制的に書き換える可能性があるため、企業内導入における生産性の変化には注視が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihAFBVV95cUxNeVJVMVlrcDdrVmlwWERhc01TckhTZ1RicGtGM1FZbGY3VVhwektESG9MLUxCclJMeUxndHNsdUttLUQ2V2QzYlFkaVFXb19QMnoyQnFBbms3SnFhZVNmd01QSERuLXBHSVUyWGFOM2NieEx6M0syZGlxRHpGZ3VhajRidmw?oc=5" target="_blank">Claude Duet、米国のウェイトリスト全員に提供開始、Proはリセット3回 - Pasquale Pillitteri</a></h3>
+                        <div class="meta">📅 2026-11-14 07:45 | 🏢 配信元: <b>Pasquale Pillitteri</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AIツールのウェイトリスト解除は、開発側がキャパシティ（インフラ負荷）に対する自信を深めたことを示唆します。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">生成AIサービスは初期の需要過多でアクセス制限をかけるのが一般的ですが、スケールアップのプロセスを経て段階的に一般公開されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">Pro版の回数制限リセットは、ユーザーの「利便性」とベンダー側の「推論コスト」のバランス調整です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE1PV0VpQV9laUlJRWpjal9SQUc0UGRycER1b0xFNHRqWVkyVFJRYVRuVlVLM1F5Vkt0Y19nWVZraGFZMjhmc1liR1BGYWg5d3BIWGZ1THczN0JGZkdKTGdDSHpaUnNJdlAzZ2wxcy1CbHpmYmo3?oc=5" target="_blank">Claudeがゲーデル手稿を解読 ヘルシンキ大チームが663条の定理の原型を発掘 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 06:30 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">クルト・ゲーデルは20世紀最大の論理学者の一人。未発表の速記手稿は解読が困難で、学術的な価値が極めて高い。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ヘルシンキ大学の研究チームが長年かけて解読を試みてきた。AI（Claude）の高度な文字認識と文脈推論能力を活用することで、長年放置されていた難解な論理学のメモの解明が進んだ。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">AIによる解読は強力なツールだが、歴史的文書の解釈には学術的な裏付けが必要。過度なAI依存による誤読の可能性を排除し、専門家によるダブルチェックが必須となる。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE9lVDVPY0o2UG9nRUNQZ0kyNzRYVWN3OGU1enBnYkxfcGdfT01ENHBSN21zVXFFOWtyZ0xyNl9aaDd5OFhucWhRd1Y2QkVkc0c2U0ZIUnRadEF3aVpmbXY5b1Q1MjlhY1hTeW1hWEkwNkg3WnI5?oc=5" target="_blank">Anthropic、18日にNasdaq上場へ…最大約223.6兆円の企業価値、韓国AI ETFの組み入れ競争が本格化 - BigGo ファイナンス</a></h3>
+                        <div class="meta">📅 2026-11-14 06:30 | 🏢 配信元: <b>BigGo ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Anthropic社はOpenAIの有力な競合。企業価値が数千兆円規模になることは、AI産業への資本集中と期待値の過熱を象徴する。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ChatGPTの台頭以降、大規模言語モデルへの投資が過熱。韓国などの金融市場では、AI関連株をパッケージ化したETFの人気が高まっており、上場によりポートフォリオ組み入れの動きが加速している。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">企業価値の推定額が現実の収益見通しと乖離していないか注意が必要。AI銘柄特有の「バブル」懸念や、規制強化による影響も考慮すべきリスク要因。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
