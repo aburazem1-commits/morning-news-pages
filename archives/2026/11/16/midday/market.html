@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>マーケット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/market.png" class="thumbnail-icon-small" alt="マーケット">
+                        マーケット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-16 10:29)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTFBhcmtlNjRhRGZmMHh6U2Voa0JJY2J6UDc0V0FxSEg0NGlXUktnY3FBSlFaY1dzX3pjTUZHT2xuME50Q080X0U3VXVDU2g3WFRiamZVX0JuM21jTHhscWktYktPc1piM2VvS0VoRg?oc=5" target="_blank">日経平均株価、米ハイテク株安重荷 内需株が支え（先読み株式相場） - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-15 22:37 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日本市場における日経平均株価の構成比率では、半導体関連などのハイテク株が大きなウェイトを占めており、米国ナスダック市場の影響を強く受けやすい構造があります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年の日本株は、米国の金利動向やAIブームに伴うハイテク株の騰落に連動する展開が定着しています。一方、内需株はインバウンド需要や賃上げによる消費意欲の改善に支えられ、下支え役となるケースが増えています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">米ハイテク株安という外部要因に対し、内需株がどの程度「防衛的な動き」を見せるのか、相関関係の変化を注視する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9VVEdzOFRldXU0SVFaVldJVkVHcmM5eUVjekVxM21lQ1NNeFY0Qm82Vms5azZ3MDZLaktsZU5OTXJxR0RaTFU0eHNlVW1FSlpZVS14THFDSXp0WTVHWUZidXdIbkw5YzFfcFRVUg?oc=5" target="_blank">ネット証券、個人を米国株へ アンソロピックIPOは23時間取引の前哨戦 - 日本経済新聞</a><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-15 02:00 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">アンソロピック（Anthropic）はOpenAIと並ぶ生成AIの有力企業です。ネット証券各社は、個人投資家の米国株投資への関心の高まりに応えるべく、取り扱い銘柄の拡充や取引時間の延長を競っています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">これまで個人投資家の米国株取引は時差の制約がありましたが、ネット証券による24時間取引対応など、取引環境の整備が急速に進んでいます。大型IPOへの個人投資家のアクセス機会拡大は、市場の裾野を広げる動きです。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">23時間取引という仕組みは流動性が限定的な時間帯を含むため、個人投資家にとっては約定価格の乖離（スリッページ）等のリスク管理が重要となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMikAFBVV95cUxQdmlCczhHYXVaV0xndm9LOE9pdXBGZ3NXVXM0LXdXU01PMFVsUGphQ1VHaXA4TmdYRDM4Rk80azJhWlNaak9aUDFOdEY2N05zVzFvME5CWVVpaEs1Wi1lRzNKbEk5Rl9CTGU4ZXIxb0F2eG12QjB1bmRlVENBcFJNME5Dc3UzdXVnTEs4a3lpZkY?oc=5" target="_blank">本日11月16日の米ドル為替レート：銀行の米ドル価格は26,000ベトナムドンに近づいています。 - Vietnam.vn</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 01:07 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ベトナムドン（VND）は管理フロート制を採用しており、米ドルとの為替レートは中央銀行によって一定の範囲内でコントロールされています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">米国の高金利政策の影響で、世界的に新興国通貨はドルに対して弱含む傾向にあります。ベトナムにおいても対ドルレートの管理はマクロ経済維持の重要課題となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ベトナムの銀行間レートと市中レートには差がある場合が多く、この提示価格がどの市場のレートを指しているのか確認が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBiZGUyZ1R5NkJFdC1weUVVVW1JWk83VnhOMDB4Q2FnelpUTHJxU1VnZ25NNlQ1MW5RQTMzLTZMVlFteHVjakJWUWpmbS10RExzNC04dE1hX3M5WVVodlJmRXhwbWVIMzA?oc=5" target="_blank">東京為替：ドル・円は持ち直し、159円80銭台を一時回復 執筆 Fisco - Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 01:02 | 🏢 配信元: <b>Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ドル円レートは、日米の金利差に大きく左右されます。160円近辺は過去に介入が意識された水準であり、市場参加者が神経質になりやすいゾーンです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">歴史的な円安トレンドの中で、政府・日銀による為替介入の可能性や、日銀の金融政策修正への思惑が常に為替相場を揺さぶる要因となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">短時間の変動幅（ボラティリティ）に注目すべきです。持ち直しが自律的な買い戻しなのか、ファンダメンタルズの変化によるものかの区別が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE9aOS1GRVVaZ1BCVEdreC10SWlZRDUyZWo2eTg5bzJmRkcxbGdDcFZacU9oOE41WklNTFM4R2d2YVc3N29GTjBkVThDMG8wVGM?oc=5" target="_blank">PV用裏面フィルムの世界市場（2026年～2032年）、市場規模（単層、3層）・分析レポートを発表 - アットプレス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 01:00 | 🏢 配信元: <b>アットプレス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">太陽光発電（PV）パネルの裏面フィルム（バックシート）は、耐久性や変換効率を左右する重要部材です。脱炭素化の加速により需要が拡大しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">太陽光パネルの製造拠点のアジアシフトが進む中で、高機能フィルム市場は素材メーカー間の競争が激化しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">市場規模予測には、各国の再生可能エネルギー政策や関税政策による不確実性が含まれます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSEFVX3lxTFA3ZDdScVFVZnRmV2VZMnA2eHJWZFk2VFZQby1NNk9GRWhVeTZuSVlaMjNNS0w1NTlJeUdacWctTEcwdFFjRVhwTg?oc=5" target="_blank">三菱ＵＦＪ銀 ドル円 公表仲値 １５９．８６ - みんかぶ FX/為替</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:56 | 🏢 配信元: <b>みんかぶ FX/為替</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">仲値（なかね）は、銀行がその日の対顧客取引レートを決める基準となる価格です。日本時間の午前9時55分頃の市場レートを参考に決定されます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">仲値決定に向けた実需のドル買い・円売り需要が、朝方の相場変動を引き起こすことは金融市場の通例です。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">この価格は銀行取引の基準であり、インターバンク市場のリアルタイムレートとは異なる場合があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihgFBVV95cUxNcGczVE1aMDYzWTFpdkExOFNGaGtRMTIxN0JnZHlkbm1iNnFacHJBNldhd2YyZ0F2NjBXVmxhWmpRdEMyYlBEZkRkVmlJZlRZUXBKMHA3NWNtUXVxNHZ2WWs3a0Vrb1RPNk93U09SeVZRQXNuNVA3c0Q1Ukt0VFh6dENIX0Z4Zw?oc=5" target="_blank">日経平均は続伸で寄り付く、材料難から高寄り後は失速 - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:42 | 🏢 配信元: <b>Reuters</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">市場参加者が方向感を探る材料が乏しい際、寄り付き後の高値を維持できずに利益確定売りが出る「高寄り失速」は典型的な市場パターンです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">日本市場では、前日の米国株の影響を受けつつ、その後は国内の独自材料が少ないと、海外勢の動きや先物主導の展開になりがちです。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「材料難」という見出しは、逆説的に何らかの大きなニュースに対する相場の過敏性を示唆している場合があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxOa3FtUUVQOFdOS0FjNC14TnkzTlVwTzNPWi1DeWYxTkRtNUpPT2t5ampzbXNXcGVGSE9GekdYeGxEZ2NwRDNUWjRwQ2hFSkEzY0VrVXZxbUJzZ09WdTd2aTZiOFJPY1FURnJUbDNIYU5uYld2aERNS0FnanJNOGY0RTlqT3NjUGs?oc=5" target="_blank">東京為替：ドル・円は伸び悩み、159円90銭手前から押し戻し(フィスコ) - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:33 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">160円という節目は心理的な抵抗線として機能しやすく、そこに至るまでの「伸び悩み」は相場転換のシグナルとして読まれます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">為替相場において、特定の価格帯で戻される動きが繰り返される場合、その水準での売り圧力が強いことが示唆されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">押し戻しの原因が「売り注文の多さ」なのか「買い意欲の枯渇」なのかで、その後のトレンドが変わります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxOTEJuaU9JOTVCT3YwMGtHMzE5VXAyaGxTUUZ3RHhMVnJ0T2ZMaWRuM1lVQjZHbVJXZ0dKUXpNdDdidUJDcUlyRGRqTExzdmFDU1BHbkxIeVRsVU1IaktLbVgyVWRPMmxNenhoTFhhanN5WktNSllVaVR0UVkzLXBvUENLdmhSZms?oc=5" target="_blank">【株式市場】歴史的な株価調整も、年明けにかけてAI上流企業に投資妙味(週刊 金融財政事情) - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:30 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">生成AIブームにより、NVIDIA等の半導体・インフラ企業（上流）が巨大な収益を上げている一方、導入・活用段階の企業（下流）との二極化が進んでいます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過去のITバブル期と同様、過度な期待による株価調整は避けられないものの、AI技術の経済的インパクトは長期的トレンドとして認識されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「年明けにかけて」という時期予測は、あくまで現在の市場環境が継続することを前提とした期待値が含まれます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiWkFVX3lxTE4tYlctRlBUMDl6eUh6QWZHTnRPZWoxeGpFQ2RQTXc2RUpuTFdMSXp4aU9sT3RZeDQyMXRhTTBxRHZyQV9faER3UFZHRm9jMFA0bkdqNWRqdFFCQQ?oc=5" target="_blank">［動画］【マーケット Q＆A 第11回】 小型割安株、買いのポイントは？/Jリートの機動的な売買はNG？/55歳でFIRE、資産4億円必要？ - トウシル</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:20 | 🏢 配信元: <b>トウシル</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">個人投資家の間でFIRE（経済的自立と早期リタイア）や割安株投資の手法が定着しており、証券会社の情報提供もそれに応える形になっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">低金利時代を経て、リスクを許容して資産を増やす投資教育のニーズがかつてないほど高まっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「資産4億円必要」等の数字はあくまで一つのモデルケースであり、個人の生活水準に依存する点に注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSEFVX3lxTE9kN2Vneko5SUpQaFg1QWdybS04a2hHNkxQMGVXMjJQU1lqRk1pUElVMFdhOUUtMFpXbXRwSWFjVUJlNFhsaVlDWA?oc=5" target="_blank">ドル円理論価格 1ドル＝158.86円（前日比-0.09円） - みんかぶ FX/為替</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:15 | 🏢 配信元: <b>みんかぶ FX/為替</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ドル円の理論価格は、日米の金利差（日米金利差）に基づいて算出されることが多い指標です。実際の市場価格との乖離が注目されます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">理論価格から大きく乖離した相場は、何らかの修正圧力がかかりやすいという論拠として利用されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">理論価格はあくまでモデルに基づく数値であり、市場の需給（フロー）を完全に説明できるものではありません。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE1TT2gzYUJSLXBHc0ZwV1kxWmtHS0FaaldvRlNwcExkMnQyLXlJVVZOUG1iU2RqWENkX2IwNEUtYVJEN01CU1ZCWVpn?oc=5" target="_blank">そのまま食べる味噌「CRAFT MISO 生糀」 青山ファーマーズマーケットで試食・ 特別販売 - ELEMINIST</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 00:01 | 🏢 配信元: <b>ELEMINIST</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">味噌などの伝統的な発酵食品に、現代のライフスタイルに適した「そのまま食べる」という付加価値を付ける動きは、食ビジネスの差別化戦略として注目されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">健康志向の高まりとともに、発酵食品の再評価と機能性訴求による高付加価値化が進行しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">これは単なる商品PRであり、広範な経済指標に与える影響は限定的です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihgFBVV95cUxNb3BEdTVWTFhxTUhyX3JJLTBXVk9VSnBwRnpkMFFWRHpPYXJ4dkE3ZmhLczctTlppY2dWT0laRWRqT3UyMjkxbDVlLWRqWmlsZHlQVWFRX1dZejlWOVdPbi00eGxIZ3Q5dEU4SUJIdHpiektxN3pTWkR2bm5YREVFNEJhR3ZLZw?oc=5" target="_blank">インテル株主が提訴、株価29％急落で情報開示遅れを主張 - Reuters</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-15 23:51 | 🏢 配信元: <b>Reuters</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">インテルは半導体製造で遅れをとり、業績悪化に伴う株価急落が深刻化しています。株主による「情報開示の遅れ」の訴訟は、企業統治の責任を問うものです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつての王者インテルが製造技術で競合に追い抜かれ、経営再建を模索する過程での株価変動は、多くの株主から注視されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">訴訟が提起された事実と、実際に経営陣に法的責任があるかは別問題です。企業の弁明を待つ必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE1LSWFxN1dHMEM3LWJVS2dRMlNKQzlSaERnbTE0RVQ3anRKdVhuQmZFWEhqOHlWTGc3VmxtbW4xTVAxZVpScUp2czVuNE1pOUlTdnB5eg?oc=5" target="_blank">為替相場 １６日（日本時間 ９時） - 中日新聞Web</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-15 23:50 | 🏢 配信元: <b>中日新聞Web</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">毎朝の定時ニュースでの為替価格報じは、市場の現在の立ち位置を確認する基準点として重要です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">為替は24時間動くため、日本時間の特定の時刻における価格は、その日の取引の始点として重要視されます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">提示された価格がインターバンク市場のどのレートを参照しているかにより若干の誤差が生じます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihwFBVV95cUxNS0J2a3NCeHh2aGJ2amFSU2lual9XbFhwSElPNExUTzJMbjFuSENOaTFyRnVBWjF6YU5CdTFnRjl5NWhpM0ViUUtPWWc3VEVzWDBFMW04SDZaVkVHSDBoc29oUGREREVuTmg3U3p0c3BzRG4yUlN4OFBtSHFaM3dqejNBbEFJTDg?oc=5" target="_blank">13日の米株式市場、中国ネット・IT株は総じて堅調(トレーダーズ・ウェブ) - Yahoo!ファイナンス</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-15 23:38 | 🏢 配信元: <b>Yahoo!ファイナンス</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">中国のネット・IT株は、中国政府の規制動向に株価が大きく左右される特徴があり、地政学リスクの影響を強く受けます。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過去数年間、中国のテック企業は厳しい規制下に置かれてきましたが、最近では経済回復のために緩和的な姿勢も見られています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">堅調さは一時的な自律反発の可能性もあります。中国経済の構造的問題が解決したわけではない点に留意すべきです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
