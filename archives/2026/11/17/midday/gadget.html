@@ -1,0 +1,480 @@
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ガジェット - Morning AI Briefing</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+            
+        <style>
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: rgba(255, 255, 255, 0.03);
+                --card-border: rgba(255, 255, 255, 0.08);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent-color: #38bdf8;
+                --accent-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+            }
+            body { margin: 0; padding: 0; background: var(--bg-gradient); color: var(--text-main); font-family: 'Outfit', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+            header { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease-out; }
+            h1 { font-size: 3rem; font-weight: 800; margin: 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+            .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 10px; }
+            
+            /* 基本グリッド（個別ページの記事一覧用） */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+            
+            /* ポータルページ専用のグリッド（PCではカードを中央に寄せて大きく見せる） */
+            .portal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+            
+            .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; text-decoration: none; color: var(--text-main); }
+            .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+            .portal-card-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--accent-color); }
+            .portal-card-count { font-size: 1rem; color: var(--text-muted); }
+            .article-title { font-size: 1.3rem; font-weight: 600; margin: 0 0 15px 0; line-height: 1.5; }
+            .article-title a { color: var(--text-main); text-decoration: none; transition: color 0.2s; }
+            .article-title a:hover { color: var(--accent-color); }
+            .ai-section { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid var(--accent-color); }
+            .ai-label { font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+            .ai-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+            .ai-content:last-child { margin-bottom: 0; }
+            .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+            .back-btn { display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-main); text-decoration: none; margin-bottom: 30px; transition: all 0.3s; font-weight: 600; }
+            .back-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); border-color: var(--accent-color); }
+            
+            /* ✨ サムネイル画像のスタイル（大きく見やすく調整） */
+            .thumbnail-icon { width: 120px; height: 120px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); object-fit: cover; }
+            .thumbnail-icon-small { width: 60px; height: 60px; vertical-align: middle; border-radius: 15px; margin-right: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+            
+            /* ✨ レスポンシブ対応（スマホ・タブレット向け最適化） */
+            @media (max-width: 768px) {
+                .grid { grid-template-columns: 1fr; gap: 20px; }
+                .portal-grid { grid-template-columns: 1fr; gap: 20px; }
+                h1 { font-size: 2rem !important; }
+                .card { padding: 20px; }
+                .thumbnail-icon { width: 90px; height: 90px; }
+                .thumbnail-icon-small { width: 40px; height: 40px; }
+            }
+            
+            /* ✨ Newバッジのスタイル */
+            .badge-new {
+                display: inline-block;
+                background: linear-gradient(135deg, #f43f5e, #fb923c);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 12px;
+                margin-left: 10px;
+                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+                animation: pulseBadge 2s infinite;
+            }
+            
+            /* ✨ 新着カード専用の光る演出（2.5秒でスッと消える！） */
+            .card-new-highlight {
+                animation: newCardFlash 2.5s ease-out forwards;
+            }
+
+            @keyframes pulseBadge {
+                0% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244,63,94,0.8); }
+                100% { transform: scale(1); box-shadow: 0 0 5px rgba(244,63,94,0.4); }
+            }
+
+            @keyframes newCardFlash {
+                0% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); }
+                15% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); border-color: rgba(56, 189, 248, 1); transform: translateY(-3px); }
+                80% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); transform: translateY(-1px); }
+                100% { box-shadow: 0 0 0px rgba(56, 189, 248, 0); border-color: var(--card-border); transform: translateY(0); }
+            }
+
+            /* ✨ フローティング目安箱のスタイル */
+            .feedback-btn {
+                position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+                background: linear-gradient(135deg, #38bdf8, #818cf8); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white;
+                box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4); cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+            }
+            .feedback-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6); }
+
+            .feedback-modal {
+                display: none; position: fixed; bottom: 100px; right: 30px; width: 320px;
+                background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); z-index: 1000;
+                animation: fadeInDown 0.3s ease-out reverse;
+            }
+            .feedback-modal.active { display: block; animation: fadeInDown 0.3s ease-out; }
+            .feedback-modal h3 { margin-top: 0; color: white; font-size: 1.2rem; margin-bottom: 15px; }
+            .feedback-modal textarea {
+                width: 100%; height: 100px; background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;
+                padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 15px; box-sizing: border-box;
+            }
+            .feedback-modal button {
+                width: 100%; padding: 10px; background: var(--accent-color); color: #0f172a;
+                border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            }
+            .feedback-modal button:hover { background: white; }
+
+            @keyframes fadeInDown { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        </style>
+    
+        </head>
+        <body>
+            <div class="container">
+                <a href="index.html" class="back-btn">⬅ トップポータルへ戻る</a>
+                <header>
+                    <h1 style="font-size: 2.5rem; letter-spacing: 0; display: flex; align-items: center; justify-content: center;">
+                        <img src="../../../../../assets/images/gadget.png" class="thumbnail-icon-small" alt="ガジェット">
+                        ガジェット
+                    </h1>
+                    <div style="font-size: 1.1rem; color: var(--accent-color); margin-top: 10px; font-weight: bold;">
+                        Midday Update (2026-11-17 13:15)
+                    </div>
+                    <div class="subtitle">AIが厳選・解説する良質な最新ニュース</div>
+                </header>
+                <div class="grid" style="animation: fadeIn 1s ease-out;">
+        
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTFBPdGsyd2xseHNyY1VNdm5wVUpfYjBadldPUzlGWi1fNEtQejJLdXh3NkRVdjNpdXd5N3pFYm8zbm1Bd0NWanlZbk1Ndko1Z19zQWVablU0N0tnRkNXeGVHZWZqVEh0WDIzNFE?oc=5" target="_blank">A SCENE × 片岡メリヤス ×『ちびまる子ちゃん』のトリプルコラボレーションガジェットアクセサリーなど12月4日(金)発売 - PR TIMES</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 03:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンアクセサリー市場では、機能性だけでなくファッション性やキャラクターIPとのコラボレーションによる差別化が重要な戦略となっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">若年層から大人まで人気のあるIPを活用し、単なる保護ケースではない「ライフスタイル雑貨」としての付加価値を訴求する動きが活発化しています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">コラボ商品は限定生産であることが多く、在庫変動が激しいためビジネス分析上の需要予測においては突発的なスパイクに注意が必要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9VbTdDYnltbjFnYmJNakJMOGx5bG5OSmhtdVdkSlMzVnNWYlhhLU4wRDlUXzVHSzNtYXk1Vm9mSmlWc0F3MllDaVppenEzX3FONUJWS200bU8yRTdWSW9KYmt1bmdOZV8wUUxTSw?oc=5" target="_blank">シャープ、5,000mAhバッテリー搭載スマートフォン「AQUOS sense11」を発売 - 日本経済新聞</a><span class="badge-new">New</span><span class="badge-paywall" style="display: inline-block; background: #ef4444; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle;">有料記事</span></h3>
+                        <div class="meta">📅 2026-11-17 02:15 | 🏢 配信元: <b>日本経済新聞</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">有料記事のため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">シャープの「AQUOS sense」シリーズは、日本国内において手頃な価格とバランスの良い性能で、幅広いユーザー層から根強い人気があるミドルレンジの代表格です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンのコモディティ化が進む中、同シリーズは「使いやすさとバッテリー寿命」に特化することで、他社との差別化を図りシェアを維持してきました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">5,000mAhというバッテリー容量は昨今の標準的なスペックです。競合のグローバルメーカー製品と比較し、日本市場特有の付加価値（おサイフケータイ対応や独自サポート等）がどれだけ評価されるかがポイントです。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE9laHpUTHZFSDFLN2lhTVdZUjhqdDI5aWQwNjZxR1B5SWpWVU9WanQ2LW0zNktOWWlWOTJzRmNwUVE4NTVNT3FxVEVZY3BpcFJteXd0VDZycE1EMU5OLTJtYXdDRnVuUTlZMGc?oc=5" target="_blank">スマイルゼミ 中学生コース スマートフォン専用アプリ「SMILE ZEMI Pocket」を 2027年4月1日(木)より提供開始 - PR TIMES</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 01:40 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマイルゼミはタブレット型の学習支援サービスですが、学習習慣の継続を目的としてスマートフォンとの連携機能を強化しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">教育市場では、PCやタブレットだけでなく、生徒が日常的に触れるスマートフォンを学習ツールとして統合する動きが進んでいます。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">中学生のスマホ利用は娯楽要素が強いため、アプリが「学習効率を上げる」ものになるか、あるいは単に娯楽を増やして学習を妨げるかという効果測定が重要です。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE1ibkxtTGV5Y09ZT2I0WjNJM0tqTk5WMFJkRTJsMFl6V1dpRVoyRW85QTU5UEhXS1A4a3o0Um1qM1pZSkxiVEVpekhGbXNMUWFrUm44R1hlb2J3WVNjeEM3MXVYYzAtZmlTTVE?oc=5" target="_blank">スマートフォンサイズの電子ペーパーAndroid端末【BOOX Palma 3】新発売のお知らせ - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-11-16 06:00 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">電子ペーパー（E Ink）は消費電力が非常に低く、目に優しいという特性から、読書やメモ書き用途でニッチな市場を確立しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマートフォンサイズでAndroid OSを搭載する電子ペーパー端末は、通知などの「デジタルデトックス」を目的とした製品として注目を集めています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">フルカラー液晶のスマホと比較して応答速度が遅いという欠点があります。あくまで「テキストを読む・書く」用途に特化したデバイスであるという前提を理解する必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiakFVX3lxTE15LVU0clIyTHhadzA4SGV0U1NudVcyWnFWcTF4LUNtM082N18zUVVpdC1iQ0tSM2JMcjlpRXVPdkU5dDBHaVpzZm1MUnpRb3d5MDRMSm9MN1lCQnVWWlhlckN4TEFKMWJVUEE?oc=5" target="_blank">【スマホアクセサリー業界】対応機種数/コラボ数/デザイン数でNo1を誇るcaseplayから「エスターバニー リトル」のスマートフォンアクセサリーが登場！ - PR TIMES</a></h3>
+                        <div class="meta">📅 2026-11-16 04:30 | 🏢 配信元: <b>PR TIMES</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">caseplayは多品種小ロット生産を得意とし、IPホルダーとの提携により、ユーザーが求める多様なデザインを提供できる体制を整えています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマホケースは単なる保護アクセサリから、自己表現の手段へと進化しており、アパレルに近いトレンド性の高いビジネスモデルになっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">デザインの多様性が最大の強みですが、機種変更のサイクルが早いスマホ市場において、膨大な在庫リスクをどう管理するかがこの業態の課題となります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMib0FVX3lxTE5FbFZOWEFFU0JLVzdQQ19CcHk4MzdSY1VfWFNTZVNlR0VVN3ZYZ2s3QlZJOW1LV0FScExBTnJPOWR0bGxXdm43bG9HbGtDWW1yakhMMWRlNW9SY0F3UndCaWdma1YxU1lmRXdYdTcwY9IBaEFVX3lxTE1kZlhCT2lXQUxCdUxZbUFzWXBvQ1VGSlMxRWFRZWZxMHRiZmxUblpEOUpHN09wOWRpMFlVdEd0azRDeEh4UVROVXZXODJ4M0tLblNNTnJNaEJGeWUzdEtWS1hWVWJpajFO?oc=5" target="_blank">磁気研究所、スマートフォンから利用できる小型設計のラベルプリンタ - ITmedia PC USER - ITmedia</a></h3>
+                        <div class="meta">📅 2026-11-16 04:28 | 🏢 配信元: <b>ITmedia</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">磁気研究所（磁研）は、ストレージやアクセサリー等の周辺機器を手掛ける企業で、スマホ連携のラベルプリンタは個人の整理術や小規模事業者の販促需要を狙っています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">家庭用・小規模オフィス向けのガジェットは、IoT化による利便性向上を掲げ、アプリでラベル作成を完結させる製品が増えています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ラベルプリンタ市場は、先行する競合他社が存在します。本製品が「スマホとの接続体験」においてどれだけストレスのないUXを提供できるかが市場シェアを左右します。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiV0FVX3lxTE51TW9LWVVEdmpkMG5mR3RTcXVSNVZ6dEN5MnZqQkZrREZBTmlhTEpLNFU5MjRBSWdpMmZkUDdNSGxNaExKTGd1UGtLMDZJUkRQQ1Z0SUtCbw?oc=5" target="_blank">【ドラゴンクエストVII for スマートフォン】PHPの脆弱性対応に伴う対策実施のお知らせ：続報 - www.dragonquest.jp</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 04:12 | 🏢 配信元: <b>www.dragonquest.jp</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">モバイルゲームにおけるPHPサーバー側の脆弱性対応は、ユーザーデータの保護やサービス継続のために極めて重要です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">過去のゲーム資産を現代のOSや環境で動かすための技術的負債解消は、旧来のヒット作を持つメーカー共通の課題となっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">単なる不具合修正ではなく、セキュリティ対応をアナウンスすることは企業としての信頼性管理の一環ですが、ユーザー側は「プレイ環境の利便性が変わらないか」を懸念する傾向があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTFBkbHJDNXBMTlRnZFdwdkppaklNbXE5Ry10MGt5Q0pPTVNnYU9aaktpb2NKV2tHVG1zWjJOVksxZEplUnJrT0c0SWI0QTh0ZFFGZ1E5bUNrOHV1OWw3UDRaWUk3em91M0NwbnpURjF5eDdLZlQxMG93TVdjbXh0WjQ?oc=5" target="_blank">『スプラトゥーン レイダース』体験版が配信開始！6つのガジェットを使って「シャケ」たちとガチバトル（インサイド） - Yahoo!ニュース</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 03:20 | 🏢 配信元: <b>Yahoo!ニュース</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">『スプラトゥーン』シリーズは任天堂の看板タイトルですが、ゲーム内のギミックとして「ガジェット」を用いた戦略的バトルが中心となっています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ゲーム本編のみならず、体験版の配信や外部イベントなどを通じてファンとの接点を増やすマーケティングが徹底されています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">ニュースタイトルが「ガジェット」という単語を強調していますが、ゲーム内のアイテムを指すのか、現実の周辺機器を指すのかを精査する必要があります（ここではゲーム内アイテムの可能性が高いです）。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTkFVX3lxTFBhSEpoR1BUUjNmdWdoRDMxMTNUMHVrQkhQVjBpUzZYWWxHNmFWeG5HcGRvaVZZWFRYY1pmRm5fQ3FRUGIwQzAxLUdPakl6Zw?oc=5" target="_blank">『ちびまる子ちゃん』がガジェットアクセに！「A SCENE（エーシーン）」・片岡メリヤスとのトリプルコラボが12月4日に発売！【全11アイテム紹介】 - LEE</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 03:13 | 🏢 配信元: <b>LEE</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ID: 49と同様、人気コンテンツとファッションブランドのコラボは、ガジェットアクセサリ市場における定番の販売促進手法です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">アニメ『ちびまる子ちゃん』のような長寿IPは、世代を超えて高い認知度を誇るため、雑貨市場での集客力は依然として極めて高いです。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">コラボの企画数が多いため、ブランド価値の稀少性が保たれているか、それとも氾濫しているかという視点での評価が求められます。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiTEFVX3lxTE9qdGg4SDhGa1RSdlJnSEp5R2kzR1pYUEJnUzF0a2UzREpOZWJ1UzhmTnFQRHJxX0RIcktqM3hWZ1Jxd3cxTTNuTS0zZzU?oc=5" target="_blank">低価格と優れた性能を売りに、「コスパ（価格に対する性能）」の代名詞と呼ばれてきた中国のシャオミが、韓国で200万ウォンを超えるプレミアムスマートフォンを発売する。サムスン電子のギャラクシーはもちろん - 매일경제</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-17 02:20 | 🏢 配信元: <b>매일경제</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">シャオミは「コスパ」の代名詞的な立ち位置ですが、市場シェア拡大後、利益率向上のためにプレミアムモデル（高級機）に軸足を移すのがスマホメーカーの定石です。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">中国メーカーは以前「安かろう悪かろう」と見られていましたが、現在はサムスンやAppleに肉薄する技術力を持ち、ブランド転換を試みています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">低価格を求めていた顧客層が、高級機にシフトしたブランドに追従するかどうかは大きな賭けです。プレミアム化が成功すれば収益性は劇的に改善します。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiR0FVX3lxTE5mSnZyMVRpTUJWTXlPRFRqSF9DdVNqemN3SXZ5NEJtUzhxU0ZLN1RzQ2kxY3hFZ3dTTnFRRW5SVzBLLVVzQkFR?oc=5" target="_blank">OPPO Reno17発表、角度で猫が浮き上がる「奇遇喵」配色と3599元からの価格 - shiritomo</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 22:51 | 🏢 配信元: <b>shiritomo</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">OPPOのRenoシリーズは、特にデザイン性とカメラ機能に重点を置いており、アジア圏を中心に若年層からの支持が厚いモデルです。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">スマホの性能差が埋まる中で、外観のデザインやカラーリングにおける「遊び心」を付加する製品戦略がトレンドとなっています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">「奇遇喵」のようなギミック重視の配色が、一時的なバズを生むだけでなく、継続的な販売の柱になるかはデザインの市場寿命に依存します。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card card-new-highlight" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMihAFBVV95cUxPQjRtd1VvVkNHY2pvNlZ4Ym90SndiSkw4VHNHXzdjMVJIQW9TVW16OUVUWS1BUHVJQ2pxcUxPMW5nRUprNVF6OGlhZmkxWGFmREN5cXhJcWozSHhGeVM3aXJ4Sm9ILWFTTXpwMmV4UV9iN0tQZmRuUUZGNXo3Mzk5LVhEMVI?oc=5" target="_blank">ブラックフライデーセール！大人気スマートフォンリング&スタンド「Aulumu G09 / G09 Ghost」20%引き - Jetstream</a><span class="badge-new">New</span></h3>
+                        <div class="meta">📅 2026-11-16 22:49 | 🏢 配信元: <b>Jetstream</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">ブラックフライデーは11月第4金曜日に開催される世界的な大規模セールであり、ガジェットや周辺機器メーカーも在庫処分や販促の好機として利用します。スマートフォンリングやスタンドは、MagSafe対応製品を中心にアクセサリー市場で高い需要があります。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">Aulumuはスタイリッシュなデザインのスマホアクセサリーを展開する新興ブランド。これまでも機能性とデザイン性を両立した製品でガジェット系メディアを中心に注目を集めてきました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">割引価格は魅力ですが、セール対象品は旧モデルや在庫整理の可能性もあるため、最新仕様との比較やレビュー確認を推奨します。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMi4wFBVV95cUxOanJJQ0VZWWhGN2VNQUhLblh4MUt3NVVFNHQzLU1wWmt2dEtxNVhMNmo5TFRwYk8tVUVDRlE3cXNYbHNPdHR0VzRYTkhIUEV1ajcxZlhKSzlNTjRVT2NaOVhiODRKTDJvMHNpdXpqYVRSbXVxNFpuMlRTb1NGVWt1NmR2dUNXRW9JNFJBTUtVOHRMaG1paWVnRldVOXN5N0pjNDRKZlhBMmthSGx6dzBpamh1blBlU3lCMnVva2pFSldRbVl4cWo0YldQWnRuUnc4X0I5YzNNTm0xb2s1XzFCOHo2OA?oc=5" target="_blank">スマートフォン用除菌器市場2035年展望：施設向け衛生プロトコルが成長を後押し - ニュースと統計 - IndexBox</a></h3>
+                        <div class="meta">📅 2026-11-16 19:31 | 🏢 配信元: <b>IndexBox</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">コロナ禍を機に高まった衛生意識が、公衆衛生の基準（プロトコル）として定着しつつあります。特に多くの人が接触する場所でのデバイス除菌は、感染症対策の観点から市場を形成しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつては個人向けUV除菌ボックスが一時的なブームとなりましたが、現在はより高精度で短時間に処理可能な業務用・施設用デバイスへと需要の主軸がシフトしています。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">市場調査レポートに基づく予測は往々にして成長を楽観視する傾向があるため、実需がどれほど持続的か、代替技術の台頭はないかを冷静に見極める必要があります。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxObGhDaGxJZkIyQ3A1MUducFlESjNERTVNc1I3MTE5WFpmZFdKMjRmQXMzeGRlc01vM1R5ZmtfXzJMaUpPeDNsVU1YVmJMRmJ6VmRCWThFVkIxOUhNeEhhWXI3LVRtTG9objlXUml4QURITUJ3N0V0R1JWQ3lRVzVKWG96TE9NTEY2ZjVlMDVHZzV2S3ViWUpsdjhZTDBET1FCV25Hd21oRXdTRGppcGRHODZIZzhhSVVMRHdv?oc=5" target="_blank">AI時代のiPhone 18 Pro Max：スマートフォンはユーザーの仕事のやり方を変えつつあるのか？ - Vietnam.vn</a></h3>
+                        <div class="meta">📅 2026-11-16 15:17 | 🏢 配信元: <b>Vietnam.vn</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">AppleなどのメーカーがAI統合（Apple Intelligence等）を進める中、スマートフォンは単なる通信手段から、オンデバイスAIを搭載した「パーソナル・インテリジェンス・ツール」へと役割を再定義されています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">近年、スマホの性能向上は頭打ちと言われてきましたが、生成AIの台頭により、処理能力やメモリ容量が改めてビジネスユースのボトルネックとして注目されるようになりました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">iPhone 18は将来的な予測モデルであり、現時点でのスペック議論は憶測の域を出ないことに注意が必要です。市場の期待値と技術的実現性の乖離に留意してください。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                    <div class="card" style="cursor: default;">
+                        <h3 class="article-title"><a href="https://news.google.com/rss/articles/CBMibkFVX3lxTE1Rd1NyUi1YUndPR1pWYWh3VHNRU2xrUlpxMkNhdlp3ZVBDUGhBMXVpa2hRYlZ6cXo0MUtRV0RhV2lPS0ZhcXdMT0FFcTVDLU4ydDRsWmczOW9ERU5pRnpGcTZqai13UWJPTVBVMnRR?oc=5" target="_blank">アミュ3COINS、リニューアルでガジェット周りが充実しまくってて通う！ - au Webポータル</a></h3>
+                        <div class="meta">📅 2026-11-16 13:06 | 🏢 配信元: <b>au Webポータル</b></div>
+                        
+                        <div class="ai-section">
+                            <div class="ai-label">📝 AI 要約</div>
+                            <div class="ai-content">本文取得エラーのため要約なし</div>
+                            <div class="ai-label">✨ 前提知識(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">3COINSは「スリコ」の愛称で親しまれる生活雑貨店ですが、近年は低価格ながらデザイン性に優れたガジェット周辺機器（ケーブル、スタンド、充電器等）のラインナップを大幅に拡充しています。</div>
+                            <div class="ai-label">📜 これまでの経緯(created by gemini-3.1-flash-lite)</div>
+                            <div class="ai-content">かつて100円ショップが独占していた安価な雑貨市場に対し、3COINSは300円〜という価格設定で「高見え」するデザインと一定の品質を付加し、若年層からビジネスパーソンまで顧客層を広げてきました。</div>
+                            
+                            <div class="ai-label">👁️ AI ワンポイント</div>
+                            <div class="ai-content">店舗の品揃えは地域や時期によって変動が激しいため、特定のガジェットが全店舗で入手可能とは限らないという「限定性」のバイアスに注意してください。</div>
+                
+                        </div>
+                
+                    </div>
+            
+                </div>
+            </div>
+            
+        <!-- ✨ フローティング目安箱 -->
+        <div class="feedback-btn" onclick="toggleFeedback()">💬</div>
+        <div class="feedback-modal" id="feedbackModal">
+            <h3>💡 ご意見・ご要望（目安箱）</h3>
+            <textarea id="feedbackText" placeholder="ここをもっとこうしてほしい！追加してほしい機能！など、なんでも教えてね。"></textarea>
+            <button onclick="submitFeedback()">送信する 🚀</button>
+        </div>
+        <script>
+        function toggleFeedback() {
+            document.getElementById('feedbackModal').classList.toggle('active');
+        }
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text.trim()) return alert("メッセージを入力してね！");
+            
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfckD_xXB-UFb-Zv2FTGAq6PlmUVdCz7Ok-v1Fgm8aClBaYfA/formResponse";
+            const entryId = "entry.565392953";
+            
+            const formData = new FormData();
+            formData.append(entryId, text);
+            
+            // ボタンを「送信中...⏳」にして無効化するオシャレ演出
+            const btn = document.querySelector('.feedback-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "送信中...⏳";
+            btn.disabled = true;
+            
+            fetch(formUrl, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => {
+                alert("貴重なご意見ありがとう！\nスプレッドシートへしっかり届けたよ！");
+                document.getElementById('feedbackText').value = "";
+                toggleFeedback();
+            }).catch((err) => {
+                alert("送信中にエラーが発生しちゃった。ネットワーク状況などを確認してみてね！");
+            }).finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        </script>
+    
+        </body>
+        </html>
+        
